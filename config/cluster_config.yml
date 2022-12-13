@@ -1,0 +1,12 @@
+# cluster_config.yml - cluster configuration
+__default__:
+    account: dmoi
+    partition: cpu
+    time: 01:00:00 # time limit for each job
+    nodes: 1
+    ntasks-per-node: 14 #Request n cores be allocated per node.
+    chdir: /work/FAC/FBM/DBC/cdessim2/default/dmoi/projects/snake_tree
+    output: a_name_for_my_job-%j.out
+    error: a_name_for_my_job-%j.err
+
+path: /work/FAC/FBM/DBC/cdessim2/default/dmoi/projects/struct_tree_BM

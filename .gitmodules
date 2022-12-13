@@ -1,0 +1,3 @@
+[submodule "smk-simple-slurm"]
+	path = smk-simple-slurm
+	url = git@github.com:jdblischak/smk-simple-slurm.git

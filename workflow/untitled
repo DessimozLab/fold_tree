@@ -1,0 +1,4 @@
+
+with open('snakemake.output[0]') as snakeout:
+	for l in snakemake.inuput:
+		snakeout.write(l)

@@ -1,4 +1,100 @@
-# Main entrypoint of the workflow. 
-# Please follow the best practices: 
-# https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html,
-# in particular regarding the standardized folder structure mentioned there. 
+conda: "config/snake_tree.yaml"
+configfile: "config/cluster_config.yml"
+
+
+#rule all:
+#    input:
+#        expand('{folder}sequences.aln.fst.nwk' ) ,# path = config["path"]),
+#    output:
+#        "{folder}output.txt"
+#    script:
+#        "aggregate_res.py"
+
+'''
+
+
+rule csv2distmat:
+    input:
+        alignment="{folder}sequences.aln.fst",#path = config["path"]  # Input alignment file
+    output:
+        tree="{folder}sequences.aln.fst.nwk", #path = config["path"] # Output tree file
+    log:
+        "{folder}logs/fasttree.log",#path = config["path"]
+    params:
+        extra="",  # Additional arguments
+
+    wrapper:
+        "v1.20.0/bio/fasttree"
+
+
+rule foldseek_allvall:
+    input:
+        alignment="{folder}sequences.aln.fst",#path = config["path"]  # Input alignment file
+    output:
+        tree="{folder}sequences.aln.fst.nwk", #path = config["path"] # Output tree file
+    log:
+        "{folder}logs/fasttree.log",#path = config["path"]
+    params:
+        extra="",  # Additional arguments
+
+    wrapper:
+        "v1.20.0/bio/fasttree"
+
+
+
+rule foldseek_db:
+    input:
+        alignment="{folder}sequences.aln.fst",#path = config["path"]  # Input alignment file
+    output:
+        tree="{folder}sequences.aln.fst.nwk", #path = config["path"] # Output tree file
+    log:
+        "{folder}logs/fasttree.log",#path = config["path"]
+    params:
+        extra="",  # Additional arguments
+
+    wrapper:
+        "v1.20.0/bio/fasttree"
+'''
+
+
+
+
+rule fasttree:
+    input:
+        alignment="{folder}sequences.aln.fst",#path = config["path"]  # Input alignment file
+    output:
+        tree="{folder}sequences.aln.fst.nwk", #path = config["path"] # Output tree file
+    log:
+        "{folder}logs/fasttree.log",#path = config["path"]
+    params:
+        extra="",  # Additional arguments
+
+    wrapper:
+        "v1.20.0/bio/fasttree"
+
+rule dl_ids:
+    input:
+        ids="{folder}identifiers.txt",#path = config["path"]  # Input alignment file
+    output:
+        fasta="{folder}sequences.fst", #path = config["path"] # Output tree file
+    log:
+        "{folder}logs/dl_ids.log",#path = config["path"]
+    params:
+        extra="",  # Additional arguments
+    wrapper:
+        "v1.20.0/bio/fasttree"
+
+rule clustalo:
+    input:
+        "{folder}sequences.fst",#path = config["path"]
+    output:
+        "{folder}sequences.aln.fst",#path = config["path"]
+    params:
+        extra="",
+    log:
+        "{folder}logs/clustalo.log",# path = config["path"]
+    threads: 14
+    wrapper:
+        "v1.20.0/bio/clustalo"
+
+

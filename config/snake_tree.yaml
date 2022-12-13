@@ -1,0 +1,7 @@
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - fasttree=2.1.11
+  - clustalo=1.2.4
+  - iqtree
