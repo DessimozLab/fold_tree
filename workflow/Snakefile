@@ -1,6 +1,5 @@
 conda: "config/snake_tree.yaml"
-configfile: "config/cluster_config.yml"
-
+#configfile: "config/cluster_config.yml"
 
 #rule all:
 #    input:
@@ -57,8 +56,6 @@ rule foldseek_db:
 '''
 
 
-
-
 rule fasttree:
     input:
         alignment="{folder}sequences.aln.fst",#path = config["path"]  # Input alignment file
@@ -72,7 +69,36 @@ rule fasttree:
     wrapper:
         "v1.20.0/bio/fasttree"
 
-rule dl_ids:
+
+
+rule dl_ids_sequences:
+    input:
+        ids="{folder}identifiers.txt",#path = config["path"]  # Input alignment file
+    output:
+        fasta="{folder}sequences.fst", #path = config["path"] # Output tree file
+    log:
+        "{folder}logs/dl_ids.log",#path = config["path"]
+    params:
+        extra="",  # Additional arguments
+    script:
+        "dl_sequences.py"
+
+
+rule dl_ids_structs:
+    input:
+        ids="{folder}identifiers.txt",#path = config["path"]  # Input alignment file
+    output:
+        fasta="{folder}sequences.fst", #path = config["path"] # Output tree file
+    log:
+        "{folder}logs/dl_ids.log",#path = config["path"]
+    params:
+        extra="",  # Additional arguments
+    script:
+        "dl_structs.py"
+
+
+"""
+rule dl_ids_structures:
     input:
         ids="{folder}identifiers.txt",#path = config["path"]  # Input alignment file
     output:
@@ -83,6 +109,7 @@ rule dl_ids:
         extra="",  # Additional arguments
     wrapper:
         "v1.20.0/bio/fasttree"
+"""
 
 rule clustalo:
     input:
