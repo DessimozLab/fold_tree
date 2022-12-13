@@ -4,3 +4,6 @@
 [submodule "slurmprofile"]
 	path = slurmprofile
 	url = git@github.com:jdblischak/smk-simple-slurm.git
+[submodule "slurmsimple"]
+	path = slurmsimple
+	url = git@github.com:jdblischak/smk-simple-slurm.git
