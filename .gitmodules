@@ -3,4 +3,4 @@
 	url = git@github.com:jdblischak/smk-simple-slurm.git
 [submodule "slurmprofile"]
 	path = slurmprofile
-	url = git@github.com:Snakemake-Profiles/slurm.git
+	url = git@github.com:jdblischak/smk-simple-slurm.git
