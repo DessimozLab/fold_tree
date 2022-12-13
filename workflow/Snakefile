@@ -1,4 +1,7 @@
 
+#once snakemake is installed use the following command to test the struct tree
+#snakemake --cores 1 ./testdata/struct_tree.nwk --use-conda
+
 import snakemake.utils
 snakemake.utils.min_version("7.8.0")
 conda:  "../config/snake_tree.yaml"
