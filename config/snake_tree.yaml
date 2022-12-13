@@ -2,6 +2,17 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
+  - fastme
   - fasttree=2.1.11
   - clustalo=1.2.4
+  - foldseek
   - iqtree
+  - python=3.7
+  - pandas
+  - numpy
+  - scipy
+  - pip:
+    - wget
+    - requests
+
+

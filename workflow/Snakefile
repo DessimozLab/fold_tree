@@ -1,9 +1,23 @@
 
 import snakemake.utils
 snakemake.utils.min_version("7.8.0")
+conda:  "../config/snake_tree.yaml"
+#shell.executable("/bin/bash")
+#shell.prefix("source /work/FAC/FBM/DBC/cdessim2/default/dmoi/condaenvs/etc/profile.d/conda.sh")
 
-shell.executable("/bin/bash")
-shell.prefix("source /work/FAC/FBM/DBC/cdessim2/default/dmoi/condaenvs/etc/profile.d/conda.sh")
+
+rule fastme:
+	conda:
+		"../config/snake_tree.yaml"
+	input:
+		"{folder}/fastmemat.txt"
+	output:
+		"{folder}/struct_tree.nwk"
+	#log:
+	#    "{folder}logs/fasttree.log",#path = config["path"]
+	shell:
+		'fastme -i {wildcards.folder}/fastmemat.txt -o {wildcards.folder}/struct_tree.nwk  -n '
+
 
 rule fasttree:
 	conda:
@@ -19,22 +33,57 @@ rule fasttree:
 	wrapper:
 		"v1.20.0/bio/fasttree"
 
+rule foldseek2distmat:
+	conda:
+		"../config/snake_tree.yaml"
+	input:
+		"{folder}/structaln_score.tsv"
+	output:
+		"{folder}/fastmemat.txt"
+	script:
+		"../src/foldseekres2distmat.py"
 
+rule foldseek2tab:
+	conda:
+		"../config/snake_tree.yaml"
+	input:
+		"{folder}/aln.0"
+	output:
+		"{folder}/structaln_score.tsv"
+	shell:
+		'foldseek createtsv {wildcards.folder}/structblobDB {wildcards.folder}/structblobDB {wildcards.folder}/aln {wildcards.folder}/structaln_score.tsv'
+
+
+rule foldseek_allvall:
+	conda:
+		"../config/snake_tree.yaml"
+	input:
+		"{folder}/structblobDB_h"
+	output:
+		"{folder}/aln.0"
+	shell:
+		'foldseek search {wildcards.folder}/structblobDB {wildcards.folder}/structblobDB {wildcards.folder}/aln {wildcards.folder}/tmp -a'
+
+rule foldseekdb:
+	conda:
+		"../config/snake_tree.yaml"
+	input:
+		"{folder}/missing_structs.txt"
+	output:
+		"{folder}/structblobDB_h"
+	shell:
+		'foldseek createdb {wildcards.folder}/structs/ {wildcards.folder}/structblobDB '
 
 rule dl_ids_sequences:
 	conda: 
-		"../config/snake_tree.yaml",
+		"../config/snake_tree.yaml"
 	input:
 		ids="{folder}identifiers.txt",#path = config["path"]  # Input alignment file
 	output:
-		fasta="{folder}sequences.fst", #path = config["path"] # Output tree file
-	#log:
-	#    "{folder}logs/dl_ids.log",#path = config["path"]
-	params:
-		extra="",  # Additional arguments
+		"{folder}sequences.fst",
+		"{folder}sequence_dataset.csv",
 	script:
-		"dl_sequences.py"
-
+		"../src/dl_sequences.py"
 
 rule dl_ids_structs:
 	conda: 
@@ -42,28 +91,13 @@ rule dl_ids_structs:
 	input:
 		ids="{folder}identifiers.txt",#path = config["path"]  # Input alignment file
 	output:
-		fasta="{folder}sequences.fst", #path = config["path"] # Output tree file
+		fasta="{folder}missing_structs.txt", #path = config["path"] # Output tree file
 	#log:
 	#    "{folder}logs/dl_ids.log",#path = config["path"]
 	params:
 		extra="",  # Additional arguments
 	script:
-		"dl_structs.py"
-
-
-"""
-rule dl_ids_structures:
-	input:
-		ids="{folder}identifiers.txt",#path = config["path"]  # Input alignment file
-	output:
-		fasta="{folder}sequences.fst", #path = config["path"] # Output tree file
-	log:
-		"{folder}logs/dl_ids.log",#path = config["path"]
-	params:
-		extra="",  # Additional arguments
-	wrapper:
-		"v1.20.0/bio/fasttree"
-"""
+		"../src/dl_structs.py"
 
 rule clustalo:
 	conda: 

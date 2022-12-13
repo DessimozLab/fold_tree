@@ -1,7 +1,6 @@
 #foldssek cluster
 import subprocess ,shlex
 import numpy as np
-from sklearn.manifold import MDS
 from scipy.spatial.distance import cdist
 
 #smooth distmat with MDS
@@ -36,16 +35,16 @@ def runFastme( fastmepath , clusterfile ):
     p = subprocess.run(shlex.split(args) , stdout=subprocess.PIPE )
     return clusterfile+'_tree.txt'
 
-def distmat_to_txt( identifiers , distmat, filedir , prefix = ''):
+def distmat_to_txt( identifiers , distmat, outfile):
     #write out distmat in phylip compatible format
     outstr = str(len(identifiers)) + '\n'
     for i,pdb in enumerate(identifiers):
         namestr = pdb.replace('.','')
         outstr += namestr+ ' ' + np.array2string( distmat[i,:], formatter={'float_kind':lambda x: "%.2f" % x}).replace('[', '').replace(']', '').replace('\n', '')  + '\n'
-    with open(filedir+ prefix +'fastmemat.txt' , 'w') as handle:
+    with open(outfile , 'w') as handle:
         handle.write(outstr)
         handle.close()
-    return filedir + prefix + 'fastmemat.txt'
+    return outfile
 
 def structblob2tree(input_folder, logfolder):
     dbpath = runFoldseekdb(input_folder, logfolder)
