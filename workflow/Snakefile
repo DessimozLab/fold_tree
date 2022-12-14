@@ -16,8 +16,8 @@ rule fastme:
 		"{folder}/fastmemat.txt"
 	output:
 		"{folder}/struct_tree.nwk"
-	#log:
-	#    "{folder}logs/fasttree.log",#path = config["path"]
+	log:
+	    "{folder}logs/fasttree.log"
 	shell:
 		'fastme -i {wildcards.folder}/fastmemat.txt -o {wildcards.folder}/struct_tree.nwk  -n '
 
@@ -29,8 +29,8 @@ rule fasttree:
 		alignment="{folder}sequences.aln.fst",#path = config["path"]  # Input alignment file
 	output:
 		tree="{folder}sequences.aln.fst.nwk", #path = config["path"] # Output tree file
-	#log:
-	#    "{folder}logs/fasttree.log",#path = config["path"]
+	log:
+	    "{folder}logs/fasttree.log"
 	params:
 		extra="",  # Additional arguments
 	wrapper:
@@ -43,6 +43,8 @@ rule foldseek2distmat:
 		"{folder}/structaln_score.tsv"
 	output:
 		"{folder}/fastmemat.txt"
+	log:
+	    "{folder}logs/foldseek2distmat.log"
 	script:
 		"../src/foldseekres2distmat.py"
 
@@ -53,6 +55,9 @@ rule foldseek2tab:
 		"{folder}/aln.0"
 	output:
 		"{folder}/structaln_score.tsv"
+	log:
+	    "{folder}logs/foldseek2tab.log"
+
 	shell:
 		'foldseek createtsv {wildcards.folder}/structblobDB {wildcards.folder}/structblobDB {wildcards.folder}/aln {wildcards.folder}/structaln_score.tsv'
 
@@ -64,6 +69,8 @@ rule foldseek_allvall:
 		"{folder}/structblobDB_h"
 	output:
 		"{folder}/aln.0"
+	log:
+	    "{folder}logs/foldseekallvall.log"
 	shell:
 		'foldseek search {wildcards.folder}/structblobDB {wildcards.folder}/structblobDB {wildcards.folder}/aln {wildcards.folder}/tmp -a'
 
@@ -74,6 +81,8 @@ rule foldseekdb:
 		"{folder}/missing_structs.txt"
 	output:
 		"{folder}/structblobDB_h"
+	log:
+	    "{folder}logs/foldseekdb.log"
 	shell:
 		'foldseek createdb {wildcards.folder}/structs/ {wildcards.folder}/structblobDB '
 
@@ -85,6 +94,8 @@ rule dl_ids_sequences:
 	output:
 		"{folder}sequences.fst",
 		"{folder}sequence_dataset.csv",
+	log:
+	    "{folder}logs/dlsequences.log"
 	script:
 		"../src/dl_sequences.py"
 
@@ -95,8 +106,8 @@ rule dl_ids_structs:
 		ids="{folder}identifiers.txt",#path = config["path"]  # Input alignment file
 	output:
 		fasta="{folder}missing_structs.txt", #path = config["path"] # Output tree file
-	#log:
-	#    "{folder}logs/dl_ids.log",#path = config["path"]
+	log:
+	    "{folder}logs/dlstructs.log",#path = config["path"]
 	params:
 		extra="",  # Additional arguments
 	script:
@@ -111,8 +122,8 @@ rule clustalo:
 		"{folder}sequences.aln.fst",#path = config["path"]
 	params:
 		extra="",
-	#log:
-	#    "{folder}logs/clustalo.log",# path = config["path"]
+	log:
+	    "{folder}logs/clustalo.log",# path = config["path"]
 	threads: 1
 	wrapper:
 		"v1.20.0/bio/clustalo"
