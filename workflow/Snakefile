@@ -4,33 +4,65 @@
 
 import snakemake.utils
 snakemake.utils.min_version("7.8.0")
-conda:  "../config/snake_tree.yaml"
-#shell.executable("/bin/bash")
-#shell.prefix("source /work/FAC/FBM/DBC/cdessim2/default/dmoi/condaenvs/etc/profile.d/conda.sh")
+
+folders = glob_wildcards("{folders}identifiers.txt").folders
+
+"""
+rule calctreescores:
+	#use 
+	conda:
+		"config/snake_tree.yaml"
+	input:
+		"{folder}/struct_tree.nwk" ,"{folder}sequences.aln.fst.nwk" , "{folder}sequence_dataset.csv"
+	output:
+		"{folder}/nodesscores.csv" , "{folder}/totalscores.csv" , "{folder}/treegraph.svg"
+	log:
+	    "{folder}logs/treescores.log"
+	script:
+		'../src/calctreescores.py'
+"""
+
+rule all:
+    input:  expand("{folder}struct_tree.nwk.rooted", folder=folders  ) ,
+    		expand("{folder}sequences.aln.fst.nwk.rooted", folder=folders  )
+
+
+
+rule mad_root:
+	conda:
+		"config/snake_tree.yaml"
+	input:
+		"{folder}/{alntype}.nwk"
+	output:
+		"{folder}/{alntype}.nwk.rooted"
+	log:
+	    "{folder}/logs/madroot{alntype}.log"
+	shell:
+		'/work/FAC/FBM/DBC/cdessim2/default/dmoi/software/mad/mad {folder}/{alntype}.nwk'
 
 
 rule fastme:
 	conda:
-		"../config/snake_tree.yaml"
+		"config/snake_tree.yaml"
 	input:
 		"{folder}/fastmemat.txt"
 	output:
 		"{folder}/struct_tree.nwk"
 	log:
-	    "{folder}logs/fasttree.log"
+	    "{folder}/logs/fasttree.log"
 	shell:
 		'fastme -i {wildcards.folder}/fastmemat.txt -o {wildcards.folder}/struct_tree.nwk  -n '
 
 
 rule fasttree:
 	conda:
-		"../config/snake_tree.yaml"
+		"config/snake_tree.yaml"
 	input:
-		alignment="{folder}sequences.aln.fst",#path = config["path"]  # Input alignment file
+		alignment="{folder}/sequences.aln.fst"
 	output:
-		tree="{folder}sequences.aln.fst.nwk", #path = config["path"] # Output tree file
+		tree="{folder}/sequences.aln.fst.nwk"
 	log:
-	    "{folder}logs/fasttree.log"
+	    "{folder}/logs/fasttree.log"
 	params:
 		extra="",  # Additional arguments
 	wrapper:
@@ -38,25 +70,25 @@ rule fasttree:
 
 rule foldseek2distmat:
 	conda:
-		"../config/snake_tree.yaml"
+		"config/snake_tree.yaml"
 	input:
 		"{folder}/structaln_score.tsv"
 	output:
 		"{folder}/fastmemat.txt"
 	log:
-	    "{folder}logs/foldseek2distmat.log"
+	    "{folder}/logs/foldseek2distmat.log"
 	script:
 		"../src/foldseekres2distmat.py"
 
 rule foldseek2tab:
 	conda:
-		"../config/snake_tree.yaml"
+		"config/snake_tree.yaml"
 	input:
 		"{folder}/aln.0"
 	output:
 		"{folder}/structaln_score.tsv"
 	log:
-	    "{folder}logs/foldseek2tab.log"
+	    "{folder}/logs/foldseek2tab.log"
 
 	shell:
 		'foldseek createtsv {wildcards.folder}/structblobDB {wildcards.folder}/structblobDB {wildcards.folder}/aln {wildcards.folder}/structaln_score.tsv'
@@ -64,50 +96,51 @@ rule foldseek2tab:
 
 rule foldseek_allvall:
 	conda:
-		"../config/snake_tree.yaml"
+		"config/snake_tree.yaml"
 	input:
 		"{folder}/structblobDB_h"
 	output:
 		"{folder}/aln.0"
 	log:
-	    "{folder}logs/foldseekallvall.log"
+	    "{folder}/logs/foldseekallvall.log"
 	shell:
 		'foldseek search {wildcards.folder}/structblobDB {wildcards.folder}/structblobDB {wildcards.folder}/aln {wildcards.folder}/tmp -a'
 
 rule foldseekdb:
 	conda:
-		"../config/snake_tree.yaml"
+		"config/snake_tree.yaml"
 	input:
 		"{folder}/missing_structs.txt"
 	output:
 		"{folder}/structblobDB_h"
 	log:
-	    "{folder}logs/foldseekdb.log"
+	    "{folder}/logs/foldseekdb.log"
 	shell:
 		'foldseek createdb {wildcards.folder}/structs/ {wildcards.folder}/structblobDB '
 
 rule dl_ids_sequences:
 	conda: 
-		"../config/snake_tree.yaml"
+		"config/snake_tree.yaml"
 	input:
-		ids="{folder}identifiers.txt",#path = config["path"]  # Input alignment file
+		ids="{folder}/identifiers.txt",#path = config["path"]  # Input alignment file
 	output:
-		"{folder}sequences.fst",
-		"{folder}sequence_dataset.csv",
+		"{folder}/sequences.fst",
+		"{folder}/sequence_dataset.csv",
 	log:
-	    "{folder}logs/dlsequences.log"
+	    "{folder}/logs/dlsequences.log"
 	script:
 		"../src/dl_sequences.py"
 
 rule dl_ids_structs:
 	conda: 
-		"../config/snake_tree.yaml"
+		"config/snake_tree.yaml"
 	input:
-		ids="{folder}identifiers.txt",#path = config["path"]  # Input alignment file
+		ids="{folder}/identifiers.txt",#path = config["path"]  # Input alignment file
 	output:
-		fasta="{folder}missing_structs.txt", #path = config["path"] # Output tree file
+		fasta="{folder}/missing_structs.txt", #path = config["path"] # Output tree file
 	log:
-	    "{folder}logs/dlstructs.log",#path = config["path"]
+	    "{folder}/logs/dlstructs.log",#path = config["path"]
+
 	params:
 		extra="",  # Additional arguments
 	script:
@@ -115,17 +148,15 @@ rule dl_ids_structs:
 
 rule clustalo:
 	conda: 
-		"../config/snake_tree.yaml"
+		"config/snake_tree.yaml"
 	input:
-		"{folder}sequences.fst",#path = config["path"]
+		"{folder}/sequences.fst",#path = config["path"]
 	output:
-		"{folder}sequences.aln.fst",#path = config["path"]
+		"{folder}/sequences.aln.fst",#path = config["path"]
 	params:
 		extra="",
 	log:
-	    "{folder}logs/clustalo.log",# path = config["path"]
+	    "{folder}/logs/clustalo.log",# path = config["path"]
 	threads: 1
 	wrapper:
 		"v1.20.0/bio/clustalo"
-
-
