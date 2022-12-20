@@ -38,21 +38,20 @@ rule mad_root:
 	log:
 	    "{folder}/logs/madroot{alntype}.log"
 	shell:
-		'/work/FAC/FBM/DBC/cdessim2/default/dmoi/software/mad/mad {folder}/{alntype}.nwk'
+		'/work/FAC/FBM/DBC/cdessim2/default/dmoi/software/mad/mad {wildcards.folder}/{wildcards.alntype}.nwk'
 
 
 rule fastme:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/fastmemat.txt"
+		"{folder}/{type}fastmemat.txt"
 	output:
-		"{folder}/struct_tree.nwk"
+		"{folder}/{type}struct_tree.nwk"
 	log:
-	    "{folder}/logs/fasttree.log"
+	    "{folder}/logs/{type}fasttree.log"
 	shell:
-		'fastme -i {wildcards.folder}/fastmemat.txt -o {wildcards.folder}/struct_tree.nwk  -n '
-
+		'fastme -i {wildcards.folder}/{wildcards.type}fastmemat.txt -o {wildcards.folder}/{wildcards.type}struct_tree.nwk -n '
 
 rule fasttree:
 	conda:
@@ -74,7 +73,7 @@ rule foldseek2distmat:
 	input:
 		"{folder}/structaln_score.tsv"
 	output:
-		"{folder}/fastmemat.txt"
+		"{folder}/fastmemat.txt" , "{folder}/raw_fastmemat.txt"
 	log:
 	    "{folder}/logs/foldseek2distmat.log"
 	script:

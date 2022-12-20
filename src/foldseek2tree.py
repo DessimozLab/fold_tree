@@ -60,6 +60,13 @@ def structblob2tree(input_folder, logfolder):
     distmat = np.zeros((len(pos), len(pos)))
     for idx,row in res.iterrows():
         kernel_distmat[pos[row[0]] , pos[row[1]]] = kernelfun(self_distmap[row[0]] , self_distmap[row[1]] , row[2])
+        distmat[pos[row[0]] , pos[row[1]]]= row[3]
+
     distmat_txt = distmat_to_txt( ids , kernel_distmat , logfolder , prefix ='standard' )
     out_tree = runFastme( 'fastme' , distmat_txt )
+
+    
+    distmat_txt = distmat_to_txt( ids , distmat , logfolder , prefix ='rawscore' )
+    out_tree = runFastme( 'fastme' , distmat_txt )
+    
     return out_tree
