@@ -5,7 +5,7 @@
 import snakemake.utils
 snakemake.utils.min_version("7.8.0")
 
-folders = glob_wildcards("{folders}identifiers.txt").folders
+folders = glob_wildcards("{folders}/identifiers.txt").folders
 
 """
 rule calctreescores:
@@ -23,10 +23,10 @@ rule calctreescores:
 """
 
 rule all:
-    input:  expand("{folder}struct_tree.nwk.rooted", folder=folders  ) ,
-    		expand("{folder}sequences.aln.fst.nwk.rooted", folder=folders  )
+    input:  expand("{folder}/{kerneltype}struct_tree.nwk.rooted", folder=folders  , kerneltype = [ 'kernel_' , 'raw_' ] ) ,
+    		expand("{folder}/sequences.aln.fst.nwk.rooted", folder=folders  )
 
-
+"""
 rule calc_score:
 	conda:
 		"config/snake_tree.yaml"
@@ -38,18 +38,18 @@ rule calc_score:
 	    "{folder}/logs/scoring{alntype}.log"
 	script:
 		"../src/foldseekres2distmat.py"
-
+"""
 rule mad_root:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/{alntype}.nwk"
+		"{folder}/{type}.nwk"
 	output:
-		"{folder}/{alntype}.nwk.rooted"
+		"{folder}/{type}.nwk.rooted"
 	log:
-	    "{folder}/logs/madroot{alntype}.log"
+	    "{folder}/logs/madroot{type}.log"
 	shell:
-		'/work/FAC/FBM/DBC/cdessim2/default/dmoi/software/mad/mad {wildcards.folder}/{wildcards.alntype}.nwk'
+		'/work/FAC/FBM/DBC/cdessim2/default/dmoi/software/mad/mad {wildcards.folder}/{wildcards.type}.nwk'
 
 rule fastme:
 	conda:
@@ -83,7 +83,7 @@ rule foldseek2distmat:
 	input:
 		"{folder}/structaln_score.tsv"
 	output:
-		"{folder}/fastmemat.txt" , "{folder}/raw_fastmemat.txt"
+		"{folder}/kernel_fastmemat.txt" , "{folder}/raw_fastmemat.txt"
 	log:
 	    "{folder}/logs/foldseek2distmat.log"
 	script:
