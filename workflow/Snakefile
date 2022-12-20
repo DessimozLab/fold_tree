@@ -27,6 +27,17 @@ rule all:
     		expand("{folder}sequences.aln.fst.nwk.rooted", folder=folders  )
 
 
+rule calc_score:
+	conda:
+		"config/snake_tree.yaml"
+	input:
+		"{folder}/{alntype}.nwk.rooted"
+	output:
+		"{folder}/{alntype}.nwk.rooted.scores"
+	log:
+	    "{folder}/logs/scoring{alntype}.log"
+	script:
+		"../src/foldseekres2distmat.py"
 
 rule mad_root:
 	conda:
@@ -39,7 +50,6 @@ rule mad_root:
 	    "{folder}/logs/madroot{alntype}.log"
 	shell:
 		'/work/FAC/FBM/DBC/cdessim2/default/dmoi/software/mad/mad {wildcards.folder}/{wildcards.alntype}.nwk'
-
 
 rule fastme:
 	conda:

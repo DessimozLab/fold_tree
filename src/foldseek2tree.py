@@ -32,7 +32,7 @@ def kernelfun(AA,BB, AB):
 
 def runFastme( fastmepath , clusterfile ):
     args =  fastmepath +  ' -i ' + clusterfile + ' -o ' + clusterfile+'_tree.txt -n '
-    p = subprocess.run(shlex.split(args) , stdout=subprocess.PIPE )
+    p = runargs(args)
     return clusterfile+'_tree.txt'
 
 def distmat_to_txt( identifiers , distmat, outfile):
