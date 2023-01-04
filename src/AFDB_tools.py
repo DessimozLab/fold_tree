@@ -3,8 +3,8 @@ import os
 import wget 
 from io import StringIO
 import pandas as pd
-import numpy as np
 import requests
+
 
 def grab_struct(uniID, structfolder, overwrite=False):
     try:
@@ -24,11 +24,11 @@ def grab_struct(uniID, structfolder, overwrite=False):
     return None
 
 #lets pull in the tor pathway members with some gene names
+
 def unirequest_tab(name, verbose = False):
     #we query first by protein name and then gene name
     url = 'http://rest.uniprot.org/uniprotkb/stream?'
     params = [
-    #
     'query={}'.format(name),
     'fields=id,gene_names,protein_name,reviewed,protein_name,organism_name,lineage_ids,sequence',
     'format=tsv',
@@ -39,7 +39,7 @@ def unirequest_tab(name, verbose = False):
     try:
         data =  pd.read_table(StringIO(data)).iloc[0]
         data['query'] = name
-        if verbose == True:
+        if verbose is True:
             print(data)
 
         return data    

@@ -7,27 +7,26 @@ snakemake.utils.min_version("7.8.0")
 
 folders = glob_wildcards("{folders}/identifiers.txt").folders
 
-"""
-rule calctreescores:
-	#use 
-	conda:
-		"config/snake_tree.yaml"
-	input:
-		"{folder}/struct_tree.nwk" ,"{folder}sequences.aln.fst.nwk" , "{folder}sequence_dataset.csv"
-	output:
-		"{folder}/nodesscores.csv" , "{folder}/totalscores.csv" , "{folder}/treegraph.svg"
-	log:
-	    "{folder}logs/treescores.log"
-	script:
-		'../src/calctreescores.py'
-"""
 
 rule all:
     input:  expand("{folder}/{kerneltype}struct_tree.nwk.rooted", folder=folders  , kerneltype = [ 'kernel_' , 'raw_' ] ) ,
     		expand("{folder}/sequences.aln.fst.nwk.rooted", folder=folders  )
 
-"""
-rule calc_score:
+
+
+rule calc_RF:
+	conda:
+		"config/snake_tree.yaml"
+	input:
+		expand("{folder}/{alntype}.nwk.rooted")
+	output:
+		"{folder}/RFdistances.json"
+	log:
+	    "{folder}/logs/RFdist.log"
+	script:
+		"../src/calcRF.py"
+
+rule calc_tax_score:
 	conda:
 		"config/snake_tree.yaml"
 	input:
@@ -37,8 +36,8 @@ rule calc_score:
 	log:
 	    "{folder}/logs/scoring{alntype}.log"
 	script:
-		"../src/foldseekres2distmat.py"
-"""
+		"../src/calctreescores.py"
+
 rule mad_root:
 	conda:
 		"config/snake_tree.yaml"
@@ -50,6 +49,18 @@ rule mad_root:
 	    "{folder}/logs/madroot{type}.log"
 	shell:
 		'/work/FAC/FBM/DBC/cdessim2/default/dmoi/software/mad/mad {wildcards.folder}/{wildcards.type}.nwk'
+
+rule postprocess:
+	conda:
+		"config/snake_tree.yaml"
+	input:
+		"{folder}/{type}struct_tree.nwk"
+	output:
+		"{folder}/{type}struct_tree_PP.nwk"
+	log:
+	    "{folder}/logs/{type}postprocess.log"
+	script:
+		'../src/postprocess.py'
 
 rule fastme:
 	conda:
@@ -127,6 +138,24 @@ rule foldseekdb:
 	shell:
 		'foldseek createdb {wildcards.folder}/structs/ {wildcards.folder}/structblobDB '
 
+
+rule clustalo:
+	conda: 
+		"config/snake_tree.yaml"
+	input:
+		"{folder}/sequences.fst",#path = config["path"]
+	output:
+		"{folder}/sequences.aln.fst",#path = config["path"]
+	params:
+		extra="",
+	log:
+	    "{folder}/logs/clustalo.log",# path = config["path"]
+	threads: 1
+	wrapper:
+		"v1.20.0/bio/clustalo"
+
+
+
 rule dl_ids_sequences:
 	conda: 
 		"config/snake_tree.yaml"
@@ -154,18 +183,3 @@ rule dl_ids_structs:
 		extra="",  # Additional arguments
 	script:
 		"../src/dl_structs.py"
-
-rule clustalo:
-	conda: 
-		"config/snake_tree.yaml"
-	input:
-		"{folder}/sequences.fst",#path = config["path"]
-	output:
-		"{folder}/sequences.aln.fst",#path = config["path"]
-	params:
-		extra="",
-	log:
-	    "{folder}/logs/clustalo.log",# path = config["path"]
-	threads: 1
-	wrapper:
-		"v1.20.0/bio/clustalo"

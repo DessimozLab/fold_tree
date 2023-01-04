@@ -46,6 +46,18 @@ def distmat_to_txt( identifiers , distmat, outfile):
         handle.close()
     return outfile
 
+
+def postprocess(t, delta=10**-10 ):
+    #make negative branch lengths a small delta instead
+    tre = toytree.tree(t)
+    for n in tre.treenode.traverse():
+        if n.dist< 0:
+            n.dist = delta
+    with open(t + 'PP.nwk' , 'w') as treeout:
+        treeout.write(tre.write())
+    return t + 'PP.nwk'
+
+
 def structblob2tree(input_folder, logfolder):
     dbpath = runFoldseekdb(input_folder, logfolder)
     alnres = runFoldseek_allvall(dbpath , logfolder)
