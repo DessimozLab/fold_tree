@@ -26,6 +26,31 @@ def standard_treedraw( tre, sizes= None , colors= None ,fixed_order=None, fixed_
 #taxonomy overlap score
 def getTaxOverlap(node):
 	
+
+	"""
+    Calculate the taxonomy overlap score for the given node in a phylogenetic tree.
+    
+    The taxonomy overlap score is defined as the number of taxonomic labels shared by all the leaf nodes
+    descended from the given node, plus the sum of the scores of all its children. If a leaf node has no
+    taxonomic label, it is not counted towards the score. The function also calculates the size of the
+    largest loss in lineage length, defined as the difference between the length of the set of taxonomic
+    labels shared by all the leaf nodes and the length of the longest set of taxonomic labels among the
+    children of the node.
+    
+    The function adds the following features to the node object:
+    - 'score': the taxonomy overlap score.
+    - 'size': the largest loss in lineage length.
+    - 'lineage': the set of taxonomic labels shared by all the leaf nodes descended from the node.
+    
+    Parameters:
+    node (Toytree.): The node in a phylogenetic tree.
+    
+    Returns:
+    set: The set of taxonomic labels shared by all the leaf nodes descended from the node, or `None` if
+    the node has no children with taxonomic labels.
+    """
+
+
 	if node.is_leaf() == True:
 		node.add_feature( 'score' ,  0 )
 		node.add_feature( 'size' ,  0 )
