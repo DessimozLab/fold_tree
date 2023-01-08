@@ -9,20 +9,18 @@ folders = glob_wildcards("{folders}/identifiers.txt").folders
 
 
 rule all:
-    input:  expand("{folder}/{kerneltype}struct_tree.nwk.rooted", folder=folders  , kerneltype = [ 'kernel_' , 'raw_' ] ) ,
-    		expand("{folder}/sequences.aln.fst.nwk.rooted", folder=folders  )
-
-
+    input:
+		"{folder}/RFdistances.json"
 
 rule calc_RF:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		expand("{folder}/{alntype}.nwk.rooted")
+		expand("{folder}/{alntype}.nwk.rooted",folder=folders , alntype = [ 'struct_tree' , 'sequences.aln.fst' ])
 	output:
-		"{folder}/RFdistances.json"
+		"{folder}/RFdistances.json" 
 	log:
-	    "{folder}/logs/RFdist.log"
+	    "{folder}/logs/RFdist.log" 
 	script:
 		"../src/calcRF.py"
 
@@ -66,7 +64,7 @@ rule fastme:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/{type}fastmemat.txt"
+		"{folder}/{type}_fastmemat.txt"
 	output:
 		"{folder}/{type}struct_tree.nwk"
 	log:
@@ -94,7 +92,7 @@ rule foldseek2distmat:
 	input:
 		"{folder}/structaln_score.tsv"
 	output:
-		"{folder}/kernel_fastmemat.txt" , "{folder}/raw_fastmemat.txt"
+		"{folder}/kernel_fastmemat.txt" , "{folder}/rawscore_fastmemat.txt"
 	log:
 	    "{folder}/logs/foldseek2distmat.log"
 	script:
