@@ -89,7 +89,23 @@ def make_lineages(uniprot_df):
 		, uniprot_df['Taxonomic lineage (Ids)'].map( lambda x : set( x.split(',') ) ) ))
 
 def label_leaves( tree , leaf_lineages):
-	#takes a pandas dataframe with lineage info from uniport
+	"""
+    Adds lineage information to the leaves of a tree.
+    
+    Parameters:
+    tree (toytree.tree.TreeNode): A tree object from the toytree package.
+    leaf_lineages (dict): A dictionary mapping leaf names to lineage information.
+    
+    Returns:
+    toytree.tree.TreeNode: The input tree object with the added lineage information.
+    
+    Examples:
+    >>> tree = toytree.tree('''((a, b), c);''')
+    >>> leaf_lineages = {'a': 'Eukaryota', 'b': 'Eukaryota'}
+    >>> label_leaves(tree, leaf_lineages)
+    toytree.tree.TreeNode
+    """
+	#takes a pandas dataframe with lineage info from uniprot
 	for n in tree.treenode.iter_leaves():
 		if n.name in leaf_lineages:
 			n.add_feature( 'lineage' ,   leaf_lineages[n.name] )
