@@ -1,0 +1,24 @@
+name: snake_tree
+channels:
+  - bioconda
+  - conda-forge
+  - nodefaults
+dependencies:
+  - snakedeploy
+  - snakefmt
+  - snakemake>=5.15.0
+  - pip
+  - fastme
+  - python=3
+  - fasttree=2.1.11
+  - clustalo=1.2.4
+  - foldseek
+  - iqtree
+  - pandas
+  - numpy
+  - scipy
+  - pip:
+    - wget
+    - toytree
+    - toyplot
+    - requests
