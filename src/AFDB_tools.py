@@ -110,6 +110,7 @@ def grab_entries(ids, verbose = False):
         print(name_results)
     return name_results
 
+
 def res2fasta(unires_df):
     """
     Converts a DataFrame containing protein information into a FASTA format string.

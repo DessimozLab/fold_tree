@@ -7,7 +7,6 @@ snakemake.utils.min_version("7.8.0")
 
 folders = glob_wildcards("{folders}/identifiers.txt").folders
 
-
 rule all:
     input:
 		"{folder}/RFdistances.json"
