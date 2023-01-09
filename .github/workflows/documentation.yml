@@ -31,6 +31,8 @@ jobs:
           mv docs docs_checkout
           mv .git docs_checkout
           find . -type d ! -name docs_checkout -exec rm -r {} \;
+
+          
           mv docs_checkout/docs/build/* .
           mv docs_checkout/.git .
           ls -lah *
