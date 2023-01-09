@@ -5,19 +5,26 @@
 import snakemake.utils
 snakemake.utils.min_version("7.8.0")
 
+
+snake_dir = workflow.basedir
+rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
+print(rootdir)
+
 folders = glob_wildcards("{folders}/identifiers.txt").folders
 print(folders[0:100] , '...')
 
 rule all:
-    input:
-		"{folder}/{alntype}.nwk.rooted.scores"
+	input:
+		expand( ["{folder}/treescores.json" ,
+		"{folder}/RFdistances.json" ] , folder = folders)
+
 
 rule calc_RF:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/struct_tree_PP.nwk.rooted" , 
-		"{folder}/sequences.aln.fst.nwk"
+		"{folder}/struct_tree.nwk.PP.nwk.rooted" , 
+		"{folder}/sequences.aln.fst.nwk.rooted"
 	output:
 		"{folder}/RFdistances.json" 
 	log:
@@ -29,11 +36,13 @@ rule calc_tax_score:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/{alntype}.nwk.rooted"
+		"{folder}/sequence_dataset.csv",
+		"{folder}/struct_tree.nwk.PP.nwk.rooted" , 
+		"{folder}/sequences.aln.fst.nwk.rooted"
 	output:
-		"{folder}/{alntype}.nwk.rooted.scores"
+		"{folder}/treescores.json"
 	log:
-	    "{folder}/logs/scoring{alntype}.log"
+	    "{folder}/logs/scoring.log"
 	script:
 		"../src/calctreescores.py"
 
@@ -41,13 +50,13 @@ rule mad_root_struct:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/struct_tree_PP.nwk"
+		"{folder}/struct_tree.nwk.PP.nwk"
 	output:
-		"{folder}/struct_tree_PP.nwk.rooted"
+		"{folder}/struct_tree.nwk.PP.nwk.rooted"
 	log:
 	    "{folder}/logs/madrootstruct.log"
 	shell:
-		'/work/FAC/FBM/DBC/cdessim2/default/dmoi/software/mad/mad {wildcards.folder}/struct_tree_PP.nwk'
+		rootdir+'madroot/mad {wildcards.folder}/struct_tree.nwk.PP.nwk'
 
 
 rule mad_root_seq:
@@ -60,7 +69,7 @@ rule mad_root_seq:
 	log:
 	    "{folder}/logs/madrootseq.log"
 	shell:
-		'/work/FAC/FBM/DBC/cdessim2/default/dmoi/software/mad/mad {wildcards.folder}/sequences.aln.fst.nwk'
+		rootdir +'madroot/mad  {wildcards.folder}/sequences.aln.fst.nwk'
 
 
 rule postprocess:
@@ -69,7 +78,7 @@ rule postprocess:
 	input:
 		"{folder}/struct_tree.nwk"
 	output:
-		"{folder}/struct_tree_PP.nwk"
+		"{folder}/struct_tree.nwk.PP.nwk"
 	log:
 	    "{folder}/logs/postprocess.log"
 	script:

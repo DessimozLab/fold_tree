@@ -2,6 +2,7 @@
 import subprocess ,shlex
 import numpy as np
 from scipy.spatial.distance import cdist
+import toytree
 
 #smooth distmat with MDS
 def MDS_smooth(distmat):
@@ -48,13 +49,13 @@ def distmat_to_txt( identifiers , distmat, outfile):
 
 
 def postprocess(t, delta=10**-10 ):
-    
     #make negative branch lengths a small delta instead
     tre = toytree.tree(t)
+
     for n in tre.treenode.traverse():
         if n.dist< 0:
             n.dist = delta
-    with open(t + 'PP.nwk' , 'w') as treeout:
+    with open(t + '.PP.nwk' , 'w') as treeout:
         treeout.write(tre.write())
     return t + 'PP.nwk'
 
