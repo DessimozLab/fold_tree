@@ -31,9 +31,11 @@ jobs:
           mkdir docs_checkout
           mv docs docs_checkout
           mv .git docs_checkout
+          mv .github docs_checkout
           find . ! -name 'docs_checkout' -type f -exec rm -rf {} +
           mv docs_checkout/docs/build/* .
           mv docs_checkout/.git .
+          ls -lah *
           git add -A
           git commit -m "Publish documentation"
           git push gh-pages HEAD:gh-pages
