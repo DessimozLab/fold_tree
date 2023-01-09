@@ -31,8 +31,7 @@ jobs:
           mkdir docs_checkout
           mv docs docs_checkout
           mv .git docs_checkout
-          mv .github docs_checkout
-          find . ! -name 'docs_checkout' -type f -exec rm -rf {} +
+          find . ! -name 'docs_checkout' -type d -exec rm -rf {} +
           mv docs_checkout/docs/build/* .
           mv docs_checkout/.git .
           ls -lah *
