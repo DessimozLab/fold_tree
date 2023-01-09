@@ -1,8 +1,6 @@
 name: Generate documentation
 
-on:
-  push:
-    branches: [ main ]
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   build:
@@ -21,21 +19,11 @@ jobs:
       - name: Generate documentation
         run: |
           sphinx-build -b html -a -E docs/source docs/build
-      - name: Push documentation to gh-pages
-        run: |
-          git config --global user.email "dmoi@unil.ch"
-          git config --global user.name "cactuskid"
-          git remote add gh-pages https://${{ secrets.GITHUB_TOKEN }}@github.com/DessimozLab/snake_tree.git
-          git fetch gh-pages
-          git checkout -b gh-pages gh-pages/gh-pages
-          mv docs docs_checkout
-          mv .git docs_checkout
-          find . -type d ! -name docs_checkout -exec rm -r {} \;
-
-          
-          mv docs_checkout/docs/build/* .
-          mv docs_checkout/.git .
-          ls -lah *
-          git add -A
-          git commit -m "Publish documentation"
-          git push gh-pages HEAD:gh-pages
+       - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        with:
+          publish_branch: gh-pages
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/build/
+          force_orphan: true
