@@ -23,9 +23,9 @@ jobs:
           sphinx-build -b html -a -E docs/source docs/build
       - name: Push documentation to gh-pages
         run: |
-          git config --global user.email "your@email.com"
-          git config --global user.name "Your Name"
-          git remote add gh-pages https://${{ secrets.GITHUB_TOKEN }}@github.com/USERNAME/REPO.git
+          git config --global user.email "dmoi@unil.ch"
+          git config --global user.name "cactuskid"
+          git remote add gh-pages https://${{ secrets.GITHUB_TOKEN }}@github.com/DessimozLab/snake_tree.git
           git fetch gh-pages
           git checkout -b gh-pages gh-pages/gh-pages
           rm -rf *
