@@ -21,6 +21,4 @@ kernel_distmat /= 2
 distmat += distmat.T
 distmat /= 2
 
-
-distmat_txt = foldseek2tree.distmat_to_txt( ids , kernel_distmat , snakemake.output[0] )
-distmat_txt = foldseek2tree.distmat_to_txt( ids , distmat , snakemake.output[1]  )
+distmat_txt = foldseek2tree.distmat_to_txt( ids , distmat , snakemake.output[0]  )

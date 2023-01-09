@@ -6,16 +6,18 @@ import snakemake.utils
 snakemake.utils.min_version("7.8.0")
 
 folders = glob_wildcards("{folders}/identifiers.txt").folders
+print(folders[0:100] , '...')
 
 rule all:
     input:
-		"{folder}/RFdistances.json"
+		"{folder}/{alntype}.nwk.rooted.scores"
 
 rule calc_RF:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		expand("{folder}/{alntype}.nwk.rooted",folder=folders , alntype = [ 'struct_tree' , 'sequences.aln.fst' ])
+		"{folder}/struct_tree_PP.nwk.rooted" , 
+		"{folder}/sequences.aln.fst.nwk"
 	output:
 		"{folder}/RFdistances.json" 
 	log:
@@ -35,27 +37,41 @@ rule calc_tax_score:
 	script:
 		"../src/calctreescores.py"
 
-rule mad_root:
+rule mad_root_struct:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/{type}.nwk"
+		"{folder}/struct_tree_PP.nwk"
 	output:
-		"{folder}/{type}.nwk.rooted"
+		"{folder}/struct_tree_PP.nwk.rooted"
 	log:
-	    "{folder}/logs/madroot{type}.log"
+	    "{folder}/logs/madrootstruct.log"
 	shell:
-		'/work/FAC/FBM/DBC/cdessim2/default/dmoi/software/mad/mad {wildcards.folder}/{wildcards.type}.nwk'
+		'/work/FAC/FBM/DBC/cdessim2/default/dmoi/software/mad/mad {wildcards.folder}/struct_tree_PP.nwk'
+
+
+rule mad_root_seq:
+	conda:
+		"config/snake_tree.yaml"
+	input:
+		"{folder}/sequences.aln.fst.nwk"
+	output:
+		"{folder}/sequences.aln.fst.nwk.rooted"
+	log:
+	    "{folder}/logs/madrootseq.log"
+	shell:
+		'/work/FAC/FBM/DBC/cdessim2/default/dmoi/software/mad/mad {wildcards.folder}/sequences.aln.fst.nwk'
+
 
 rule postprocess:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/{type}struct_tree.nwk"
+		"{folder}/struct_tree.nwk"
 	output:
-		"{folder}/{type}struct_tree_PP.nwk"
+		"{folder}/struct_tree_PP.nwk"
 	log:
-	    "{folder}/logs/{type}postprocess.log"
+	    "{folder}/logs/postprocess.log"
 	script:
 		'../src/postprocess.py'
 
@@ -63,13 +79,13 @@ rule fastme:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/{type}_fastmemat.txt"
+		"{folder}/fastmemat.txt"
 	output:
-		"{folder}/{type}struct_tree.nwk"
+		"{folder}/struct_tree.nwk"
 	log:
-	    "{folder}/logs/{type}fasttree.log"
+	    "{folder}/logs/fastme.log"
 	shell:
-		'fastme -i {wildcards.folder}/{wildcards.type}fastmemat.txt -o {wildcards.folder}/{wildcards.type}struct_tree.nwk -n '
+		'fastme -i {wildcards.folder}/fastmemat.txt -o {wildcards.folder}/struct_tree.nwk -n '
 
 rule fasttree:
 	conda:
@@ -91,7 +107,7 @@ rule foldseek2distmat:
 	input:
 		"{folder}/structaln_score.tsv"
 	output:
-		"{folder}/kernel_fastmemat.txt" , "{folder}/rawscore_fastmemat.txt"
+		"{folder}/fastmemat.txt"
 	log:
 	    "{folder}/logs/foldseek2distmat.log"
 	script:
