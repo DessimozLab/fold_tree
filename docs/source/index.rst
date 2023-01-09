@@ -17,6 +17,7 @@ Installation
 
 To install My Project, run the following command:
 
+test project
 .. code-block:: bash
 
    $ pip install myproject
