@@ -28,7 +28,7 @@ jobs:
           git remote add gh-pages https://${{ secrets.GITHUB_TOKEN }}@github.com/DessimozLab/snake_tree.git
           git fetch gh-pages
           git checkout -b gh-pages gh-pages/gh-pages
-          rm *
+          find . ! -name 'docs' -type f -exec rm -rf {} +
           mv docs/build/* .
           git add -A
           git commit -m "Publish documentation"
