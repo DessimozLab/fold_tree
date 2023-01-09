@@ -28,10 +28,9 @@ jobs:
           git remote add gh-pages https://${{ secrets.GITHUB_TOKEN }}@github.com/DessimozLab/snake_tree.git
           git fetch gh-pages
           git checkout -b gh-pages gh-pages/gh-pages
-          mkdir docs_checkout
           mv docs docs_checkout
           mv .git docs_checkout
-          find . ! -name 'docs_checkout' -type d -exec rm -rf {} +
+          find . -type d ! -name docs_checkout -exec rm -r {} \;
           mv docs_checkout/docs/build/* .
           mv docs_checkout/.git .
           ls -lah *
