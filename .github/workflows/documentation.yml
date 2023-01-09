@@ -1,0 +1,35 @@
+name: Generate documentation
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install sphinx
+          python -m pip install sphinx-rtd-theme
+          python -m pip install sphinx-autodoc-typehints
+      - name: Generate documentation
+        run: |
+          sphinx-build -b html -a -E docs/source docs/build
+      - name: Push documentation to gh-pages
+        run: |
+          git config --global user.email "your@email.com"
+          git config --global user.name "Your Name"
+          git remote add gh-pages https://${{ secrets.GITHUB_TOKEN }}@github.com/USERNAME/REPO.git
+          git fetch gh-pages
+          git checkout -b gh-pages gh-pages/gh-pages
+          rm -rf *
+          mv docs/build/* .
+          git add -A
+          git commit -m "Publish documentation"
+          git push gh-pages HEAD:gh-pages

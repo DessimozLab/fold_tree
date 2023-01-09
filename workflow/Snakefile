@@ -18,7 +18,6 @@ rule all:
 		expand( ["{folder}/treescores.json" ,
 		"{folder}/RFdistances.json" ] , folder = folders)
 
-
 rule calc_RF:
 	conda:
 		"config/snake_tree.yaml"
