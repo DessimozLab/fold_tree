@@ -20,7 +20,7 @@ To install My Project, run the following command:
 .. code-block:: bash
 
    $ pip install myproject
-   
+
 
 Usage
 -----
@@ -42,9 +42,10 @@ docstrings
 some docs from the function docstrings
 
 .. automodule:: foldseek2tree
+    :members:
 
 .. automodule:: treescore
-
+    :members:
 
 
 Troubleshooting
