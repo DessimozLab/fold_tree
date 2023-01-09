@@ -2,7 +2,6 @@ name: Generate documentation
 on:
   push:
     branches: [ main ]
-  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,7 +19,7 @@ jobs:
       - name: Generate documentation
         run: |
           sphinx-build -b html -a -E docs/source docs/build
-       - name: Deploy
+      - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
         with:
