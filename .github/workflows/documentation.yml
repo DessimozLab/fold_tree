@@ -16,15 +16,14 @@ jobs:
           python -m pip install sphinx
           python -m pip install sphinx-rtd-theme
           python -m pip install sphinx-autodoc-typehints
-                    
       - name: Generate documentation
         run: |
-          sphinx-build -b html -a -E docs/source docs/build
+          sphinx-build -b html -a -E docsource docs
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/build
+          publish_dir: docs
           destination_dir: docs
           force_orphan: true
