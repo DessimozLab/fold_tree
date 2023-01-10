@@ -104,6 +104,8 @@ rule fasttree:
 		tree="{folder}/sequences.aln.fst.nwk"
 	log:
 	    "{folder}/logs/fasttree.log"
+	resources:
+        "mem_mb=5000"
 	params:
 		extra="",  # Additional arguments
 	wrapper:
@@ -142,10 +144,13 @@ rule foldseek_allvall:
 		"{folder}/structblobDB_h"
 	output:
 		"{folder}/aln.0"
+	resources:
+        "mem_mb=5000"
 	log:
 	    "{folder}/logs/foldseekallvall.log"
 	shell:
 		'foldseek search {wildcards.folder}/structblobDB {wildcards.folder}/structblobDB {wildcards.folder}/aln {wildcards.folder}/tmp -a'
+	
 
 rule foldseekdb:
 	conda:
@@ -171,6 +176,8 @@ rule clustalo:
 		extra="",
 	log:
 	    "{folder}/logs/clustalo.log",# path = config["path"]
+	resources:
+        "mem_mb=5000"
 	threads: 1
 	wrapper:
 		"v1.20.0/bio/clustalo"
