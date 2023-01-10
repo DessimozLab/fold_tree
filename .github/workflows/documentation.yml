@@ -16,6 +16,7 @@ jobs:
           python -m pip install sphinx
           python -m pip install sphinx-rtd-theme
           python -m pip install sphinx-autodoc-typehints
+                    
       - name: Generate documentation
         run: |
           sphinx-build -b html -a -E docs/source docs/build
