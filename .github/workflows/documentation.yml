@@ -27,3 +27,5 @@ jobs:
           publish_dir: docs
           destination_dir: docs
           force_orphan: true
+          enable_jekyll: false
+          
