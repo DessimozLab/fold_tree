@@ -18,7 +18,9 @@ for idx,row in res.iterrows():
 
 kernel_distmat += kernel_distmat.T
 kernel_distmat /= 2
+
 distmat += distmat.T
 distmat /= 2
+distmat = 1 - distmat
 
 distmat_txt = foldseek2tree.distmat_to_txt( ids , distmat , snakemake.output[0]  )
