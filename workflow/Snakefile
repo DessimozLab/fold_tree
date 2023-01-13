@@ -1,11 +1,8 @@
 
 #once snakemake is installed use the following command to test the struct tree
 #snakemake --cores 1 ./testdata/struct_tree.nwk --use-conda
-
 import snakemake.utils
 snakemake.utils.min_version("7.8.0")
-
-
 snake_dir = workflow.basedir
 rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
 print(rootdir)
@@ -56,7 +53,6 @@ rule mad_root_struct:
 	    "{folder}/logs/madrootstruct.log"
 	shell:
 		rootdir+'madroot/mad {wildcards.folder}/struct_tree.nwk.PP.nwk'
-
 
 rule mad_root_seq:
 	conda:
