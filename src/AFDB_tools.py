@@ -4,6 +4,22 @@ import wget
 from io import StringIO
 import pandas as pd
 import requests
+import scipy.stats.describe
+
+from Bio.PDB import *
+
+
+
+def get_mean_llpd(identifier,pdb_path):\n",
+    lpppd=[]
+    parser = PDBParser()struc = parser.get_structure("a", pdb_path)
+
+    for res in struc.get_residues():
+        for at in res.get_atoms():
+           lppd.append(at.get_bfactor())
+           break
+    
+   return sum(lppd)/len(lppd)"
 
 
 def grab_struct(uniID, structfolder, overwrite=False):
