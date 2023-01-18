@@ -17,6 +17,7 @@ dependencies:
   - pandas
   - numpy
   - scipy
+  - biopython
   - pip:
     - wget
     - toytree

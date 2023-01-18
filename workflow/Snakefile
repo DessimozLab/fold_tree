@@ -13,7 +13,7 @@ print(folders[0:100] , '...')
 rule all:
 	input:
 		expand( ["{folder}/treescores.json" ,
-		"{folder}/RFdistances.json" ] , folder = folders)
+		"{folder}/RFdistances.json" , "{folder}/plddt.json"] , folder = folders)
 
 rule calc_RF:
 	conda:
@@ -130,7 +130,6 @@ rule foldseek2tab:
 	shell:
 		'foldseek createtsv {wildcards.folder}/structblobDB {wildcards.folder}/structblobDB {wildcards.folder}/aln {wildcards.folder}/structaln_score.tsv'
 
-
 rule foldseek_allvall:
 	conda:
 		"config/snake_tree.yaml"
@@ -155,7 +154,6 @@ rule foldseekdb:
 	shell:
 		'foldseek createdb {wildcards.folder}/structs/ {wildcards.folder}/structblobDB '
 
-
 rule clustalo:
 	conda: 
 		"config/snake_tree.yaml"
@@ -171,8 +169,6 @@ rule clustalo:
 	wrapper:
 		"v1.20.0/bio/clustalo"
 
-
-
 rule dl_ids_sequences:
 	conda: 
 		"config/snake_tree.yaml"
@@ -186,13 +182,25 @@ rule dl_ids_sequences:
 	script:
 		"../src/dl_sequences.py"
 
+rule plddt:
+	conda:
+		"config/snake_tree.yaml"
+	input:
+		"{folder}/missing_structs.txt"
+	output:
+		"{folder}/plddt.json"
+	log:
+	    "{folder}/logs/plddt.log"
+	script:
+		'../src/grabplddt.py'
+
 rule dl_ids_structs:
 	conda: 
 		"config/snake_tree.yaml"
 	input:
-		ids="{folder}/identifiers.txt",#path = config["path"]  # Input alignment file
+		"{folder}/identifiers.txt",#path = config["path"]  # Input alignment file
 	output:
-		fasta="{folder}/missing_structs.txt", #path = config["path"] # Output tree file
+		"{folder}/missing_structs.txt", #path = config["path"] # Output tree file
 	log:
 	    "{folder}/logs/dlstructs.log",#path = config["path"]
 
