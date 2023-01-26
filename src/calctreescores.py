@@ -16,9 +16,8 @@ for t in snakemake.input[1:]:
     overlap = treescore.getTaxOverlap(tree.treenode)
     taxscore = tree.treenode.score
     #calc descriptive stats on normalized branch lens    
-    lengths = np.array([node.dist for node in t.treenode.traverse()])
+    lengths = np.array([node.dist for node in tree.treenode.traverse()])
     lengths /= np.sum(lengths)
     scores[t] = {'score': taxscore, 'stats': describe(lengths)}
-
 with open(snakemake.output[0], 'w') as snakeout:
     snakeout.write( json.dumps( scores ) )
