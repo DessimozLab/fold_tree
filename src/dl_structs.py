@@ -24,5 +24,5 @@ fasta = AFDB_tools.res2fasta(resdf)
 with open(snakemake.output[0] , 'w') as outfile:
 	outfile.write(fasta)
 
-with open(snakemake.output[0] , 'w') as outfile:
+with open(snakemake.output[1] , 'w') as outfile:
 	outfile.write(json.dumps(finalset))

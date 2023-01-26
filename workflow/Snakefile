@@ -175,7 +175,6 @@ rule dl_ids_sequences:
 	input:
 		ids="{folder}/identifiers.txt",#path = config["path"]  # Input alignment file
 	output:
-		"{folder}/sequences.fst",
 		"{folder}/sequence_dataset.csv",
 	log:
 	    "{folder}/logs/dlsequences.log"
@@ -198,9 +197,9 @@ rule dl_ids_structs:
 	conda: 
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/identifiers.txt",#path = config["path"]  # Input alignment file
+		"{folder}/sequence_dataset.csv",
 	output:
-		"{folder}/missing_structs.txt", #path = config["path"] # Output tree file
+		"{folder}/sequences.fst",		
 	log:
 	    "{folder}/logs/dlstructs.log",#path = config["path"]
 
