@@ -14,5 +14,7 @@ for t in snakemake.input[1:]:
     overlap = treescore.getTaxOverlap(tree.treenode)
     taxscore = tree.treenode.score
     scores[t] = taxscore
+
+    
 with open(snakemake.output[0], 'w') as snakeout:
     snakeout.write( json.dumps( scores ) )
