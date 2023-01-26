@@ -3,3 +3,5 @@ resources/**
 logs/**
 .snakemake
 .snakemake/**
+**/*.pdb
+**/*.tsv
