@@ -5,3 +5,8 @@ logs/**
 .snakemake/**
 **/*.pdb
 **/*.tsv
+examples/**
+!examples/**/identifiers.txt
+!examples/**/*.csv
+!examples/**/*.nhx
+!examples/**/*.nwk
