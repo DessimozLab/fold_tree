@@ -17,7 +17,7 @@ def runargs(args):
     return p
     
 def runFoldseekdb(folder , outfolder):
-    args = 'foldseek createdb '+  folder + ' '+ outfolder+'structblobDB '
+    args = 'foldseek createdb '+  folder + ' '+ outfolder+'/structblobDB '
     p = runargs(args)
     return outfolder+'structblobDB '
 

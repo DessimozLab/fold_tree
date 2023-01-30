@@ -2,7 +2,6 @@ import AFDB_tools
 import os
 import json
 import pandas as pd
-
 infolder = snakemake.input[0].split('/')[:-1]
 infolder = ''.join( [i + '/' for i in infolder])
 structfolder = infolder+'structs/'
