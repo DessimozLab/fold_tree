@@ -3,6 +3,8 @@ import subprocess ,shlex
 import numpy as np
 from scipy.spatial.distance import cdist
 import toytree
+import pandas as pd
+
 
 #smooth distmat with MDS
 def MDS_smooth(distmat):
@@ -21,8 +23,8 @@ def runFoldseekdb(folder , outfolder):
     p = runargs(args)
     return outfolder+'structblobDB '
 
-def runFoldseek_allvall(dbpath , outfolder):
-    args = 'foldseek search '+  dbpath +' '  + dbpath + ' ' + outfolder+'aln tmp -a'
+def runFoldseek_allvall(dbpath , outfolder , maxseqs = 3000):
+    args = 'foldseek search '+  dbpath +' '  + dbpath + ' ' + outfolder+'aln tmp -a --max-seqs '+str(maxseqs)
     p = runargs(args)
     args = 'foldseek createtsv '+  dbpath +' '  + dbpath  + ' ' + outfolder+'aln '  + outfolder +'aln_score.tsv'
     p = runargs(args)
@@ -64,23 +66,18 @@ def structblob2tree(input_folder, logfolder):
     dbpath = runFoldseekdb(input_folder, logfolder)
     alnres = runFoldseek_allvall(dbpath , logfolder)
     res = pd.read_table(alnres, header = None ,delim_whitespace=True)
-    res[0] = res[0].map(lambda x :revmapper[x.replace('.pdb', '')])
-    res[1] = res[1].map(lambda x :revmapper[x.replace('.pdb', '')])
+    res[0] = res[0].map(lambda x :x.replace('.pdb', ''))
+    res[1] = res[1].map(lambda x :x.replace('.pdb', ''))
+
     ids = list( set(list(res[0].unique()) + list(res[1].unique())))
     pos = { protid : i for i,protid in enumerate(ids)}
-    self_dists = res[res[0] == res[1]]
-    self_distmap = dict(zip(self_dists[0] , self_dists[2] ) )    
-    kernel_distmat = np.zeros((len(pos), len(pos)))
     distmat = np.zeros((len(pos), len(pos)))
     for idx,row in res.iterrows():
-        kernel_distmat[pos[row[0]] , pos[row[1]]] = kernelfun(self_distmap[row[0]] , self_distmap[row[1]] , row[2])
-        distmat[pos[row[0]] , pos[row[1]]]= row[3]
-
-    distmat_txt = distmat_to_txt( ids , kernel_distmat , logfolder , prefix ='standard' )
-    out_tree = runFastme( 'fastme' , distmat_txt )
-
+        distmat[pos[row[0]] , pos[row[1]]]= row[3]    
+    distmat = 1-distmat
+    distmat += distmat.T
+    distmat /= 2
     
-    distmat_txt = distmat_to_txt( ids , distmat , logfolder , prefix ='rawscore' )
+    distmat_txt = distmat_to_txt( ids , distmat , input_folder + 'fastme_mat.txt'  )
     out_tree = runFastme( 'fastme' , distmat_txt )
-    
     return out_tree
