@@ -19,6 +19,7 @@ dependencies:
   - scipy
   - biopython
   - pip:
+    - tqdm
     - wget
     - toytree
     - toyplot
