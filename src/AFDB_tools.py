@@ -58,6 +58,9 @@ def grab_struct(uniID, structfolder, overwrite=False):
 
 #lets pull in the tor pathway members with some gene names
 
+def chunk(data,csize):
+	return [data[x:x+csize] for x in range(0, len(data), csize)]
+
 def unirequest_tab(name, verbose = False):
 
 	"""
@@ -80,22 +83,22 @@ def unirequest_tab(name, verbose = False):
 	#we query first by protein name and then gene name
 	url = 'http://rest.uniprot.org/uniprotkb/stream?'
 	params = [
-	'query={}'.format(name),
-	'fields=id,gene_names,protein_name,reviewed,protein_name,organism_name,lineage_ids,sequence',
+	'query=accession:{}'.format(name),
+	'fields=id,accession,gene_names,protein_name,reviewed,protein_name,organism_name,lineage_ids,sequence',
 	'format=tsv',
 	]
 	params = ''.join([ p+'&' for p in params ])[:-1]
 	data = requests.get(url+params).text
 	#only return the first hit for each query    
-	try:
-		data =  pd.read_table(StringIO(data)).iloc[0]
-		data['query'] = name
-		if verbose is True:
-			print(data)
+	data =  pd.read_table(StringIO(data))
+	print(data.columns)
+	data['query'] = data['Entry']
+	data = data[ data['Entry'].isin(name.split('+OR+'))]
+	if verbose is True:
+		print(data)
 
-		return data    
-	except:
-		print('err uniprot API' , name)
+	return data    
+
 
 def grab_entries(ids, verbose = False):
 	"""
@@ -118,11 +121,10 @@ def grab_entries(ids, verbose = False):
 	This function makes requests to the UniProt API for information about proteins with the given IDs. If a request is successful, the returned data is processed and added to a DataFrame. If a request is unsuccessful, an error message is printed to the console.
 	"""
 
-	name_results = pd.concat([unirequest_tab(name) for name in ids] , axis = 1 , ignore_index= True).transpose()
+	name_results = pd.concat([unirequest_tab( '+OR+'.join(c) , verbose = True) for c in chunk(ids, 100 )] , axis = 1 , ignore_index= True).transpose()
 	if verbose == True:
 		print(name_results)
 	return name_results
-
 
 def res2fasta(unires_df):
 	"""

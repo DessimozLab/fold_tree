@@ -20,7 +20,14 @@ def extract_core(resdf , hitthresh = .8 , corefolder = 'core_structs/' , structf
                 hitvec[0,r[5]:r[6]] = hitvec[0,r[5]:r[6]]+1
             hitvec /= len(resdf[0].unique())
             core = np.where(hitvec>hitthresh)[1]
-            hits[q]= { 'min': np.amin(core), 'max': np.amax(core)}
+            try:
+                hits[q]= { 'min': np.amin(core), 'max': np.amax(core)}
+            except:
+                #be more lenient...
+                print(hitvec, sub)
+                core = np.where(hitvec>.1)[1]
+                hits[q]= { 'min': np.amin(core), 'max': np.amax(core)}
+
             pbar.set_description('processed: %d' % (1 + i))
             pbar.update(1)
         
