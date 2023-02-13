@@ -6,6 +6,8 @@ logs/**
 **/*.pdb
 **/*.tsv
 examples/**
+testdata/**
+!testdata/identifiers.txt
 !examples/**/identifiers.txt
 !examples/**/*.csv
 !examples/**/*.nhx
