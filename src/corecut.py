@@ -4,7 +4,7 @@ import numpy as np
 import os
 import tqdm
 
-def extract_core(resdf , hitthresh = .8 , corefolder = 'core_structs/' , structfolder = 'structs/'):
+def extract_core(resdf , hitthresh = .8 ,minthresh = .6, corefolder = 'core_structs/' , structfolder = 'structs/'):
     #read all results
     folder =''.join([ sub + '/' for sub in resdf.split('/')[:-1] ])
     print(folder)
@@ -24,9 +24,17 @@ def extract_core(resdf , hitthresh = .8 , corefolder = 'core_structs/' , structf
                 hits[q]= { 'min': np.amin(core), 'max': np.amax(core)}
             except:
                 #be more lenient...
-                print(hitvec, sub)
-                core = np.where(hitvec>.1)[1]
-                hits[q]= { 'min': np.amin(core), 'max': np.amax(core)}
+                subthresh = np.amax(hitvec)
+                print(hitvec, sub, 'be careful, non homologous sequences may have enterred the dataset!')
+                if subthresh>=minthresh:
+                    print('new core threst set at ' + str(subthresh) )
+                    core = np.where(hitvec>=subthresh)[1]
+                    hits[q]= { 'min': np.amin(core), 'max': np.amax(core)}
+                    print(q , 'added')
+                
+                else:
+                    print(q , 'rejected')
+
 
             pbar.set_description('processed: %d' % (1 + i))
             pbar.update(1)
