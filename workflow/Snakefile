@@ -196,6 +196,7 @@ rule clustalo:
 	wrapper:
 		"v1.20.0/bio/clustalo"
 
+
 rule dl_ids_sequences:
 	conda: 
 		"config/snake_tree.yaml"

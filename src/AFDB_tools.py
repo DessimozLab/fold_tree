@@ -47,7 +47,7 @@ def grab_struct(uniID, structfolder, overwrite=False):
 	print(uniID)
 	try:
 		prefix = 'https://alphafold.ebi.ac.uk/files/AF-'
-		post = '-F1-model_v3.pdb'
+		post = '-F1-model_v4.pdb'
 		url = prefix+uniID.upper()+post
 		if not os.path.isfile(structfolder + uniID +'.pdb'):
 			wget.download(url, structfolder + uniID +'.pdb')

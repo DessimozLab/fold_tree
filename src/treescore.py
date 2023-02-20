@@ -3,7 +3,8 @@ import toyplot
 
 #taxonomy overlap score
 
-def standard_treedraw( tre, sizes= None , colors= None ,fixed_order=None, fixed_position=None , ts = None,  save_file = False  , tiplabels = None):
+def standard_treedraw( tre, sizes= None , colors= None ,fixed_order=None, fixed_position=None , 
+ts = None,  save_file = False  , tiplabels = None ,  layout='c', edge_type='p' ):
 	if tiplabels is None:
 		tiplabels = tre.get_tip_labels()
 	canvas, axes, mark = tre.draw(  
@@ -15,14 +16,14 @@ def standard_treedraw( tre, sizes= None , colors= None ,fixed_order=None, fixed_
 		fixed_order=fixed_order, 
 		fixed_position=fixed_position,
 		tip_labels=tiplabels,
+		layout=layout,
+		edge_type=edge_type,
 		tip_labels_style={
 			"fill": "#262626",
 			"font-size": "9px"}
 	)
 	if save_file:
 		toyplot.svg.render(canvas, save_file)
-
-
 #taxonomy overlap score
 def getTaxOverlap(node):
 	
