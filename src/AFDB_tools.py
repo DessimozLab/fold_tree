@@ -6,6 +6,7 @@ import pandas as pd
 import requests
 from scipy.stats import describe
 from Bio.PDB import *
+import time
 
 
 def descr(pdb_path):
@@ -78,8 +79,6 @@ def unirequest_tab(name, verbose = False):
 															 id  ...                                            sequence
 	0  sp|P00533|1A2K_HUMAN RecName: Full=Alpha-2-...  ...  MPTSVLLLALLLAPAALVHVCRSRFPKCVVLVNVTGLFGN...
 	"""
-
-
 	#we query first by protein name and then gene name
 	url = 'http://rest.uniprot.org/uniprotkb/stream?'
 	params = [
@@ -90,15 +89,19 @@ def unirequest_tab(name, verbose = False):
 	params = ''.join([ p+'&' for p in params ])[:-1]
 	data = requests.get(url+params).text
 	#only return the first hit for each query    
-	data =  pd.read_table(StringIO(data))
-	print(data.columns)
-	data['query'] = data['Entry']
-	data = data[ data['Entry'].isin(name.split('+OR+'))]
-	if verbose is True:
-		print(data)
-
-	return data    
-
+	try:
+		data =  pd.read_table(StringIO(data))
+		print(data.columns)
+		data['query'] = data['Entry']
+		data = data[ data['Entry'].isin(name.split('+OR+'))]
+		if verbose is True:
+			
+			print(data)
+		return data    
+	except:
+		print('error', data )
+		time.sleep(10)
+		unirequest_tab(name, verbose = True)
 
 def grab_entries(ids, verbose = True):
 	"""
@@ -121,7 +124,7 @@ def grab_entries(ids, verbose = True):
 	This function makes requests to the UniProt API for information about proteins with the given IDs. If a request is successful, the returned data is processed and added to a DataFrame. If a request is unsuccessful, an error message is printed to the console.
 	"""
 	print(len(ids))
-	name_results = pd.concat([unirequest_tab( '+OR+'.join(c) , verbose = True) for c in chunk(ids, 100 )] , ignore_index= True)
+	name_results = pd.concat([unirequest_tab( '+OR+'.join(c) , verbose = True) for c in chunk(ids, 50 )] , ignore_index= True)
 	if verbose == True:
 		print(name_results)
 	return name_results

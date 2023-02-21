@@ -4,7 +4,7 @@ import numpy as np
 import os
 import tqdm
 
-def extract_core(resdf , hitthresh = .8 ,minthresh = .6, corefolder = 'core_structs/' , structfolder = 'structs/'):
+def extract_core(resdf , outfile,  hitthresh = .8 ,minthresh = .6, corefolder = 'core_structs/' , structfolder = 'structs/' ):
     #read all results
     folder =''.join([ sub + '/' for sub in resdf.split('/')[:-1] ])
     print(folder)
@@ -56,7 +56,7 @@ def extract_core(resdf , hitthresh = .8 ,minthresh = .6, corefolder = 'core_stru
             pbar.set_description('processed: %d' % (1 + i))
             pbar.update(1)
     hitsdf = pd.DataFrame.from_dict( hits , orient='index'  )
-    hitsdf.to_csv(folder +'struct_cores.csv')
+    hitsdf.to_csv(outfile)
     return folder +'struct_cores.csv'
 
 
