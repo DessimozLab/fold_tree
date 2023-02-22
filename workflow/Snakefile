@@ -155,13 +155,25 @@ rule foldseek2tab:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/{type}_aln_{alntype}.0"
+		"{folder}/core_aln_{alntype}.0"
 	output:
-		"{folder}/{type}_{alntype}_structaln_score.tsv"
+		"{folder}/core_{alntype}_structaln_score.tsv"
 	log:
-	    "{folder}/logs/{type}_{alntype}_foldseek2tab.log"
+	    "{folder}/logs/core_{alntype}_foldseek2tab.log"
 	shell:
-		'foldseek createtsv {wildcards.folder}/{wildcards.type}_structblobDB {wildcards.folder}/{wildcards.type}_structblobDB {wildcards.folder}/{wildcards.type}_aln_{wildcards.alntype} {wildcards.folder}/{wildcards.type}_{wildcards.alntype}_structaln_score.tsv'
+		'foldseek createtsv {wildcards.folder}/core_{wildcards.alntype}_structblobDB {wildcards.folder}/core_{wildcards.alntype}_structblobDB {wildcards.folder}/core_aln_{wildcards.alntype} {wildcards.folder}/core_{wildcards.alntype}_structaln_score.tsv'
+
+rule foldseek2tab_struct:
+	conda:
+		"config/snake_tree.yaml"
+	input:
+		"{folder}/struct_aln_{alntype}.0"
+	output:
+		"{folder}/struct_{alntype}_structaln_score.tsv"
+	log:
+	    "{folder}/logs/struct_{alntype}_foldseek2tab.log"
+	shell:
+		'foldseek createtsv {wildcards.folder}/struct_structblobDB {wildcards.folder}/struct_structblobDB {wildcards.folder}/struct_aln_{wildcards.alntype} {wildcards.folder}/struct_{wildcards.alntype}_structaln_score.tsv'
 
 rule foldseek_allvall_core:
 	conda:
