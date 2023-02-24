@@ -12,3 +12,5 @@ testdata/**
 !examples/**/*.csv
 !examples/**/*.nhx
 !examples/**/*.nwk
+foldseek/bin/foldseek
+foldseek/README.md
