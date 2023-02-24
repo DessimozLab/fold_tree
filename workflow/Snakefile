@@ -197,7 +197,7 @@ rule foldseek_allvall:
 	log:
 		"{folder}/struct_{alntype}_foldseekallvall.log"
 	shell:
-		'foldseek search {wildcards.folder}/struct_structblobDB {wildcards.folder}/struct_structblobDB {wildcards.folder}/struct_aln_{wildcards.alntype} {wildcards.folder}/tmp -a --alignment-type {wildcards.alntype}  --split-mode 2 --split-memory-limit 4G' 
+		'foldseek search {wildcards.folder}/struct_structblobDB {wildcards.folder}/struct_structblobDB {wildcards.folder}/struct_aln_{wildcards.alntype} {wildcards.folder}/tmp -a --alignment-type {wildcards.alntype}  --split-mode 2 --split-memory-limit 4G  ' 
 
 rule foldseekdb:
 	conda:
