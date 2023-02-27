@@ -24,6 +24,9 @@ ts = None,  save_file = False  , tiplabels = None ,  layout='c', edge_type='p' )
 	)
 	if save_file:
 		toyplot.svg.render(canvas, save_file)
+
+
+
 #taxonomy overlap score
 def getTaxOverlap(node):
 	
@@ -50,7 +53,6 @@ def getTaxOverlap(node):
     set: The set of taxonomic labels shared by all the leaf nodes descended from the node, or `None` if
     the node has no children with taxonomic labels.
     """
-
 
 	if node.is_leaf() == True:
 		node.add_feature( 'score' ,  0 )
