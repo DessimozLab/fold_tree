@@ -10,9 +10,10 @@ print(rootdir)
 folders = glob_wildcards("{folders}/identifiers.txt").folders
 types = ['struct', 'core']
 alntypes = ['0', '2']
-
+foldseekpath = '../foldseek/bin/foldseek'
 
 print(folders[0:100] , '...')
+
 
 rule all:
 	input:
@@ -20,6 +21,7 @@ rule all:
 		expand( "{folder}/{alntype}_RFdistances.json" , alntype = alntypes , folder = folders ),
 		expand( "{folder}/treescores_core_{alntype}_tree.nwk.PP.nwk.rooted.json" , folder = folders , alntype = alntypes ),
 		expand( "{folder}/treescores_struct_{alntype}_tree.nwk.PP.nwk.json" , folder = folders , alntype = alntypes ),
+		expand( "{folder}/sequences.aln.fst.nwk.rooted" , folder = folders )
 		expand( "{folder}/treescores_sequences.json" , folder = folders )
 
 rule calc_RF:

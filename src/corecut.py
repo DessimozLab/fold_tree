@@ -38,7 +38,6 @@ def extract_core(resdf , outfile,  hitthresh = .8 ,minthresh = .6, corefolder = 
 
             pbar.set_description('processed: %d' % (1 + i))
             pbar.update(1)
-        
     #make core struct folder
     try:
         os.mkdir(folder+corefolder)
@@ -49,7 +48,6 @@ def extract_core(resdf , outfile,  hitthresh = .8 ,minthresh = .6, corefolder = 
     parser = Bio.PDB.PDBParser()
     with tqdm.tqdm(total=len(hits)) as pbar:
         for i,q in enumerate(hits):
-            print(folder+structfolder+q)
             struct = parser.get_structure(q.split('.')[0], folder+structfolder+q )
             #zero based indexing...
             struct_core = Bio.PDB.Dice.extract( struct ,'A' , hits[q]['min']+1 , hits[q]['max']+1 ,folder+corefolder+q  )
