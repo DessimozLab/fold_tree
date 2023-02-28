@@ -1,6 +1,7 @@
 
 #once snakemake is installed use the following command to test the struct tree
-#snakemake --cores 1 ./testdata/struct_tree.nwk --use-conda
+
+
 import snakemake.utils
 snakemake.utils.min_version("7.8.0")
 snake_dir = workflow.basedir
@@ -90,19 +91,6 @@ rule mad_root_seq:
 	shell:
 		rootdir +'madroot/mad  {wildcards.folder}/sequences.aln.fst.nwk'
 
-rule corecut:
-	conda:
-		"config/snake_tree.yaml"
-	input:
-		"{folder}/struct_{alntype}_structaln_score.tsv",
-		"{folder}/sequence_dataset.csv"
-	output:
-		"{folder}/struct_{alntype}_cores.csv"	
-	log:
-	    "{folder}/logs/{alntype}_corecut.log"
-	script:
-		'../src/clip_core.py'
-
 rule postprocess:
 	conda:
 		"config/snake_tree.yaml"
@@ -153,18 +141,6 @@ rule foldseek2distmat:
 	script:
 		"../src/foldseekres2distmat.py"
 
-rule foldseek_allvall_core:
-	conda:
-		"config/snake_tree.yaml"
-	input:
-		"{folder}/core_{alntype}_structblobDB_h"
-	output:
-		"{folder}/core_aln_{alntype}.0"
-	log:
-	    "{folder}/logs/core_{alntype}_foldseekallvall.log"
-	shell:
-		foldseekpath + ' search {wildcards.folder}/core_{wildcards.alntype}_structblobDB {wildcards.folder}/core_{wildcards.alntype}_structblobDB {wildcards.folder}/core_aln_{wildcards.alntype} {wildcards.folder}/tmp -a --alignment-type {wildcards.alntype}  --split-mode 2 --split-memory-limit 4G'
-
 rule foldseek_allvall:
 	conda:
 		"config/snake_tree.yaml"
@@ -175,20 +151,19 @@ rule foldseek_allvall:
 	log:
 		"{folder}/struct_{alntype}_foldseekallvall.log"
 	shell:
-		foldseekpath + ' search {wildcards.folder}/struct_structblobDB {wildcards.folder}/struct_structblobDB {wildcards.folder}/struct_aln_{wildcards.alntype} {wildcards.folder}/tmp -a --alignment-type {wildcards.alntype}  --split-mode 2 --split-memory-limit 4G  ' 
-
+		foldseekpath + " easy-search ./structs/* ./structs/* alnredo.html tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --format-mode 3 --exhaustive-search" 
 
 rule clustalo:
 	conda: 
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/sequences.fst",#path = config["path"]
+		"{folder}/sequences.fst",
 	output:
-		"{folder}/sequences.aln.fst",#path = config["path"]
+		"{folder}/sequences.aln.fst",
 	params:
 		extra="",
 	log:
-	    "{folder}/logs/clustalo.log",# path = config["path"]
+	    "{folder}/logs/clustalo.log",
 	threads: 1
 	wrapper:
 		"v1.20.0/bio/clustalo"
