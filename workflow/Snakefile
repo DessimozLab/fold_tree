@@ -1,6 +1,7 @@
 
 #once snakemake is installed use the following command to test the struct tree
-#snakemake --cores 1 ./testdata/struct_tree.nwk --use-conda
+
+
 import snakemake.utils
 snakemake.utils.min_version("7.8.0")
 snake_dir = workflow.basedir
@@ -8,33 +9,31 @@ rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
 print(rootdir)
 
 folders = glob_wildcards("{folders}/identifiers.txt").folders
-types = ['struct', 'core']
-alntypes = ['0', '2']
-foldseekpath = '../foldseek/bin/foldseek'
+mattypes = ['fident', 'alntmscore', 'lddt']
 
+foldseekpath = './foldseek/bin/foldseek '
 print(folders[0:100] , '...')
-
 
 rule all:
 	input:
 	#get all treescore and rf distance files for all alntypes
-		expand( "{folder}/{alntype}_RFdistances.json" , alntype = alntypes , folder = folders ),
-		expand( "{folder}/treescores_core_{alntype}_tree.nwk.PP.nwk.rooted.json" , folder = folders , alntype = alntypes ),
-		expand( "{folder}/treescores_struct_{alntype}_tree.nwk.PP.nwk.json" , folder = folders , alntype = alntypes ),
-		expand( "{folder}/sequences.aln.fst.nwk.rooted" , folder = folders )
+		expand( "{folder}/RFdistances.json" , folder = folders ),
+		expand( "{folder}/{mattype}_treescores_struct_tree.json" , folder = folders , mattype = mattypes  ),
+		expand( "{folder}/sequences.aln.fst.nwk.rooted" , folder = folders ),
 		expand( "{folder}/treescores_sequences.json" , folder = folders )
 
 rule calc_RF:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/struct_{alntype}_tree.nwk.PP.nwk.rooted" , 
-		"{folder}/sequences.aln.fst.nwk.rooted", 
-		"{folder}/core_{alntype}_tree.nwk.PP.nwk.rooted",
+		"{folder}/fident_struct_tree.nwk.PP.nwk.rooted" , 
+		"{folder}/alntmscore_struct_tree.nwk.PP.nwk.rooted" , 
+		"{folder}/lddt_struct_tree.nwk.PP.nwk.rooted" , 
+		"{folder}/sequences.aln.fst.nwk.rooted",		
 	output:
-		"{folder}/{alntype}_RFdistances.json" 
+		"{folder}/RFdistances.json" 
 	log:
-	    "{folder}/logs/{alntype}_RFdist.log" 
+	    "{folder}/logs/RFdist.log" 
 	script:
 		"../src/calcRF.py"
 
@@ -43,11 +42,11 @@ rule calc_tax_score:
 		"config/snake_tree.yaml"
 	input:
 		"{folder}/sequence_dataset.csv",
-		"{folder}/{type}_{alntype}_tree.nwk.PP.nwk.rooted"
+		"{folder}/{mattype}_struct_tree.nwk.PP.nwk.rooted"
 	output:
-		"{folder}/treescores_{type}_{alntype}.json"
+		"{folder}/{mattype}_treescores_struct_tree.json"
 	log:
-	    "{folder}/logs/{type}_{alntype}_scoring.log"
+	    "{folder}/logs/{mattype}_struct_tree_scoring.log"
 	script:
 		"../src/calctreescores.py"
 
@@ -65,18 +64,17 @@ rule calc_tax_score_seq:
 	script:
 		"../src/calctreescores.py"
 
-
 rule mad_root_struct:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/{type}_{alntype}_tree.nwk.PP.nwk"
+		"{folder}/{mattype}_struct_tree.nwk.PP.nwk"
 	output:
-		"{folder}/{type}_{alntype}_tree.nwk.PP.nwk.rooted"
+		"{folder}/{mattype}_struct_tree.nwk.PP.nwk.rooted"
 	log:
-	    "{folder}/logs/{type}_{alntype}_madrootstruct.log"
+	    "{folder}/logs/{mattype}_struct_madroot.log"
 	shell:
-		rootdir+'madroot/mad {wildcards.folder}/{wildcards.type}_{wildcards.alntype}_tree.nwk.PP.nwk'
+		rootdir+'madroot/mad {wildcards.folder}/{wildcards.mattype}_struct_tree.nwk.PP.nwk'
 
 rule mad_root_seq:
 	conda:
@@ -90,28 +88,15 @@ rule mad_root_seq:
 	shell:
 		rootdir +'madroot/mad  {wildcards.folder}/sequences.aln.fst.nwk'
 
-rule corecut:
-	conda:
-		"config/snake_tree.yaml"
-	input:
-		"{folder}/struct_{alntype}_structaln_score.tsv",
-		"{folder}/sequence_dataset.csv"
-	output:
-		"{folder}/struct_{alntype}_cores.csv"	
-	log:
-	    "{folder}/logs/{alntype}_corecut.log"
-	script:
-		'../src/clip_core.py'
-
 rule postprocess:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/{type}_{alntype}_tree.nwk"
+		"{folder}/{mattype}_struct_tree.nwk"
 	output:
-		"{folder}/{type}_{alntype}_tree.nwk.PP.nwk"
+		"{folder}/{mattype}_struct_tree.nwk.PP.nwk"
 	log:
-	    "{folder}/logs/{type}_{alntype}_postprocess.log"
+	    "{folder}/logs/{mattype}_struct_postprocess.log"
 	script:
 		'../src/postprocess.py'
 
@@ -119,13 +104,13 @@ rule fastme:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/{type}_{alntype}_fastmemat.txt"
+		"{folder}/{mattype}_fastmemat.txt"
 	output:
-		"{folder}/{type}_{alntype}_tree.nwk"
+		"{folder}/{mattype}_struct_tree.nwk"
 	log:
-	    "{folder}/logs/{type}_{alntype}_fastme.log"
+	    "{folder}/logs/{mattype}_fastme.log"
 	shell:
-		'fastme -i {wildcards.folder}/{wildcards.type}_{wildcards.alntype}_fastmemat.txt -o {wildcards.folder}/{wildcards.type}_{wildcards.alntype}_tree.nwk -n '
+		'fastme -i {wildcards.folder}/{wildcards.mattype}_fastmemat.txt -o {wildcards.folder}/{wildcards.mattype}_struct_tree.nwk -n '
 
 rule fasttree:
 	conda:
@@ -137,7 +122,7 @@ rule fasttree:
 	log:
 	    "{folder}/logs/fasttree.log"
 	params:
-		extra="",  # Additional arguments
+		extra="",
 	wrapper:
 		"v1.20.0/bio/fasttree"
 
@@ -145,107 +130,48 @@ rule foldseek2distmat:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/{type}_{alntype}_structaln_score.tsv"
+		"{folder}/allvall.csv"
 	output:
-		"{folder}/{type}_{alntype}_fastmemat.txt"
+		"{folder}/fident_fastmemat.txt",
+		"{folder}/alntmscore_fastmemat.txt",
+		"{folder}/lddt_fastmemat.txt",
 	log:
-	    "{folder}/logs/{type}_{alntype}_foldseek2distmat.log"
+	    "{folder}/logs/foldseek2distmat.log"
 	script:
 		"../src/foldseekres2distmat.py"
-
-rule foldseek2tab:
-	conda:
-		"config/snake_tree.yaml"
-	input:
-		"{folder}/core_aln_{alntype}.0"
-	output:
-		"{folder}/core_{alntype}_structaln_score.tsv"
-	log:
-	    "{folder}/logs/core_{alntype}_foldseek2tab.log"
-	shell:
-		'foldseek createtsv {wildcards.folder}/core_{wildcards.alntype}_structblobDB {wildcards.folder}/core_{wildcards.alntype}_structblobDB {wildcards.folder}/core_aln_{wildcards.alntype} {wildcards.folder}/core_{wildcards.alntype}_structaln_score.tsv'
-
-rule foldseek2tab_struct:
-	conda:
-		"config/snake_tree.yaml"
-	input:
-		"{folder}/struct_aln_{alntype}.0"
-	output:
-		"{folder}/struct_{alntype}_structaln_score.tsv"
-	log:
-	    "{folder}/logs/struct_{alntype}_foldseek2tab.log"
-	shell:
-		'foldseek createtsv {wildcards.folder}/struct_structblobDB {wildcards.folder}/struct_structblobDB {wildcards.folder}/struct_aln_{wildcards.alntype} {wildcards.folder}/struct_{wildcards.alntype}_structaln_score.tsv'
-
-rule foldseek_allvall_core:
-	conda:
-		"config/snake_tree.yaml"
-	input:
-		"{folder}/core_{alntype}_structblobDB_h"
-	output:
-		"{folder}/core_aln_{alntype}.0"
-	log:
-	    "{folder}/logs/core_{alntype}_foldseekallvall.log"
-	shell:
-		'foldseek search {wildcards.folder}/core_{wildcards.alntype}_structblobDB {wildcards.folder}/core_{wildcards.alntype}_structblobDB {wildcards.folder}/core_aln_{wildcards.alntype} {wildcards.folder}/tmp -a --alignment-type {wildcards.alntype}  --split-mode 2 --split-memory-limit 4G'
 
 rule foldseek_allvall:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/struct_structblobDB_h"
+		"{folder}/finalset.json"
 	output:
-		"{folder}/struct_aln_{alntype}.0"
+		"{folder}/allvall.csv"
 	log:
-		"{folder}/struct_{alntype}_foldseekallvall.log"
+		"{folder}/logs/foldseekallvall.log"
 	shell:
-		'foldseek search {wildcards.folder}/struct_structblobDB {wildcards.folder}/struct_structblobDB {wildcards.folder}/struct_aln_{wildcards.alntype} {wildcards.folder}/tmp -a --alignment-type {wildcards.alntype}  --split-mode 2 --split-memory-limit 4G  ' 
-
-rule foldseekdb:
-	conda:
-		"config/snake_tree.yaml"
-	input:
-		"{folder}/finalset.json",
-	output:
-		"{folder}/struct_structblobDB_h"
-	log:
-	    "{folder}/logs/foldseekdb.log"
-	shell:
-		'foldseek createdb {wildcards.folder}/structs/ {wildcards.folder}/struct_structblobDB '
-
-rule foldseekdb_core:
-	conda:
-		"config/snake_tree.yaml"
-	input:
-		"{folder}/struct_{alntype}_cores.csv",
-	output:
-		"{folder}/core_{alntype}_structblobDB_h"
-	log:
-	    "{folder}/logs/{alntype}foldseekdb.log"
-	shell:
-		'foldseek createdb {wildcards.folder}/structs/ {wildcards.folder}/core_{wildcards.alntype}_structblobDB '
+		foldseekpath + " easy-search {wildcards.folder}/structs/* {wildcards.folder}/structs/* {wildcards.folder}/allvall.csv {wildcards.folder}/tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --exhaustive-search" 
 
 rule clustalo:
 	conda: 
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/sequences.fst",#path = config["path"]
+		"{folder}/sequences.fst",
 	output:
-		"{folder}/sequences.aln.fst",#path = config["path"]
+		"{folder}/sequences.aln.fst",
 	params:
 		extra="",
 	log:
-	    "{folder}/logs/clustalo.log",# path = config["path"]
+	    "{folder}/logs/clustalo.log",
 	threads: 1
 	wrapper:
 		"v1.20.0/bio/clustalo"
-
 
 rule dl_ids_sequences:
 	conda: 
 		"config/snake_tree.yaml"
 	input:
-		ids="{folder}/identifiers.txt",#path = config["path"]  # Input alignment file
+		ids="{folder}/identifiers.txt",
 	output:
 		"{folder}/sequence_dataset.csv",
 	log:
@@ -274,9 +200,8 @@ rule dl_ids_structs:
 		"{folder}/sequences.fst",
 		"{folder}/finalset.json",
 	log:
-	    "{folder}/logs/dlstructs.log",#path = config["path"]
-
+	    "{folder}/logs/dlstructs.log",
 	params:
-		extra="",  # Additional arguments
+		extra="", 
 	script:
 		"../src/dl_structs.py"

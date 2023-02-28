@@ -30,6 +30,11 @@ def runFoldseek_allvall(dbpath , outfolder , maxseqs = 3000):
     p = runargs(args)
     return outfolder +'aln_score.tsv'
 
+def runFoldseek_allvall_EZsearch(infolder , outpath , foldseekpath = '../foldseek/bin/'):
+    args = foldseekpath + ' easy-search ' + infolder + ' ' + infolder +' '+ outpath + " tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --format-mode 3 --exhaustive-search "
+    p = runargs(args)
+    return outpath
+
 def kernelfun(AA,BB, AB):
     return AA + BB - 2*AB
 
