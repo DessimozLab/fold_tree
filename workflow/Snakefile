@@ -10,7 +10,7 @@ print(rootdir)
 
 folders = glob_wildcards("{folders}/identifiers.txt").folders
 mattypes = ['fident', 'alntmscore', 'lddt']
-
+alntypes = ['0', '1']
 foldseekpath = './foldseek/bin/foldseek '
 print(folders[0:100] , '...')
 
@@ -18,7 +18,7 @@ rule all:
 	input:
 	#get all treescore and rf distance files for all alntypes
 		expand( "{folder}/RFdistances.json" , folder = folders ),
-		expand( "{folder}/{mattype}_treescores_struct_tree.json" , folder = folders , mattype = mattypes  ),
+		expand( "{folder}/{mattype}_{alntype}_treescores_struct_tree.json" , folder = folders , mattype = mattypes , alntype = alntypes ),
 		expand( "{folder}/sequences.aln.fst.nwk.rooted" , folder = folders ),
 		expand( "{folder}/treescores_sequences.json" , folder = folders )
 
@@ -26,10 +26,14 @@ rule calc_RF:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/fident_struct_tree.nwk.PP.nwk.rooted" , 
-		"{folder}/alntmscore_struct_tree.nwk.PP.nwk.rooted" , 
-		"{folder}/lddt_struct_tree.nwk.PP.nwk.rooted" , 
-		"{folder}/sequences.aln.fst.nwk.rooted",		
+		"{folder}/fident_0_struct_tree.nwk.PP.nwk.rooted" , 
+		"{folder}/alntmscore_0_struct_tree.nwk.PP.nwk.rooted" , 
+		"{folder}/lddt_0_struct_tree.nwk.PP.nwk.rooted" , 
+		"{folder}/sequences.aln.fst.nwk.rooted",
+		"{folder}/fident_1_struct_tree.nwk.PP.nwk.rooted" , 
+		"{folder}/alntmscore_1_struct_tree.nwk.PP.nwk.rooted" , 
+		"{folder}/lddt_1_struct_tree.nwk.PP.nwk.rooted" ,
+		"{folder}/sequences.aln.fst.nwk.rooted",
 	output:
 		"{folder}/RFdistances.json" 
 	log:
@@ -37,16 +41,35 @@ rule calc_RF:
 	script:
 		"../src/calcRF.py"
 
+rule calc_consensus:
+	conda:
+		"config/snake_tree.yaml"
+	input:
+		"{folder}/fident_0_struct_tree.nwk.PP.nwk.rooted" , 
+		"{folder}/alntmscore_0_struct_tree.nwk.PP.nwk.rooted" , 
+		"{folder}/lddt_0_struct_tree.nwk.PP.nwk.rooted" , 
+		"{folder}/sequences.aln.fst.nwk.rooted",
+		"{folder}/fident_1_struct_tree.nwk.PP.nwk.rooted" , 
+		"{folder}/alntmscore_1_struct_tree.nwk.PP.nwk.rooted" , 
+		"{folder}/lddt_1_struct_tree.nwk.PP.nwk.rooted" ,
+		"{folder}/sequences.aln.fst.nwk.rooted",		
+	output:
+		"{folder}/consensus_struct.nwk" 
+	log:
+	    "{folder}/logs/CT.log" 
+	script:
+		"../src/getconsensustree.py"
+
 rule calc_tax_score:
 	conda:
 		"config/snake_tree.yaml"
 	input:
 		"{folder}/sequence_dataset.csv",
-		"{folder}/{mattype}_struct_tree.nwk.PP.nwk.rooted"
+		"{folder}/{mattype}_{alntype}_struct_tree.nwk.PP.nwk.rooted"
 	output:
-		"{folder}/{mattype}_treescores_struct_tree.json"
+		"{folder}/{mattype}_{alntype}_treescores_struct_tree.json"
 	log:
-	    "{folder}/logs/{mattype}_struct_tree_scoring.log"
+	    "{folder}/logs/{mattype}_{alntype}_struct_tree_scoring.log"
 	script:
 		"../src/calctreescores.py"
 
@@ -68,13 +91,13 @@ rule mad_root_struct:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/{mattype}_struct_tree.nwk.PP.nwk"
+		"{folder}/{mattype}_{alntype}_struct_tree.nwk.PP.nwk"
 	output:
-		"{folder}/{mattype}_struct_tree.nwk.PP.nwk.rooted"
+		"{folder}/{mattype}_{alntype}_struct_tree.nwk.PP.nwk.rooted"
 	log:
-	    "{folder}/logs/{mattype}_struct_madroot.log"
+	    "{folder}/logs/{mattype}_{alntype}_struct_madroot.log"
 	shell:
-		rootdir+'madroot/mad {wildcards.folder}/{wildcards.mattype}_struct_tree.nwk.PP.nwk'
+		rootdir+'madroot/mad {wildcards.folder}/{wildcards.mattype}_{wildcards.alntype}_struct_tree.nwk.PP.nwk'
 
 rule mad_root_seq:
 	conda:
@@ -92,11 +115,11 @@ rule postprocess:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/{mattype}_struct_tree.nwk"
+		"{folder}/{mattype}_{alntype}_struct_tree.nwk"
 	output:
-		"{folder}/{mattype}_struct_tree.nwk.PP.nwk"
+		"{folder}/{mattype}_{alntype}_struct_tree.nwk.PP.nwk"
 	log:
-	    "{folder}/logs/{mattype}_struct_postprocess.log"
+	    "{folder}/logs/{mattype}_{alntype}_struct_postprocess.log"
 	script:
 		'../src/postprocess.py'
 
@@ -104,13 +127,13 @@ rule fastme:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/{mattype}_fastmemat.txt"
+		"{folder}/{mattype}_{alntype}_fastmemat.txt"
 	output:
-		"{folder}/{mattype}_struct_tree.nwk"
+		"{folder}/{mattype}_{alntype}_struct_tree.nwk"
 	log:
-	    "{folder}/logs/{mattype}_fastme.log"
+	    "{folder}/logs/{mattype}_{alntype}_fastme.log"
 	shell:
-		'fastme -i {wildcards.folder}/{wildcards.mattype}_fastmemat.txt -o {wildcards.folder}/{wildcards.mattype}_struct_tree.nwk -n '
+		'fastme -i {wildcards.folder}/{wildcards.mattype}_{wildcards.alntype}_fastmemat.txt -o {wildcards.folder}/{wildcards.mattype}_{wildcards.alntype}_struct_tree.nwk -n '
 
 rule fasttree:
 	conda:
@@ -130,27 +153,39 @@ rule foldseek2distmat:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/allvall.csv"
+		"{folder}/allvall_{alntype}.csv"
 	output:
-		"{folder}/fident_fastmemat.txt",
-		"{folder}/alntmscore_fastmemat.txt",
-		"{folder}/lddt_fastmemat.txt",
+		"{folder}/fident_{alntype}_fastmemat.txt",
+		"{folder}/alntmscore_{alntype}_fastmemat.txt",
+		"{folder}/lddt_{alntype}_fastmemat.txt",
 	log:
-	    "{folder}/logs/foldseek2distmat.log"
+	    "{folder}/logs/{alntype}_foldseek2distmat.log"
 	script:
 		"../src/foldseekres2distmat.py"
 
-rule foldseek_allvall:
+rule foldseek_allvall_0:
 	conda:
 		"config/snake_tree.yaml"
 	input:
 		"{folder}/finalset.json"
 	output:
-		"{folder}/allvall.csv"
+		"{folder}/allvall_0.csv"
 	log:
 		"{folder}/logs/foldseekallvall.log"
 	shell:
-		foldseekpath + " easy-search {wildcards.folder}/structs/* {wildcards.folder}/structs/* {wildcards.folder}/allvall.csv {wildcards.folder}/tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --exhaustive-search" 
+		foldseekpath + " easy-search {wildcards.folder}/structs/ {wildcards.folder}/structs/ {wildcards.folder}/allvall_0.csv {wildcards.folder}/tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --exhaustive-search --alignment-type 0" 
+
+rule foldseek_allvall_1:
+	conda:
+		"config/snake_tree.yaml"
+	input:
+		"{folder}/finalset.json"
+	output:
+		"{folder}/allvall_1.csv"
+	log:
+		"{folder}/logs/foldseekallvall.log"
+	shell:
+		foldseekpath + " easy-search {wildcards.folder}/structs/* {wildcards.folder}/structs/* {wildcards.folder}/allvall_1.csv {wildcards.folder}/tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --exhaustive-search --alignment-type 1" 
 
 rule clustalo:
 	conda: 

@@ -12,13 +12,18 @@ ids = list( set(list(res['query'].unique()) + list(res['target'].unique())))
 pos = { protid : i for i,protid in enumerate(ids)}
 kernels = ['fident', 'alntmscore', 'lddt']
 matrices = { k:np.zeros((len(pos), len(pos))) for k in kernels }
+print(res)
+
 #calc kernel for tm, aln score, lddt
 for idx,row in res.iterrows():
     for k in matrices:
-        matrices[k][pos[row['query']] , pos[row['target']]]= row[k]
+        matrices[k][pos[row['query']] , pos[row['target']]] += row[k]
+        matrices[k][pos[row['target']] , pos[row['query']]] += row[k]
 
-for i,kernel in enumerate(matrices):
-    matrices[k] += matrices[k].T
+for i,k in enumerate(matrices):
     matrices[k] /= 2
+    matrices[k] = 1-matrices[k]
+    
+    print(matrices[k], np.amax(matrices[k]), np.amin(matrices[k]) )
     np.save(k + '_distmat.npy' , matrices[k])
     distmat_txt = foldseek2tree.distmat_to_txt( ids , matrices[k] , snakemake.output[i] )

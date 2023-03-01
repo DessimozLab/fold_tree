@@ -5,6 +5,14 @@ from scipy.spatial.distance import cdist
 import toytree
 import pandas as pd
 
+def consensustree(treelist):
+    #creat a multitree object from the list of tree files
+    treelist = [toytree.tree(i) for i in treelist]
+    mt = toytree.mtree(treelist)
+    #get the consensus tree
+    ct = mt.get_consensus(min_support=0.5)
+    return ct
+
 
 #smooth distmat with MDS
 def MDS_smooth(distmat):
