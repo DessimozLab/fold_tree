@@ -1,5 +1,6 @@
-docstrings
----------------
+
+Treescore
+=====================
 
 The tree string module has a few functions that are useful for
 scoring trees based on the taxonomic information in the tree. 

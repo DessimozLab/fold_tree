@@ -1,5 +1,6 @@
-docstrings
----------------
+
+foldseek2tree
+=====================
 
 some docs from the function docstrings
 
