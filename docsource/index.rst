@@ -1,6 +1,6 @@
 
 .. toctree::
-   :maxdepth: 2
+
    treeinspector
    foldseek2tree
    AFDBtool

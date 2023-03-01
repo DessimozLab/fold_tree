@@ -15,7 +15,7 @@ following paper:
 
     https://pubmed.ncbi.nlm.nih.gov/25564672/
 
-.. automodule:: treescore
+.. automodule:: src.treescore
     :members:    
     :undoc-members:
     :show-inheritance:
