@@ -5,6 +5,35 @@ import toyplot
 
 def standard_treedraw( tre, sizes= None , colors= None ,fixed_order=None, fixed_position=None , 
 ts = None,  save_file = False  , tiplabels = None ,  layout='c', edge_type='p' ):
+	
+	'''
+	standard treedraw function
+	
+	Parameters
+	----------
+	tre : toytree.tree
+		tree to draw
+	sizes : list
+		list of node sizes
+	colors : list
+		list of node colors
+	fixed_order : list
+		list of node names in order to draw
+	fixed_position : list
+		list of node positions
+	ts : treestlye : str
+		style of tree to draw (default = 'c')
+	save_file : str
+		path to save file
+	tiplabels : list
+		list of tip labels to draw
+	layout : str
+		layout of tree to draw (default = 'c')
+	edge_type : str
+		type of edge to draw (default = 'p')
+	'''
+
+	
 	if tiplabels is None:
 		tiplabels = tre.get_tip_labels()
 	canvas, axes, mark = tre.draw(  

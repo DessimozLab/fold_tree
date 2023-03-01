@@ -5,6 +5,14 @@ import os
 import tqdm
 
 def extract_core(resdf , outfile,  hitthresh = .8 ,minthresh = .6, corefolder = 'core_structs/' , structfolder = 'structs/' ):
+    """
+    resdf: path to results file
+    outfile: path to output file
+    hitthresh: proportion of structures that need to map to a residue for it to be included in the core
+    minthresh: if no residues meet the hitthresh, the minimum proportion of structures that need to map to a residue for it to be included in the core
+    corefolder: name of folder to output core structures to
+    structfolder: name of folder to find structures in
+    """
     #read all results
     folder =''.join([ sub + '/' for sub in resdf.split('/')[:-1] ])
     print(folder)

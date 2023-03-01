@@ -6,6 +6,14 @@ import toytree
 import pandas as pd
 
 def consensustree(treelist):
+    '''get a consensus tree from a list of tree files
+    
+    Parameters
+    ----------
+    treelist : list
+        list of tree files
+
+    '''
     #creat a multitree object from the list of tree files
     treelist = [toytree.tree(i) for i in treelist]
     mt = toytree.mtree(treelist)
@@ -22,23 +30,70 @@ def MDS_smooth(distmat):
     return distmat
 
 def runargs(args):
+    '''run a command line command
+    
+    Parameters
+    ----------
+    args : str
+        command line command
+    '''
+    
     args = shlex.split( args)
     p = subprocess.run( args )
     return p
     
 def runFoldseekdb(folder , outfolder):
+    '''run foldseek createdb
+    
+    parameters
+    ----------
+    folder : str
+        path to folder with pdb files
+    outfolder : str 
+        path to output folder
+    
+
+    '''
     args = 'foldseek createdb '+  folder + ' '+ outfolder+'structblobDB '
     p = runargs(args)
     return outfolder+'structblobDB '
 
 def runFoldseek_allvall(dbpath , outfolder , maxseqs = 3000):
+    '''
+    run foldseek search and createtsv
+    
+    parameters
+    ----------
+    dbpath : str
+        path to foldseek database
+    outfolder : str 
+        path to output folder
+    maxseqs : int   
+        maximum number of sequences to compare to
+
+    '''
+    
     args = 'foldseek search '+  dbpath +' '  + dbpath + ' ' + outfolder+'aln tmp -a --max-seqs '+str(maxseqs)
     p = runargs(args)
     args = 'foldseek createtsv '+  dbpath +' '  + dbpath  + ' ' + outfolder+'aln '  + outfolder +'aln_score.tsv'
     p = runargs(args)
     return outfolder +'aln_score.tsv'
 
-def runFoldseek_allvall_EZsearch(infolder , outpath , foldseekpath = '../foldseek/bin/'):
+def runFoldseek_allvall_EZsearch(infolder , outpath , foldseekpath = '../foldseek/bin/foldseek'):
+    '''
+    run foldseek easy-search
+    
+    parameters
+    ----------
+    infolder : str
+        path to folder with pdb files
+    outpath : str
+        path to output folder
+    foldseekpath : str  
+        path to foldseek binary
+
+        '''
+    
     args = foldseekpath + ' easy-search ' + infolder + ' ' + infolder +' '+ outpath + " tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --format-mode 3 --exhaustive-search "
     p = runargs(args)
     return outpath
@@ -47,11 +102,34 @@ def kernelfun(AA,BB, AB):
     return AA + BB - 2*AB
 
 def runFastme( fastmepath , clusterfile ):
+    '''run fastme
+    
+    parameters
+    ----------
+    fastmepath : str
+        path to fastme binary
+    clusterfile : str
+        path to all vs all distance matrix in fastme format
+    '''
+
     args =  fastmepath +  ' -i ' + clusterfile + ' -o ' + clusterfile+'_tree.txt -n '
     p = runargs(args)
     return clusterfile+'_tree.txt'
 
 def distmat_to_txt( identifiers , distmat, outfile):
+    '''
+    write out a distance matrix in fastme format
+
+    Parameters
+    ----------
+    identifiers : list
+        list of identifiers for your proteins
+    distmat : np.array  
+        distance matrix
+    outfile : str   
+        path to output file
+
+    '''
     #write out distmat in phylip compatible format
     outstr = str(len(identifiers)) + '\n'
     for i,pdb in enumerate(identifiers):
@@ -64,6 +142,15 @@ def distmat_to_txt( identifiers , distmat, outfile):
 
 
 def postprocess(t, delta=10**-10 ):
+    '''
+    postprocess a tree to make sure all branch lengths are positive
+    
+    Parameters
+    ----------
+    t : str
+        path to tree file
+    delta : float
+        small number to replace negative branch lengths with'''
     #make negative branch lengths a small delta instead
     tre = toytree.tree(t)
 
@@ -76,6 +163,16 @@ def postprocess(t, delta=10**-10 ):
 
 
 def structblob2tree(input_folder, logfolder):
+    '''run structblob pipeline
+
+    Parameters
+    ----------
+    input_folder : str
+        path to folder with pdb files
+    logfolder : str 
+        path to output folder
+    '''
+    
     dbpath = runFoldseekdb(input_folder, logfolder)
     alnres = runFoldseek_allvall(dbpath , logfolder)
     res = pd.read_table(alnres, header = None ,delim_whitespace=True)

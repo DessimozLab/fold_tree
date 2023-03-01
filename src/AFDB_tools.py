@@ -10,6 +10,11 @@ import time
 
 
 def descr(pdb_path):
+	'''
+	Extracts the plddt (in the beta factor column) of the first atom of each residue in a PDB file and returns a descriptive statistics object.
+	Parameters:
+		pdb_path (str): The path to the PDB file.'''
+
 	lppd=[]
 	parser = PDBParser()
 	struc = parser.get_structure("a", pdb_path)
