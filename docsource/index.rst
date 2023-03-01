@@ -1,7 +1,11 @@
 Welcome to My Project
 =====================
 
-This is the documentation for My Project, a Python library for doing X.
+This is the documentation for foldtree, it's a combination of some utility functions and a snakemake workflow to make trees from alphafold structures.
+
+.. image:: https://img.shields.io/pypi/v/foldtree.svg
+   :target: https://pypi.python.org/pypi/foldtree
+
 
 .. toctree::
    :maxdepth: 2
@@ -12,41 +16,51 @@ This is the documentation for My Project, a Python library for doing X.
    troubleshooting
    credits
 
+
 Installation
 ------------
 
-To install My Project, run the following command:
+To use foldtree, clone the git rep and install it with pip:
 
 test project
 .. code-block:: bash
 
-   $ pip install myproject
+   $ git clone 
+   $ cd foldtree
+   $ pip install -e .
 
 
 Usage
 -----
 
-To use My Project, import it in your code and call the `do_x()` function:
+You can use the functions in the different source module to design your own workflows or use the snakemake workflow.
+
+To run the snakemake workflow on the test dataset try using 
+
+.. code-block:: bash
+
+   $ snakemake --cores 4 --use-conda --configfile config.yaml --config input_dir=test_data/ output_dir=test_output/ --use-conda --conda-prefix /tmp/conda
+
+
+This workflow will try to create a tree for each of the uniprot identifiers in the identifier.txt file in the test_data folder. The output will be in the test_output folder.
+
+You can use this workflow on your own data by creating a folder with an identifier file. The workflow will attempt to to download all the necesary data to produce a sequence and structure based tree.
+
+
+To use the foldtree utility functions, import the different modules in your code:
 
 .. code-block:: python
 
-   import myproject
+   from foldtree.src import foldseek2tree
+   from foldtree.src import AFDBtools
+   from foldtree.src import treescore
 
+   
    myproject.do_x()
 
 
 
 
-docstrings
----------------
-
-some docs from the function docstrings
-
-.. automodule:: foldseek2tree
-    :members:
-
-.. automodule:: treescore
-    :members:
 
 
 Troubleshooting
