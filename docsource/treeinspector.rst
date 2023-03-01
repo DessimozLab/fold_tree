@@ -8,7 +8,7 @@ The 3 showcase trees are the ones that are used in the
 foldtree paper. The trees used for benchmarking are also included and 
 are sorted into HOGs inferred to have appeared at different taxonomic levels.
 
-.. _link URL: https://foldtree.github.io/dist/treeinspector.html
+`go to treeinspector <https://foldtree.github.io/dist/treeinspector.html>`_
 
 
    

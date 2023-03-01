@@ -1,24 +1,17 @@
 
 .. toctree::
    :maxdepth: 2
-   
    treeinspector
    foldseek2tree
-   AFDBtools
+   AFDBtool
    treescore
 
 
-Welcome to My Project
+
+Foldtree
 =====================
 
 This is the documentation for foldtree, it's a combination of some utility functions and a snakemake workflow to make trees from alphafold structures.
-
-.. image:: https://img.shields.io/pypi/v/foldtree.svg
-   :target: https://pypi.python.org/pypi/foldtree
-
-
-
-
 
 Installation
 ------------
@@ -64,21 +57,17 @@ To use the foldtree utility functions, import the different modules in your code
    from foldtree.src import treescore
 
    
-   myproject.do_x()
+   # use the functions in the modules
 
-
-
-
-
+There are examples of how to use the different functions in the notebooks in the notebooks folder.
 
 Troubleshooting
 ---------------
 
-
-If you encounter any issues while using My Project, please file a bug report on our GitHub repository: https://github.com/user/repo/issues
+If you encounter any issues while using My Project, please file a bug report on our GitHub repository: https://github.com/DessimozLab/fold_tree/issues
 
 
 Credits
 -------
 
-My Project was created by John Doe.
+This project was created by Dave Moi, Yannis Nevers and Charles Bernard at DessimozLab (DBC at the university of Lausanne).
