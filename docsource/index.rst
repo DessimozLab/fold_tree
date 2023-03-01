@@ -1,3 +1,13 @@
+
+.. toctree::
+   :maxdepth: 2
+   
+   treeinspector
+   foldseek2tree
+   AFDBtools
+   treescore
+
+
 Welcome to My Project
 =====================
 
@@ -6,13 +16,7 @@ This is the documentation for foldtree, it's a combination of some utility funct
 .. image:: https://img.shields.io/pypi/v/foldtree.svg
    :target: https://pypi.python.org/pypi/foldtree
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-   treeinspector
-   foldseek2tree
-   AFDBtools
-   treescore
+
 
 
 
