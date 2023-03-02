@@ -8,7 +8,7 @@ dependencies:
   - snakefmt
   - snakemake>=5.15.0
   - pip
-  - fastme
+  - quicktree
   - python=3.10
   - fasttree=2.1.11
   - clustalo=1.2.4

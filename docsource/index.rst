@@ -37,14 +37,14 @@ To run the snakemake workflow on the test dataset try using
 
 .. code-block:: bash
 
-   $ snakemake --cores 4 --use-conda --configfile config.yaml --config input_dir=test_data/ output_dir=test_output/ --use-conda --conda-prefix /tmp/conda
-
+   $ snakemake  --cores 4 --use-conda  --use-conda 
 
 Or if you are using a slurm cluster you can use the slurm profile:
 
 .. code-block:: bash
 
-   $ snakemake --profile slurmsimple --use-conda --configfile config.yaml --config input_dir=test_data/ output_dir=test_output/ --use-conda --conda-prefix /tmp/conda
+   $ snakemake  --profile slurmsimple --use-conda --use-conda 
+
 
 This workflow will try to create a tree for each of the uniprot identifiers in the identifier.txt file in the test_data folder. The output will be in the test_output folder.
 You can use this workflow on your own data by creating a folder with an identifier file. The workflow will attempt to to download all the necesary data to produce a sequence and structure based tree.

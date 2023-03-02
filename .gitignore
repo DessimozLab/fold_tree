@@ -6,7 +6,8 @@ logs/**
 **/*.pdb
 **/*.tsv
 **/*.pyc
-**/*.cpython-*.pyc
+**/*.npy
+**/*.csv
 examples/**
 testdata/**
 !testdata/identifiers.txt

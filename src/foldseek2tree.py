@@ -130,11 +130,13 @@ def distmat_to_txt( identifiers , distmat, outfile):
         path to output file
 
     '''
+    
     #write out distmat in phylip compatible format
     outstr = str(len(identifiers)) + '\n'
     for i,pdb in enumerate(identifiers):
         namestr = pdb.replace('.','')
-        outstr += namestr+ ' ' + np.array2string( distmat[i,:], formatter={'float_kind':lambda x: "%.2f" % x}).replace('[', '').replace(']', '').replace('\n', '')  + '\n'
+        #outstr += namestr+ ' ' + np.array2string( distmat[i,:], formatter={'float_kind':lambda x: "%.2f" % x}).replace('[', '').replace(']', '').replace('\n', '')  + '\n'
+        outstr += namestr + ' '.join( [ "{:.2f}".format(d) for d in list( distmat[i,: ] )  ]  ) + '\n'
     with open(outfile , 'w') as handle:
         handle.write(outstr)
         handle.close()
