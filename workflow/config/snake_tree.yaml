@@ -15,12 +15,15 @@ dependencies:
   - foldseek
   - iqtree
   - pandas
-  - numpy
   - scipy
   - biopython
+  - numpy
   - pip:
     - tqdm
     - wget
-    - toytree
+    - numpy
+    #- toytree
+    - git+https://github.com/cactuskid/toytree.git@fixnp_bool
     - toyplot
     - requests
+    

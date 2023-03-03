@@ -135,20 +135,13 @@ def distmat_to_txt( identifiers , distmat, outfile):
     #write out distmat in phylip compatible format
     outstr = str(len(identifiers)) + '\n'
     for i,pdb in enumerate(identifiers):
-        namestr = pdb.replace('.','')
-        #outstr += namestr+ ' ' + np.array2string( distmat[i,:], formatter={'float_kind':lambda x: "%.2f" % x}).replace('[', '').replace(']', '').replace('\n', '')  + '\n'
-        outstr += namestr + ' '.join( [ "{:.2f}".format(d) for d in list( distmat[i,: ] )  ]  ) + '\n'
+        outstr += pdb + ' ' + ' '.join( [ "{:.2f}".format(d) for d in list( distmat[i,: ] )  ]  ) + '\n'
     with open(outfile , 'w') as handle:
         handle.write(outstr)
         handle.close()
     return outfile
-
-def clipline(l):
-    #remove all . after identifiers with alphanumerical characters
-    return re.sub(r'([a-zA-Z0-9])\.([0-9])', r'\1 \2', l)
-
-
-def postprocess(t, delta=10**-10 ):
+   
+def postprocess(t, outree, delta=0.0001 ):
     '''
     postprocess a tree to make sure all branch lengths are positive
     
@@ -159,18 +152,15 @@ def postprocess(t, delta=10**-10 ):
     delta : float
         small number to replace negative branch lengths with'''
     #make negative branch lengths a small delta instead
-    
     with open(t) as treein:
-        #use a regular expression to remove all . after identifiers with alphanumerical characters
-        
-        treestr = ' '.join( [  ' ' + clipline(l).strip() + ' ' for l in treein ] )
-    
-    tre = toytree.tree(treestr , tree_format=0 )
+        treestr = ' '.join( [ i.strip() for i in treein.readlines() ] )
+
+    tre = toytree.tree(treestr, tree_format=0 )
 
     for n in tre.treenode.traverse():
         if n.dist< 0:
             n.dist = delta
-    with open(t + '.PP.nwk' , 'w') as treeout:
+    with open(outree , 'w') as treeout:
         treeout.write(tre.write())
     return t + 'PP.nwk'
 

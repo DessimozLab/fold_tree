@@ -8,7 +8,6 @@ from scipy.stats import describe
 from Bio.PDB import *
 import time
 
-
 def descr(pdb_path):
 	'''
 	Extracts the plddt (in the beta factor column) of the first atom of each residue in a PDB file and returns a descriptive statistics object.

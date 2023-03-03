@@ -26,12 +26,12 @@ rule calc_RF:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/fident_0_struct_tree.nwk.PP.nwk.rooted" , 
-		"{folder}/alntmscore_0_struct_tree.nwk.PP.nwk.rooted" , 
-		"{folder}/lddt_0_struct_tree.nwk.PP.nwk.rooted" , 
-		"{folder}/fident_1_struct_tree.nwk.PP.nwk.rooted" , 
-		"{folder}/alntmscore_1_struct_tree.nwk.PP.nwk.rooted" , 
-		"{folder}/lddt_1_struct_tree.nwk.PP.nwk.rooted" ,
+		"{folder}/fident_0_struct_tree.PP.nwk.rooted" , 
+		"{folder}/alntmscore_0_struct_tree.PP.nwk.rooted" , 
+		"{folder}/lddt_0_struct_tree.PP.nwk.rooted" , 
+		"{folder}/fident_1_struct_tree.PP.nwk.rooted" , 
+		"{folder}/alntmscore_1_struct_tree.PP.nwk.rooted" , 
+		"{folder}/lddt_1_struct_tree.PP.nwk.rooted" ,
 		"{folder}/sequences.aln.fst.nwk.rooted",
 	output:
 		"{folder}/RFdistances.json" 
@@ -44,12 +44,12 @@ rule calc_consensus:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/fident_0_struct_tree.nwk.PP.nwk" , 
-		"{folder}/alntmscore_0_struct_tree.nwk.PP.nwk" , 
-		"{folder}/lddt_0_struct_tree.nwk.PP.nwk" , 
-		"{folder}/fident_1_struct_tree.nwk.PP.nwk" , 
-		"{folder}/alntmscore_1_struct_tree.nwk.PP.nwk" , 
-		"{folder}/lddt_1_struct_tree.nwk.PP.nwk" ,
+		"{folder}/fident_0_struct_tree.PP.nwk.rooted" , 
+		"{folder}/alntmscore_0_struct_tree.PP.nwk.rooted" , 
+		"{folder}/lddt_0_struct_tree.PP.nwk.rooted" , 
+		"{folder}/fident_1_struct_tree.PP.nwk.rooted" , 
+		"{folder}/alntmscore_1_struct_tree.PP.nwk.rooted" , 
+		"{folder}/lddt_1_struct_tree.PP.nwk.rooted" ,
 	output:
 		"{folder}/consensus_struct.nwk" 
 	log:
@@ -62,7 +62,7 @@ rule calc_tax_score:
 		"config/snake_tree.yaml"
 	input:
 		"{folder}/sequence_dataset.csv",
-		"{folder}/{mattype}_{alntype}_struct_tree.nwk.PP.nwk.rooted"
+		"{folder}/{mattype}_{alntype}_struct_tree.PP.nwk.rooted"
 	output:
 		"{folder}/{mattype}_{alntype}_treescores_struct_tree.json"
 	log:
@@ -88,13 +88,13 @@ rule mad_root_struct:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/{mattype}_{alntype}_struct_tree.nwk.PP.nwk"
+		"{folder}/{mattype}_{alntype}_struct_tree.PP.nwk"
 	output:
-		"{folder}/{mattype}_{alntype}_struct_tree.nwk.PP.nwk.rooted"
+		"{folder}/{mattype}_{alntype}_struct_tree.PP.nwk.rooted"
 	log:
 	    "{folder}/logs/{mattype}_{alntype}_struct_madroot.log"
 	shell:
-		rootdir+'madroot/mad {wildcards.folder}/{wildcards.mattype}_{wildcards.alntype}_struct_tree.nwk.PP.nwk'
+		rootdir+'madroot/mad {wildcards.folder}/{wildcards.mattype}_{wildcards.alntype}_struct_tree.PP.nwk'
 
 rule mad_root_seq:
 	conda:
@@ -108,13 +108,14 @@ rule mad_root_seq:
 	shell:
 		rootdir +'madroot/mad  {wildcards.folder}/sequences.aln.fst.nwk'
 
+
 rule postprocess:
 	conda:
 		"config/snake_tree.yaml"
 	input:
 		"{folder}/{mattype}_{alntype}_struct_tree.nwk"
 	output:
-		"{folder}/{mattype}_{alntype}_struct_tree.nwk.PP.nwk"
+		"{folder}/{mattype}_{alntype}_struct_tree.PP.nwk"
 	log:
 	    "{folder}/logs/{mattype}_{alntype}_struct_postprocess.log"
 	script:
