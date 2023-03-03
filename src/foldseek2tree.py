@@ -4,6 +4,7 @@ import numpy as np
 from scipy.spatial.distance import cdist
 import toytree
 import pandas as pd
+import re
 
 def consensustree(treelist):
     '''get a consensus tree from a list of tree files
@@ -15,10 +16,10 @@ def consensustree(treelist):
 
     '''
     #creat a multitree object from the list of tree files
-    treelist = [toytree.tree(i) for i in treelist]
+    treelist = [toytree.tree(i , format = 0 ) for i in treelist]
     mt = toytree.mtree(treelist)
     #get the consensus tree
-    ct = mt.get_consensus(min_support=0.5)
+    ct = mt.get_consensus_tree( )
     return ct
 
 
@@ -130,7 +131,7 @@ def distmat_to_txt( identifiers , distmat, outfile):
         path to output file
 
     '''
-    
+
     #write out distmat in phylip compatible format
     outstr = str(len(identifiers)) + '\n'
     for i,pdb in enumerate(identifiers):
@@ -141,6 +142,10 @@ def distmat_to_txt( identifiers , distmat, outfile):
         handle.write(outstr)
         handle.close()
     return outfile
+
+def clipline(l):
+    #remove all . after identifiers with alphanumerical characters
+    return re.sub(r'([a-zA-Z0-9])\.([0-9])', r'\1 \2', l)
 
 
 def postprocess(t, delta=10**-10 ):
@@ -154,7 +159,13 @@ def postprocess(t, delta=10**-10 ):
     delta : float
         small number to replace negative branch lengths with'''
     #make negative branch lengths a small delta instead
-    tre = toytree.tree(t)
+    
+    with open(t) as treein:
+        #use a regular expression to remove all . after identifiers with alphanumerical characters
+        
+        treestr = ' '.join( [  ' ' + clipline(l).strip() + ' ' for l in treein ] )
+    
+    tre = toytree.tree(treestr , tree_format=0 )
 
     for n in tre.treenode.traverse():
         if n.dist< 0:

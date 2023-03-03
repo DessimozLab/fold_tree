@@ -19,7 +19,8 @@ rule all:
 	#get all treescore and rf distance files for all alntypes
 		expand( "{folder}/RFdistances.json" , folder = folders ),
 		expand( "{folder}/{mattype}_{alntype}_treescores_struct_tree.json" , folder = folders , mattype = mattypes , alntype = alntypes ),
-		expand( "{folder}/treescores_sequences.json" , folder = folders )
+		expand( "{folder}/treescores_sequences.json" , folder = folders ) ,
+		expand(  "{folder}/consensus_struct.nwk" , folder = folders )
 
 rule calc_RF:
 	conda:
@@ -43,14 +44,12 @@ rule calc_consensus:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/fident_0_struct_tree.nwk.PP.nwk.rooted" , 
-		"{folder}/alntmscore_0_struct_tree.nwk.PP.nwk.rooted" , 
-		"{folder}/lddt_0_struct_tree.nwk.PP.nwk.rooted" , 
-		"{folder}/sequences.aln.fst.nwk.rooted",
-		"{folder}/fident_1_struct_tree.nwk.PP.nwk.rooted" , 
-		"{folder}/alntmscore_1_struct_tree.nwk.PP.nwk.rooted" , 
-		"{folder}/lddt_1_struct_tree.nwk.PP.nwk.rooted" ,
-		"{folder}/sequences.aln.fst.nwk.rooted",		
+		"{folder}/fident_0_struct_tree.nwk.PP.nwk" , 
+		"{folder}/alntmscore_0_struct_tree.nwk.PP.nwk" , 
+		"{folder}/lddt_0_struct_tree.nwk.PP.nwk" , 
+		"{folder}/fident_1_struct_tree.nwk.PP.nwk" , 
+		"{folder}/alntmscore_1_struct_tree.nwk.PP.nwk" , 
+		"{folder}/lddt_1_struct_tree.nwk.PP.nwk" ,
 	output:
 		"{folder}/consensus_struct.nwk" 
 	log:
