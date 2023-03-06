@@ -19,11 +19,9 @@ for idx,row in res.iterrows():
     for k in matrices:
         matrices[k][pos[row['query']] , pos[row['target']]] += row[k]
         matrices[k][pos[row['target']] , pos[row['query']]] += row[k]
-
 for i,k in enumerate(matrices):
     matrices[k] /= 2
     matrices[k] = 1-matrices[k]
-    
     print(matrices[k], np.amax(matrices[k]), np.amin(matrices[k]) )
     np.save(k + '_distmat.npy' , matrices[k])
     distmat_txt = foldseek2tree.distmat_to_txt( ids , matrices[k] , snakemake.output[i] )
