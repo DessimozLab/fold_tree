@@ -149,5 +149,6 @@ def res2fasta(unires_df):
 	'> P00533\nMPTSVLLLALLLAPAALVHVCRSRFPKCVVLVNVTGLFGN\n'
 	"""
 	unires_df['fasta'] = unires_df[ ['query' , 'Sequence']].apply( lambda r : '> '+ r.query + '\n'+ r.Sequence+ '\n' , axis = 1)
+	unires_df.drop_duplicates(subset=['Entry'])
 	fasta = ''.join(unires_df.fasta)
 	return fasta

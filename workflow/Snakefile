@@ -11,65 +11,83 @@ print(rootdir)
 folders = glob_wildcards("{folders}/identifiers.txt").folders
 mattypes = ['fident', 'alntmscore', 'lddt']
 alntypes = ['0', '1']
+exp = ['raw', 'exp']
+
 foldseekpath = './foldseek/bin/foldseek '
 print(folders[0:100] , '...')
 
 rule all:
 	input:
 	#get all treescore and rf distance files for all alntypes
-		expand( "{folder}/RFdistances.json" , folder = folders ),
-		expand( "{folder}/{mattype}_{alntype}_treescores_struct_tree.json" , folder = folders , mattype = mattypes , alntype = alntypes ),
+		expand( "{folder}/RFdistances.json" , folder = folders ) ,
+		expand( "{folder}/{mattype}_{alntype}_{exp}_treescores_struct_tree.json" , folder = folders , mattype = mattypes , alntype = alntypes , exp=exp ),
 		expand( "{folder}/treescores_sequences.json" , folder = folders ) ,
-		expand(  "{folder}/consensus_struct.nwk" , folder = folders )
+		expand(  "{folder}/consensus_struct.nwk" , folder = folders ) , 
+		expand( "{folder}/consensus_treescores_struct_tree_{exp}_.json" , folder = folders , exp = exp ) 
 
 rule calc_RF:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/fident_0_struct_tree.PP.nwk.rooted" , 
-		"{folder}/alntmscore_0_struct_tree.PP.nwk.rooted" , 
-		"{folder}/lddt_0_struct_tree.PP.nwk.rooted" , 
-		"{folder}/fident_1_struct_tree.PP.nwk.rooted" , 
-		"{folder}/alntmscore_1_struct_tree.PP.nwk.rooted" , 
-		"{folder}/lddt_1_struct_tree.PP.nwk.rooted" ,
+		"{folder}/fident_0_{exp}_struct_tree.PP.nwk.rooted" , 
+		"{folder}/alntmscore_0_{exp}_struct_tree.PP.nwk.rooted" , 
+		"{folder}/lddt_0_{exp}_struct_tree.PP.nwk.rooted" , 
+		"{folder}/fident_1_{exp}_struct_tree.PP.nwk.rooted" , 
+		"{folder}/alntmscore_1_{exp}_struct_tree.PP.nwk.rooted" , 
+		"{folder}/lddt_1_{exp}_struct_tree.PP.nwk.rooted" ,
 		"{folder}/sequences.aln.fst.nwk.rooted",
+		"{folder}/consensus_struct.nwk"
 	output:
-		"{folder}/RFdistances.json" 
+		"{folder}/RFdistances_{exp}_.json" 
 	log:
-	    "{folder}/logs/RFdist.log" 
+	    "{folder}/logs/RFdist_{exp}_.log" 
 	script:
 		"../src/calcRF.py"
 
+
+rule calc_tax_score_consensus:
+	conda:
+		"config/snake_tree.yaml"
+	input:
+		"{folder}/sequence_dataset.csv",
+		"{folder}/consensus_struct_{exp}_.nwk"
+	output:
+		"{folder}/consensus_treescores_struct_tree_{exp}_.json"
+	log:
+	    "{folder}/logs/consensus_struct_tree_scoring_{exp}_.log"
+	script:
+		"../src/calctreescores.py"
+		
 rule calc_consensus:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/fident_0_struct_tree.PP.nwk.rooted" , 
-		"{folder}/alntmscore_0_struct_tree.PP.nwk.rooted" , 
-		"{folder}/lddt_0_struct_tree.PP.nwk.rooted" , 
-		"{folder}/fident_1_struct_tree.PP.nwk.rooted" , 
-		"{folder}/alntmscore_1_struct_tree.PP.nwk.rooted" , 
-		"{folder}/lddt_1_struct_tree.PP.nwk.rooted" ,
+		"{folder}/fident_0_{exp}_struct_tree.PP.nwk.rooted" , 
+		"{folder}/alntmscore_0_{exp}_struct_tree.PP.nwk.rooted" , 
+		"{folder}/lddt_0_{exp}_struct_tree.PP.nwk.rooted" , 
+		"{folder}/fident_1_{exp}_struct_tree.PP.nwk.rooted" , 
+		"{folder}/alntmscore_1_{exp}_struct_tree.PP.nwk.rooted" , 
+		"{folder}/lddt_1_{exp}_struct_tree.PP.nwk.rooted" ,
 	output:
-		"{folder}/consensus_struct.nwk" 
+		"{folder}/consensus_struct__{exp}_.nwk" 
 	log:
 	    "{folder}/logs/CT.log" 
 	script:
 		"../src/getconsensustree.py"
+
 
 rule calc_tax_score:
 	conda:
 		"config/snake_tree.yaml"
 	input:
 		"{folder}/sequence_dataset.csv",
-		"{folder}/{mattype}_{alntype}_struct_tree.PP.nwk.rooted"
+		"{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk.rooted"
 	output:
-		"{folder}/{mattype}_{alntype}_treescores_struct_tree.json"
+		"{folder}/{mattype}_{alntype}_{exp}_treescores_struct_tree.json"
 	log:
-	    "{folder}/logs/{mattype}_{alntype}_struct_tree_scoring.log"
+	    "{folder}/logs/{mattype}_{alntype}_{exp}_struct_tree_scoring.log"
 	script:
 		"../src/calctreescores.py"
-
 
 rule calc_tax_score_seq:
 	conda:
@@ -88,13 +106,13 @@ rule mad_root_struct:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/{mattype}_{alntype}_struct_tree.PP.nwk"
+		"{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk"
 	output:
-		"{folder}/{mattype}_{alntype}_struct_tree.PP.nwk.rooted"
+		"{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk.rooted"
 	log:
-	    "{folder}/logs/{mattype}_{alntype}_struct_madroot.log"
+	    "{folder}/logs/{mattype}_{alntype}_{exp}_struct_madroot.log"
 	shell:
-		rootdir+'madroot/mad {wildcards.folder}/{wildcards.mattype}_{wildcards.alntype}_struct_tree.PP.nwk'
+		rootdir+'madroot/mad {wildcards.folder}/{wildcards.mattype}_{wildcards.alntype}_{exp}_struct_tree.PP.nwk'
 
 rule mad_root_seq:
 	conda:
@@ -108,14 +126,13 @@ rule mad_root_seq:
 	shell:
 		rootdir +'madroot/mad  {wildcards.folder}/sequences.aln.fst.nwk'
 
-
 rule postprocess:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/{mattype}_{alntype}_struct_tree.nwk"
+		"{folder}/{mattype}_{alntype}_{exp}_struct_tree.nwk"
 	output:
-		"{folder}/{mattype}_{alntype}_struct_tree.PP.nwk"
+		"{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk"
 	log:
 	    "{folder}/logs/{mattype}_{alntype}_struct_postprocess.log"
 	script:
@@ -125,13 +142,13 @@ rule quicktree:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/{mattype}_{alntype}_fastmemat.txt"
+		"{folder}/{mattype}_{alntype}_{exp}_fastmemat.txt"
 	output:
-		"{folder}/{mattype}_{alntype}_struct_tree.nwk"
+		"{folder}/{mattype}_{alntype}_{exp}_struct_tree.nwk"
 	log:
-	    "{folder}/logs/{mattype}_{alntype}_fastme.log"
+	    "{folder}/logs/{mattype}_{alntype}_{exp}_fastme.log"
 	shell:
-		'quicktree -i m {wildcards.folder}/{wildcards.mattype}_{wildcards.alntype}_fastmemat.txt > {wildcards.folder}/{wildcards.mattype}_{wildcards.alntype}_struct_tree.nwk '
+		'quicktree -i m {wildcards.folder}/{wildcards.mattype}_{wildcards.alntype}_{wildcards.exp}_fastmemat.txt > {wildcards.folder}/{wildcards.mattype}_{wildcards.alntype}_{wildcards.exp}_struct_tree.nwk '
 
 rule fasttree:
 	conda:
@@ -153,9 +170,12 @@ rule foldseek2distmat:
 	input:
 		"{folder}/allvall_{alntype}.csv"
 	output:
-		"{folder}/fident_{alntype}_fastmemat.txt",
-		"{folder}/alntmscore_{alntype}_fastmemat.txt",
-		"{folder}/lddt_{alntype}_fastmemat.txt",
+		"{folder}/fident_{alntype}_raw_fastmemat.txt",
+		"{folder}/alntmscore_{alntype}_raw_fastmemat.txt",
+		"{folder}/lddt_{alntype}_raw_fastmemat.txt",
+		"{folder}/fident_{alntype}_exp_fastmemat.txt",
+		"{folder}/alntmscore_{alntype}_exp_fastmemat.txt",
+		"{folder}/lddt_{alntype}_exp_fastmemat.txt",
 	log:
 	    "{folder}/logs/{alntype}_foldseek2distmat.log"
 	script:
