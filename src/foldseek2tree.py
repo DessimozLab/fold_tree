@@ -2,9 +2,12 @@
 import subprocess ,shlex
 import numpy as np
 from scipy.spatial.distance import cdist
+import statsmodels
 import toytree
 import pandas as pd
 import re
+from scipy.stats import chi2
+
 
 def consensustree(treelist):
     '''get a consensus tree from a list of tree files
@@ -22,13 +25,37 @@ def consensustree(treelist):
     ct = mt.get_consensus_tree( )
     return ct
 
-
 #smooth distmat with MDS
 def MDS_smooth(distmat):
     mds = MDS(n_components=int(distmat.shape[0]/2) )#, dissimilarity='precomputed'  )
     distmat = mds.fit_transform(1-distmat )
     distmat = cdist(distmat,distmat, 'minkowski', p=1.5 )
     return distmat
+
+def Tajima_dist(kn_ratio,iter = 100):
+    taj = np.add.reduce([ (kn_ratio**(np.ones(kn_ratio.shape)*i) )/ i for i in range(1,iter) ] )
+    #set diagonal to 0
+    np.fill_diagonal(taj, 0)
+    return taj
+
+def clock_test(distmats, ntriplets = 1000):
+    '''test if a distance matrix is clocklike using a xi squared test for n random triplets'''
+    #get n random triplets without replacement
+    triplets = np.random.choice(distmat.shape[0], size=(ntriplets, 3), replace=False)
+    #get the distances between the triplets
+    res = {}
+    for mattype in distmats:
+        distmat = distmats[mattype]
+
+        dists = np.array( [ sorted[distmat[i,j],distmat[i,k],distmat[j,k]] for i,j,k in triplets ] )
+        x2 = (dists[:,0] - dists[:,1])**2 / dists[:,0] + dists[:,1]
+        pvals = chi2.cdf(x2, 1)
+
+        #apply bonferroni correction
+        corrected = statsmodels.stats.multitest.multipletests(pvals, alpha=0.05, method='hs', maxiter=1, is_sorted=False, returnsorted=False)
+        res[mattype] = corrected
+
+    return res
 
 def runargs(args):
     '''run a command line command
@@ -135,7 +162,7 @@ def distmat_to_txt( identifiers , distmat, outfile):
     #write out distmat in phylip compatible format
     outstr = str(len(identifiers)) + '\n'
     for i,pdb in enumerate(identifiers):
-        outstr += pdb + ' ' + ' '.join( [ "{:.2f}".format(d) for d in list( distmat[i,: ] )  ]  ) + '\n'
+        outstr += pdb + ' ' + ' '.join( [ "{:.4f}".format(d) for d in list( distmat[i,: ] )  ]  ) + '\n'
     with open(outfile , 'w') as handle:
         handle.write(outstr)
         handle.close()

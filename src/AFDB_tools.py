@@ -7,6 +7,7 @@ import requests
 from scipy.stats import describe
 from Bio.PDB import *
 import time
+import numpy as np
 
 def descr(pdb_path):
 	'''
@@ -23,6 +24,26 @@ def descr(pdb_path):
 		   break
 	return describe(lppd)
 
+
+def filter_plddt(pdb_path , thresh= .6 , minthresh = .5 ):
+	'''
+	Extracts the plddt (in the beta factor column) of the first atom of each residue in a PDB file and returns bool if the pdb is accepted or not.
+
+	Parameters:
+		pdb_path (str): The path to the PDB file.'''
+	
+
+	lddt=[]
+	parser = PDBParser()
+	struc = parser.get_structure("a", pdb_path)
+	for res in struc.get_residues():
+		for at in res.get_atoms():
+		   lddt.append(at.get_bfactor())
+		   break
+	if np.mean(lddt) < thresh or np.amin(lddt) < minthresh:
+		return False
+	else:
+		return True
 
 def grab_struct(uniID, structfolder, overwrite=False):
 
@@ -148,7 +169,8 @@ def res2fasta(unires_df):
 	>>> res2fasta(unires_df)
 	'> P00533\nMPTSVLLLALLLAPAALVHVCRSRFPKCVVLVNVTGLFGN\n'
 	"""
+	
+	unires_df = unires_df.drop_duplicates(subset=['query'])
 	unires_df['fasta'] = unires_df[ ['query' , 'Sequence']].apply( lambda r : '> '+ r.query + '\n'+ r.Sequence+ '\n' , axis = 1)
-	unires_df.drop_duplicates(subset=['Entry'])
 	fasta = ''.join(unires_df.fasta)
 	return fasta

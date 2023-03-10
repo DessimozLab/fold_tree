@@ -59,7 +59,6 @@ ts = None,  save_file = False  , tiplabels = None ,  layout='c', edge_type='p' )
 #taxonomy overlap score
 def getTaxOverlap(node):
 	
-
 	"""
     Calculate the taxonomy overlap score for the given node in a phylogenetic tree.
     
@@ -86,15 +85,18 @@ def getTaxOverlap(node):
 	if node.is_leaf() == True:
 		node.add_feature( 'score' ,  0 )
 		node.add_feature( 'size' ,  0 )
+		node.add_feature( 'score_x_red' , 0)
 		return node.lineage
 	else:
 		lengths = []
 		total = 0
+		redtotal = 0
 		sets = [] 
 		scores = []
 		for i,c in enumerate(node.get_children()):
 			sets.append( getTaxOverlap(c))
 			total += c.score
+			redtotal += c.score_x_red
 		sets = [s for s in sets if s]
 		if len(sets)> 0:
 			for i,cset in enumerate(sets):
@@ -104,12 +106,13 @@ def getTaxOverlap(node):
 					nset = nset.intersection(cset)
 				lengths.append(len(cset))
 			score = len(nset) + total
+			score_x_red = (1-node.red)*len(nset) + redtotal
 			node.add_feature( 'score' ,  score )
+			node.add_feature( 'score_x_red' , score_x_red)
 			#show the biggest loss in lineage length
 			node.add_feature( 'size' ,  abs( len(nset) - max(lengths) ) )
 		else:
 			nset = None
-			
 			node.add_feature( 'size' ,  0 )
 			node.add_feature( 'score' ,  0 )
 		node.add_feature( 'lineage' ,  nset )
@@ -145,3 +148,56 @@ def label_leaves( tree , leaf_lineages):
 			n.add_feature( 'lineage' ,   None )
 	return tree
 
+def compute_sum_dist_to_desc_leaves(node, sum_d = 0, n_leaves = 0, n_internal_nodes = 0):
+    """
+    Compute the sum of distances to the descendant leaves and the number of descendant leaves for each node.
+    
+	"""
+
+    n_internal_nodes = 0
+    if node.is_leaf():
+        n_leaves = 1
+        sum_d = node.get_distance(node.up)
+        node.n_desc_leaves = 0
+        node.sum_dist_to_desc_leaves = 0
+        node.n_internal_nodes = 0
+    else:
+        n_leaves = 0
+        sum_d = 0
+        for child in node.children:
+            res = compute_sum_dist_to_desc_leaves(child, sum_d, n_leaves, n_internal_nodes)
+            sum_d += res[0] 
+            n_leaves += res[1]
+            n_internal_nodes += res[2]
+        n_internal_nodes += 1
+        node.sum_dist_to_desc_leaves = sum_d
+        node.n_desc_leaves = n_leaves
+        node.n_internal_nodes = n_internal_nodes
+        if node.up:
+            sum_d += node.get_distance(node.up) * n_leaves
+    if node.up:
+        return sum_d, n_leaves, n_internal_nodes
+    
+def compute_red_score(node, red = 0, level_from_root = 0):
+    """
+    Compute the RED score for each node.
+    
+    """
+    if node.is_leaf():
+        red = 1
+    elif not node.up:
+        red = 0
+    else:
+        p = red
+        d = node.get_distance(node.up)
+        u = (node.sum_dist_to_desc_leaves + (d * node.n_desc_leaves)) / node.n_desc_leaves
+        red = p + (d/u) * (1-p)
+    node.level = level_from_root
+    node.red = red
+    for child in node.children:
+        compute_red_score(child, red, level_from_root + 1)
+        
+def labelwRED(tree):
+    compute_sum_dist_to_desc_leaves(tree)
+    compute_red_score(tree)
+    return tree

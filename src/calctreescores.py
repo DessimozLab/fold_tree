@@ -12,12 +12,18 @@ stats = {}
 for t in snakemake.input[1:]:
     tree = toytree.tree(t)
     lineages = treescore.make_lineages(uniprot_df)
+
     tree = treescore.label_leaves( tree , lineages)
-    overlap = treescore.getTaxOverlap(tree.treenode)
-    taxscore = tree.treenode.score
-    #calc descriptive stats on normalized branch lens    
-    lengths = np.array([node.dist for node in tree.treenode.traverse()])
+    tree = treescore.labelwRED(tree.treenode)
+    overlap = treescore.getTaxOverlap(tree)
+
+    taxscore = tree.score
+    redscore = tree.score_x_red
+
+    #calc descriptive stats on normalized branch lens to see if trees are balanced  
+    lengths = np.array([node.dist for node in tree.traverse()])
     lengths /= np.sum(lengths)
-    scores[t] = {'score': taxscore, 'stats': describe(lengths)}
+
+    scores[t] = {'score': taxscore, 'stats': describe(lengths) , 'red_x_score': redscore }
 with open(snakemake.output[0], 'w') as snakeout:
     snakeout.write( json.dumps( scores ) )

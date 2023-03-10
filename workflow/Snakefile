@@ -13,16 +13,16 @@ mattypes = ['fident', 'alntmscore', 'lddt']
 alntypes = ['0', '1']
 exp = ['raw', 'exp']
 
-foldseekpath = './foldseek/bin/foldseek '
+foldseekpath = '/work/FAC/FBM/DBC/cdessim2/default/dmoi/projects/snake_tree/foldseek/bin/foldseek '
 print(folders[0:100] , '...')
 
 rule all:
 	input:
 	#get all treescore and rf distance files for all alntypes
-		expand( "{folder}/RFdistances.json" , folder = folders ) ,
+		expand( "{folder}/RFdistances_{exp}_.json" , folder = folders , exp = exp) ,
 		expand( "{folder}/{mattype}_{alntype}_{exp}_treescores_struct_tree.json" , folder = folders , mattype = mattypes , alntype = alntypes , exp=exp ),
 		expand( "{folder}/treescores_sequences.json" , folder = folders ) ,
-		expand(  "{folder}/consensus_struct.nwk" , folder = folders ) , 
+		expand(  "{folder}/consensus_struct_{exp}_.nwk" , folder = folders, exp = exp ) , 
 		expand( "{folder}/consensus_treescores_struct_tree_{exp}_.json" , folder = folders , exp = exp ) 
 
 rule calc_RF:
@@ -36,7 +36,7 @@ rule calc_RF:
 		"{folder}/alntmscore_1_{exp}_struct_tree.PP.nwk.rooted" , 
 		"{folder}/lddt_1_{exp}_struct_tree.PP.nwk.rooted" ,
 		"{folder}/sequences.aln.fst.nwk.rooted",
-		"{folder}/consensus_struct.nwk"
+		"{folder}/consensus_struct_{exp}_.nwk.rooted"
 	output:
 		"{folder}/RFdistances_{exp}_.json" 
 	log:
@@ -69,9 +69,9 @@ rule calc_consensus:
 		"{folder}/alntmscore_1_{exp}_struct_tree.PP.nwk.rooted" , 
 		"{folder}/lddt_1_{exp}_struct_tree.PP.nwk.rooted" ,
 	output:
-		"{folder}/consensus_struct__{exp}_.nwk" 
+		"{folder}/consensus_struct_{exp}_.nwk" 
 	log:
-	    "{folder}/logs/CT.log" 
+	    "{folder}/logs/_{exp}_CT.log" 
 	script:
 		"../src/getconsensustree.py"
 
@@ -102,6 +102,18 @@ rule calc_tax_score_seq:
 	script:
 		"../src/calctreescores.py"
 
+rule mad_root_consensus:
+	conda:
+		"config/snake_tree.yaml"
+	input:
+		"{folder}/consensus_struct_{exp}_.nwk" 
+	output:
+		"{folder}/consensus_struct_{exp}_.nwk.rooted"
+	log:
+	    "{folder}/logs/{exp}_consensus_madroot.log"
+	shell:
+		rootdir+'madroot/mad {wildcards.folder}/consensus_struct_{wildcards.exp}_.nwk'
+
 rule mad_root_struct:
 	conda:
 		"config/snake_tree.yaml"
@@ -112,7 +124,7 @@ rule mad_root_struct:
 	log:
 	    "{folder}/logs/{mattype}_{alntype}_{exp}_struct_madroot.log"
 	shell:
-		rootdir+'madroot/mad {wildcards.folder}/{wildcards.mattype}_{wildcards.alntype}_{exp}_struct_tree.PP.nwk'
+		rootdir+'madroot/mad {wildcards.folder}/{wildcards.mattype}_{wildcards.alntype}_{wildcards.exp}_struct_tree.PP.nwk'
 
 rule mad_root_seq:
 	conda:
@@ -134,7 +146,7 @@ rule postprocess:
 	output:
 		"{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk"
 	log:
-	    "{folder}/logs/{mattype}_{alntype}_struct_postprocess.log"
+	    "{folder}/logs/{mattype}_{alntype}_{exp}_struct_postprocess.log"
 	script:
 		'../src/postprocess.py'
 
@@ -185,7 +197,7 @@ rule foldseek_allvall_0:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/finalset.json"
+		"{folder}/finalset.csv"
 	output:
 		"{folder}/allvall_0.csv"
 	log:
@@ -197,7 +209,7 @@ rule foldseek_allvall_1:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/finalset.json"
+		"{folder}/finalset.csv"
 	output:
 		"{folder}/allvall_1.csv"
 	log:
@@ -236,7 +248,7 @@ rule plddt:
 	conda:
 		"config/snake_tree.yaml"
 	input:
-		"{folder}/finalset.json",
+		"{folder}/finalset.csv",
 	output:
 		"{folder}/plddt.json"
 	log:
@@ -251,7 +263,7 @@ rule dl_ids_structs:
 		"{folder}/sequence_dataset.csv",
 	output:
 		"{folder}/sequences.fst",
-		"{folder}/finalset.json",
+		"{folder}/finalset.csv",
 	log:
 	    "{folder}/logs/dlstructs.log",
 	params:
