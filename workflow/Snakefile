@@ -71,7 +71,7 @@ rule calc_consensus:
 	output:
 		"{folder}/consensus_struct_{exp}_.nwk" 
 	log:
-	    "{folder}/logs/_{exp}_CT.log" 
+	    "{folder}/logs/{exp}_CT.log" 
 	script:
 		"../src/getconsensustree.py"
 
