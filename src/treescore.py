@@ -98,9 +98,7 @@ def getTaxOverlap(node , treelen  = None):
 			sets.append( getTaxOverlap(c))
 			total += c.score
 			fractotal += c.score_x_frac
-		
 		sets = [s for s in sets if s]
-
 		if len(sets)> 0:
 			for i,cset in enumerate(sets):
 				if i == 0:
