@@ -57,7 +57,7 @@ ts = None,  save_file = False  , tiplabels = None ,  layout='c', edge_type='p' )
 
 
 #taxonomy overlap score
-def getTaxOverlap(node):
+def getTaxOverlap(node , treelen  = None):
 	
 	"""
     Calculate the taxonomy overlap score for the given node in a phylogenetic tree.
@@ -85,43 +85,55 @@ def getTaxOverlap(node):
 	if node.is_leaf() == True:
 		node.add_feature( 'score' ,  0 )
 		node.add_feature( 'size' ,  0 )
-		node.add_feature( 'score_x_red' , 0)
+		node.add_feature( 'score_x_frac' , 0)
 		return node.lineage
 	else:
 		lengths = []
 		total = 0
 		redtotal = 0
+		fractotal = 0
 		sets = [] 
 		scores = []
 		for i,c in enumerate(node.get_children()):
 			sets.append( getTaxOverlap(c))
 			total += c.score
-			redtotal += c.score_x_red
+			fractotal += c.score_x_frac
+		
 		sets = [s for s in sets if s]
+
 		if len(sets)> 0:
 			for i,cset in enumerate(sets):
 				if i == 0:
 					nset = cset
 				else:
-					nset = nset.intersection(cset)
+					nset = { k:v+1 for k,v in nset.items() if k in cset}
 				lengths.append(len(cset))
+			#add the number of unique lineages
 			score = len(nset) + total
-			score_x_red = (1-node.red)*len(nset) + redtotal
+			#add the number of unique lineages weighted by the fraction of the tree
+			score_x_frac = sum([ nset[i] for i in nset.keys() ]) + fractotal
+
 			node.add_feature( 'score' ,  score )
-			node.add_feature( 'score_x_red' , score_x_red)
+			node.add_feature( 'score_x_frac' , score_x_frac)
+			
 			#show the biggest loss in lineage length
 			node.add_feature( 'size' ,  abs( len(nset) - max(lengths) ) )
+
 		else:
 			nset = None
 			node.add_feature( 'size' ,  0 )
 			node.add_feature( 'score' ,  0 )
+			node.add_feature( 'score_x_frac' ,  0 )
+
 		node.add_feature( 'lineage' ,  nset )
 		#only in the case of a leaf with no label
 	return nset
 
+
 def make_lineages(uniprot_df):
 	return dict(zip(uniprot_df['query'] 
-		, uniprot_df['Taxonomic lineage (Ids)'].map( lambda x : set( x.split(',') ) ) ))
+		, uniprot_df['Taxonomic lineage (Ids)'].map( lambda x :  {t:1 for t in  x.split(',')} ) ))
+
 
 def label_leaves( tree , leaf_lineages):
 	"""
