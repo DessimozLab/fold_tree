@@ -13,7 +13,7 @@ mattypes = ['fident', 'alntmscore', 'lddt']
 alntypes = ['0', '1']
 exp = ['raw', 'exp']
 
-foldseekpath = '/work/FAC/FBM/DBC/cdessim2/default/dmoi/projects/snake_tree/foldseek/bin/foldseek '
+foldseekpath = rootdir + 'foldseek/foldseek '
 print(folders[0:100] , '...')
 
 rule all:

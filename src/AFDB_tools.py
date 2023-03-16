@@ -45,7 +45,7 @@ def filter_plddt(pdb_path , thresh= .6 , minthresh = .5 ):
 	else:
 		return True
 
-def grab_struct(uniID, structfolder, overwrite=False):
+def grab_struct(uniID, structfolder, rejected = None, overwrite=False):
 
 	"""
 	Downloads a protein structure file from the AlphaFold website and saves it to the specified folder.
@@ -76,7 +76,8 @@ def grab_struct(uniID, structfolder, overwrite=False):
 		post = '-F1-model_v4.pdb'
 		url = prefix+uniID.upper()+post
 		if not os.path.isfile(structfolder + uniID +'.pdb'):
-			wget.download(url, structfolder + uniID +'.pdb')
+			if rejected is None or (rejected and not os.path.isfile(structfolder + uniID +'.pdb')):
+				wget.download(url, structfolder + uniID +'.pdb')
 	except:
 		print('structure not found', uniID)
 		return uniID
@@ -116,11 +117,9 @@ def unirequest_tab(name, verbose = False):
 	#only return the first hit for each query    
 	try:
 		data =  pd.read_table(StringIO(data))
-		print(data.columns)
 		data['query'] = data['Entry']
 		data = data[ data['Entry'].isin(name.split('+OR+'))]
 		if verbose is True:
-			
 			print(data)
 		return data    
 	except:
@@ -148,7 +147,6 @@ def grab_entries(ids, verbose = True):
 	Notes:
 	This function makes requests to the UniProt API for information about proteins with the given IDs. If a request is successful, the returned data is processed and added to a DataFrame. If a request is unsuccessful, an error message is printed to the console.
 	"""
-	print(len(ids))
 	name_results = pd.concat([unirequest_tab( '+OR+'.join(c) , verbose = True) for c in chunk(ids, 50 )] , ignore_index= True)
 	if verbose == True:
 		print(name_results)
@@ -171,6 +169,9 @@ def res2fasta(unires_df):
 	"""
 	
 	unires_df = unires_df.drop_duplicates(subset=['query'])
-	unires_df['fasta'] = unires_df[ ['query' , 'Sequence']].apply( lambda r : '> '+ r.query + '\n'+ r.Sequence+ '\n' , axis = 1)
+	unires_df['query'] = unires_df['query'].map( lambda x : '>' + x + '\n')
+
+	unires_df['fasta'] = unires_df['query'] + unires_df.Sequence + '\n'
+
 	fasta = ''.join(unires_df.fasta)
 	return fasta
