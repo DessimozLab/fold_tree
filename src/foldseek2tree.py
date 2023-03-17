@@ -32,8 +32,8 @@ def MDS_smooth(distmat):
     distmat = cdist(distmat,distmat, 'minkowski', p=1.5 )
     return distmat
 
-def Tajima_dist(kn_ratio,iter = 100):
-    taj = np.add.reduce([ (kn_ratio**(np.ones(kn_ratio.shape)*i) )/ i for i in range(1,iter) ] )
+def Tajima_dist(kn_ratio,bfactor=1,iter = 100):
+    taj = np.add.reduce([ (kn_ratio**(np.ones(kn_ratio.shape)*i) )/ (bfactor**(i-1)*i) for i in range(1,iter) ] )
     #set diagonal to 0
     np.fill_diagonal(taj, 0)
     return taj
@@ -180,16 +180,17 @@ def postprocess(t, outree, delta=0 ):
         small number to replace negative branch lengths with'''
     #make negative branch lengths a small delta instead
     with open(t) as treein:
-        treestr = ' '.join( [ i for i in treein ] )
+        treestr = ' '.join( [ i.strip() for i in treein ] )
 
-    tre = toytree.tree(treestr)
+    tre = toytree.tree(treestr , format = 0 )
+    print(tre)
 
     for n in tre.treenode.traverse():
         if n.dist< 0:
             n.dist = delta
-    with open(outree , 'w') as treeout:
-        treeout.write(tre.write())
-    return t + 'PP.nwk'
+    tre.write( outree, tree_format = 0 )
+
+    return outree
 
 
 def structblob2tree(input_folder, logfolder):

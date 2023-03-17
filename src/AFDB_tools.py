@@ -170,8 +170,7 @@ def res2fasta(unires_df):
 	
 	unires_df = unires_df.drop_duplicates(subset=['query'])
 	unires_df['query'] = unires_df['query'].map( lambda x : '>' + x + '\n')
-
-	unires_df['fasta'] = unires_df['query'] + unires_df.Sequence + '\n'
-
+	unires_df['fasta'] = unires_df['query'] + unires_df.Sequence
+	unires_df['fasta'] = unires_df['fasta'].map( lambda x : x + '\n')
 	fasta = ''.join(unires_df.fasta)
 	return fasta
