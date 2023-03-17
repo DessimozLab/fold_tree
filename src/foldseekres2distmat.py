@@ -38,5 +38,4 @@ for i,k in enumerate(matrices):
     else:
         tajima =  foldseek2tree.Tajima_dist(matrices[k] + 10 **-4 )
     np.fill_diagonal(tajima, 0)
-    
-    distmat_txt = foldseek2tree.distmat_to_txt( ids ,  , snakemake.output[len(matrices)+i] )
+    distmat_txt = foldseek2tree.distmat_to_txt( ids , tajima , snakemake.output[len(matrices)+i] )
