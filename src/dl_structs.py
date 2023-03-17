@@ -35,7 +35,8 @@ plddt = { i:AFDB_tools.filter_plddt( found[i] , thresh= 60 , minthresh = 50 ) fo
 for i in list(found.keys()):
 	if i not in ids or plddt[i] is False:
 		#move to rejected folder
-		shutil.move(found[i], rejectedfolder)
+		if not os.path.isfile(rejectedfolder + i + '.pdb'):
+			shutil.move(found[i], rejectedfolder)
 		missing_structs.add(i)
 		del found[i]
 
