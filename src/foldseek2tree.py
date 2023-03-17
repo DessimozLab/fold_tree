@@ -168,7 +168,7 @@ def distmat_to_txt( identifiers , distmat, outfile):
         handle.close()
     return outfile
    
-def postprocess(t, outree, delta=0.0001 ):
+def postprocess(t, outree, delta=0 ):
     '''
     postprocess a tree to make sure all branch lengths are positive
     
@@ -180,9 +180,9 @@ def postprocess(t, outree, delta=0.0001 ):
         small number to replace negative branch lengths with'''
     #make negative branch lengths a small delta instead
     with open(t) as treein:
-        treestr = ' '.join( [ i.strip() for i in treein.readlines() ] )
+        treestr = ' '.join( [ i for i in treein ] )
 
-    tre = toytree.tree(treestr, tree_format=0 )
+    tre = toytree.tree(treestr)
 
     for n in tre.treenode.traverse():
         if n.dist< 0:

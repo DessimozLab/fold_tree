@@ -39,7 +39,6 @@ for i in list(found.keys()):
 			shutil.move(found[i], rejectedfolder)
 		else:
 			os.remove(found[i])
-
 		missing_structs.add(i)
 		del found[i]
 
