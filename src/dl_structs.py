@@ -25,7 +25,7 @@ seqdf = pd.read_csv(snakemake.input[0])
 ids = list(seqdf['query'].unique())
 
 missing = [	AFDB_tools.grab_struct(i, structfolder, rejectedfolder) for i in ids ]
-found = glob.glob(structfolder+'*.pdb')
+found = glob.glob(structfolder+'*.pdb') + glob.glob(rejectedfolder+'*.pdb')
 found = { i.split('/')[-1].replace('.pdb',''):i for i in found}
 missing_structs = set(ids)-set(found.keys())
 
@@ -37,6 +37,9 @@ for i in list(found.keys()):
 		#move to rejected folder
 		if not os.path.isfile(rejectedfolder + i + '.pdb'):
 			shutil.move(found[i], rejectedfolder)
+		else:
+			os.remove(found[i])
+
 		missing_structs.add(i)
 		del found[i]
 
