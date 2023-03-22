@@ -29,8 +29,8 @@ found = glob.glob(structfolder+'*.pdb') + glob.glob(rejectedfolder+'*.pdb')
 found = { i.split('/')[-1].replace('.pdb',''):i for i in found}
 missing_structs = set(ids)-set(found.keys())
 
-#get plddt from afdb structures and remove those with avg plddt < 0.6
-plddt = { i:AFDB_tools.filter_plddt( found[i] , thresh= 60 , minthresh = 50 ) for i in found}
+#get plddt from afdb structures and remove those with avg plddt < 0.3
+plddt = { i:AFDB_tools.filter_plddt( found[i] , thresh= 40 , minthresh = 30 ) for i in found}
 
 for i in list(found.keys()):
 	if i not in ids or plddt[i] is False:

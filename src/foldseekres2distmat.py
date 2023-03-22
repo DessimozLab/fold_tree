@@ -8,7 +8,6 @@ print(res.head())
 #get the folder of the input file
 infolder = snakemake.input[0].split('/')[:-1]
 infolder = ''.join( [i + '/' for i in infolder])+'/'
-
 res[0] = res[0].map(lambda x :x.replace('.pdb', ''))
 res[1] = res[1].map(lambda x :x.replace('.pdb', ''))
 res.columns = 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore'.split(',')
@@ -33,9 +32,6 @@ for i,k in enumerate(matrices):
     distmat_txt = foldseek2tree.distmat_to_txt( ids , matrices[k] , snakemake.output[i] )
 
 for i,k in enumerate(matrices):
-    if k == 'fident':
-        tajima =  foldseek2tree.Tajima_dist(matrices[k] + 10 **-4 ,bfactor=19/20)
-    else:
-        tajima =  foldseek2tree.Tajima_dist(matrices[k] + 10 **-4 )
+    tajima =  foldseek2tree.Tajima_dist(matrices[k] + 10 **-5 )
     np.fill_diagonal(tajima, 0)
     distmat_txt = foldseek2tree.distmat_to_txt( ids , tajima , snakemake.output[len(matrices)+i] )

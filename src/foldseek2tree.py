@@ -70,7 +70,7 @@ def runargs(args):
     p = subprocess.run( args )
     return p
     
-def runFoldseekdb(folder , outfolder):
+def runFoldseekdb(folder , outfolder , foldseekpath = '../foldseek/bin/foldseek'):
     '''run foldseek createdb
     
     parameters
@@ -82,11 +82,11 @@ def runFoldseekdb(folder , outfolder):
     
 
     '''
-    args = 'foldseek createdb '+  folder + ' '+ outfolder+'structblobDB '
+    args = foldseekpath + ' createdb '+  folder + ' '+ outfolder+'structblobDB '
     p = runargs(args)
     return outfolder+'structblobDB '
 
-def runFoldseek_allvall(dbpath , outfolder , maxseqs = 3000):
+def runFoldseek_allvall( structfolder , outfolder , foldseekpath = '../foldseek/bin/foldseek' , maxseqs = 3000):
     '''
     run foldseek search and createtsv
     
@@ -101,10 +101,8 @@ def runFoldseek_allvall(dbpath , outfolder , maxseqs = 3000):
 
     '''
     
-    args = 'foldseek search '+  dbpath +' '  + dbpath + ' ' + outfolder+'aln tmp -a --max-seqs '+str(maxseqs)
-    p = runargs(args)
-    args = 'foldseek createtsv '+  dbpath +' '  + dbpath  + ' ' + outfolder+'aln '  + outfolder +'aln_score.tsv'
-    p = runargs(args)
+    foldseekpath + " easy-search " + structfolder + " "+ structfolder +" "+ outfolder+"/allvall.csv " +  structfolder+"/tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --exhaustive-search --alignment-type 2" 
+
     return outfolder +'aln_score.tsv'
 
 def runFoldseek_allvall_EZsearch(infolder , outpath , foldseekpath = '../foldseek/bin/foldseek'):

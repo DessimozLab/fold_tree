@@ -18,6 +18,10 @@ testdata/**
 foldseek/bin/foldseek
 foldseek/README.md
 CATH_data/**
+CAT_data/**
+CATH_data/**
+SCOP_data/**
+!SCOP_data/pdb_chain_scop_uniprot.csv
 !CATH_data/cath-domain-list.txt
 !CATH_data/pdb_chain_cath_uniprot.csv
 !CATH_data/cath-domain-list.txt
