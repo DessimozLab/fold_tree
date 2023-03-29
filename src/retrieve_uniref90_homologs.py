@@ -1,3 +1,143 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# # Overview
+# Given a PDB file, performe a remote search against the AFDB50 using FoldSeek
+
+# # Load libraries
+from requests import get, post
+import argparse, wget
+import sys, time, glob, pandas as pd, tqdm, os
+
+
+# initilize argument parser
+parser = argparse.ArgumentParser(prog = "retrieve_uniref90_homologs", description = '''
+Retrieve candidate homolog sequences from UniRef90 for a group of query structural models. 
+\n
+Briefly, a remote FoldSeek search against a clustered database of AlphaFold structural models corresponding to UniProtKB sequences is performed. Hits are filtered according to user-specified criteria, determining a set of candidate homologous structures. Structural models for sequences belonging to the same UniRef90 cluster of this candidates are retrieved.''')
+
+# set arguments
+io_arguments = parser.add_argument_group("I/O options")
+io_arguments.add_argument("-s", "--seed-structures", type = str, help = 'Input folder allocating structural models employed in homologues search. Files must be in PDB format, with a .pdb extension.', metavar = '<folder>')
+# creating an auxiliary function
+def default_output_folder(args):
+	return f"{args.seed_structures}/output"
+# getting on with argument parsing
+io_arguments.add_argument("-o", "--output-folder", type = str, default = None, help = 'Output folder where results are saved. [Default: <seed_structures>/output].', metavar = '<folder>')
+foldseek_filter_arguments = parser.add_argument_group("Filtering options")
+foldseek_filter_arguments.add_argument("-prob", "--prob-threshold", type = float, default = 0.9, help = 'Minimum probabily score for a FoldSeek hit to be considered as a candidate homologous structure. [Default: 0.9].', metavar = '<float>')
+foldseek_filter_arguments.add_argument("-qcov", "--query-cov-threshold", type = float, default = 70, help = 'Minimum percentage of the query structure (i.e. seed structure) that must be covered by a FoldSeek alignment to consider the hit as a candidate homologous structure. [Default: 70].', metavar = '<float>')
+foldseek_filter_arguments.add_argument("-scov", "--subject-cov-threshold", type = float, default = 0, help = 'Minimum percentage of the subject structure (i.e. candidate homolog) that must be covered by a FoldSeek alignment to consider the hit as a candidate homologous structure. [Default: 0].', metavar = '<float>')
+foldseek_filter_arguments.add_argument("-eval", "--evalue-threshold", type = float, default = 1e-05 , help = 'Maximum e-value for a FoldSeek hit to be considered as a candidate homologous structure. [Default: 1e-05].', metavar = '<float>')
+foldseek_filter_arguments.add_argument("-len_std", "--length-std-filtering", type = float, default = 1 , help = 'Number of length standard deviations to consider around the mean when filtering UniRef90 clusters by sequence length. [Default: 1].', metavar = '<float>')
+# parser arguments
+args = parser.parse_args()
+
+if args.output_folder is None:
+	args.output_folder = default_output_folder(args)
+
+# set variables
+seed_structures_folder = args.seed_structures
+output_folder = args.output_folder
+prob_threshold = args.prob_threshold
+qcov_threshold = args.query_cov_threshold
+scov_threshold = args.subject_cov_threshold
+evalue_threshold = args.evalue_threshold
+std_threshold = args.length_std_filtering
+
+# # Define auxiliary functions
+def foldseek_search(pdb_path, output_file):
+    try:
+        # load PDB
+        time.sleep(1)
+        if not os.path.exists(output_file):
+            with open(pdb_path, 'r') as file:
+                data = file.read()
+            # starting search
+            ticket = post('https://search.foldseek.com/api/ticket', {
+                            'q' : data,
+                            'database[]' : ['afdb50', 'afdb-swissprot', 'pdb100', 'afdb-proteome', 'mgnify_esm30', 'gmgcl_id'],
+                            'mode' : '3diaa',
+                        }).json()
+            # collecting results
+            repeat = True
+            while repeat:
+                status = get('https://search.foldseek.com/api/ticket/' + ticket['id']).json()
+                if status['status'] == "ERROR":
+                    # handle error
+                    sys.exit(0)
+            
+                # wait a short time between poll requests
+                time.sleep(1)
+                repeat = status['status'] != "COMPLETE"
+            # get all hits for the first query (0)
+            result = get('https://search.foldseek.com/api/result/' + ticket['id'] + '/0').json()
+            # iterating over results
+            foldseek_results_rows = []
+            # voy por base de datos
+            for results_dbs in result['results']:
+                # recorro los alineamientos
+                for alignment in results_dbs['alignments']:
+                    # agrego la fila
+                    foldseek_results_rows.append(pd.DataFrame.from_dict({'pdb_file': [pdb_path],
+                                                                         'db': [results_dbs['db']], 
+                                                                         'query': [alignment.get('query', '-')],
+                                                                         'target': [alignment.get('target', '-')],
+                                                                         'seqId': [alignment.get('seqId', '-')],
+                                                                         'alnLength': [alignment.get('alnLength', '-')],
+                                                                         'missmatches': [alignment.get('missmatches', '-')],
+                                                                         'gapsopened': [alignment.get('gapsopened', '-')],
+                                                                         'qStartPos': [alignment.get('qStartPos', '-')],
+                                                                         'qEndPos': [alignment.get('qEndPos', '-')],
+                                                                         'dbStartPos': [alignment.get('dbStartPos', '-')],
+                                                                         'dbEndPos': [alignment.get('dbEndPos', '-')],
+                                                                         'prob': [alignment.get('prob', '-')],
+                                                                         'eval': [alignment.get('eval', '-')],
+                                                                         'score': [alignment.get('score', '-')],
+                                                                         'qLen': [alignment.get('qLen', '-')],
+                                                                         'dbLen': [alignment.get('dbLen', '-')],
+                                                                         'qAln': [alignment.get('qAln', '-')],
+                                                                         'dbAln': [alignment.get('dbAln', '-')],
+                                                                         'tCa': [alignment.get('tCa', '-')],
+                                                                         'tSeq': [alignment.get('tSeq', '-')],
+                                                                         'taxId': [alignment.get('taxId', '-')],
+                                                                         'taxName': [alignment.get('taxName', '-')]}))
+            # return result
+            return pd.concat(foldseek_results_rows)
+        else:
+            pass
+    except Exception as e:
+        print(e)
+
+def create_dir(dir):
+    if not os.path.exists(dir):
+        os.mkdir(dir)
+
+# get the seed PDBs
+seed_pdbs = glob.glob(f"{seed_structures_folder}/*.pdb") # using the input folder
+# create the ouput folder
+create_dir(output_folder)
+
+# # Perform remote search on seed structures
+print('                                  ')
+print('##################################')
+print('Starting remote FoldSeek searches.')
+print('##################################')
+print('                                  ')
+
+for input_pdb in tqdm.tqdm(seed_pdbs): 
+    # get the PDB ID
+    pdb_id = input_pdb.rpartition('/')[2].rpartition('.')[0]
+    # create directories to allocate results
+    create_dir('{0}/foldseek_searches'.format(output_folder))
+    # get the output name
+    output_file = '{0}/foldseek_searches/foldseek_search_{1}.tsv'.format(output_folder, pdb_id) 
+    # perform search
+    if not os.path.exists(output_file):
+        result_table = foldseek_search(pdb_path = input_pdb, output_file = output_file) 
+        # save TSV file
+        result_table.to_csv(output_file, sep = '\t', index = False)
+
 # importing libraries
 import json, pandas as pd,re,time,zlib,requests,os
 from xml.etree import ElementTree
@@ -276,7 +416,7 @@ def get_uniprotkbid_length(ID_list):
       sys.exit()
     return r.json()
         
-def prune_group_by_length(uniprot_ids):
+def prune_group_by_length(uniprot_ids, std_filter):
     # retrieve sequences lengths by batch of 400
     try:
         if len(uniprot_ids) == 1:
@@ -296,7 +436,7 @@ def prune_group_by_length(uniprot_ids):
         group_length_std = np.std([item for key,item in dictionary_lengths_result.items()])
         # now get rid of those sequences with lengths strongly deviating from the mean
         return [key for key,item in dictionary_lengths_result.items() if 
-                    (item >= group_length_mean-group_length_std) and (item <= group_length_mean+group_length_std)]
+                    (item >= group_length_mean-(std_filter*group_length_std)) and (item <= group_length_mean+(std_filter*group_length_std))]
     except Exception as e:
         print(e)
 
@@ -306,25 +446,67 @@ def param_to_num(param):
     else:
         return float(param)
 
+def grab_struct(uniID, structfolder, rejected = None, overwrite=False):
+
+	"""
+	Downloads a protein structure file from the AlphaFold website and saves it to the specified folder.
+	
+	Parameters:
+	uniID (str): The UniProt ID of the protein for which the structure is being downloaded.
+	structfolder (str): The path to the folder where the structure file should be saved.
+	overwrite (bool, optional): A flag indicating whether to overwrite an existing file with the same name in the specified folder. Defaults to False.
+	
+	Returns:
+	None: If the file is successfully downloaded or if overwrite is set to True and a file with the same name is found in the specified folder.
+	str: If an error occurs during the download or if a file with the same name is found in the specified folder and overwrite is set to False.
+	
+	Examples:
+	>>> grab_struct('P00533', '/path/to/structures/')
+	None
+	>>> grab_struct('P00533', '/path/to/structures/', overwrite=True)
+	None
+	"""
+
+	try:
+		os.mkdir(structfolder)
+	except:
+		pass
+	print(uniID)
+	try:
+		prefix = 'https://alphafold.ebi.ac.uk/files/AF-'
+		post = '-F1-model_v4.pdb'
+		url = prefix+uniID.upper()+post
+		if not os.path.isfile(structfolder + uniID +'.pdb'):
+			if rejected is None or (rejected and not os.path.isfile(structfolder + uniID +'.pdb')):
+				wget.download(url, structfolder + uniID +'.pdb')
+	except:
+		print('structure not found', uniID)
+		return uniID
+	return None
+    
     
 # get the API into work
 POLLING_INTERVAL = 3
 API_URL = "https://rest.uniprot.org"
 
-
-retries = Retry(total=5, backoff_factor=0.25, status_forcelist=[500, 502, 503, 504])
-session = requests.Session()
-session.mount("https://", HTTPAdapter(max_retries=retries))
-
 # performing pipeline
-for foldseek_result in snakemake.input:
+# get the foldseek results
+foldseek_results = glob.glob(f'{output_folder}/foldseek_searches/*tsv') 
+# iterate...
+
+print('                                        ')
+print('########################################')
+print('Retrieving target UniRef90 clusters IDs.')
+print('########################################')
+print('                                        ')
+
+for foldseek_result in foldseek_results: # cambiar
+    # start request session
+    retries = Retry(total=5, backoff_factor=0.25, status_forcelist=[500, 502, 503, 504])
+    session = requests.Session()
+    session.mount("https://", HTTPAdapter(max_retries=retries))
     # get PDB id
     pdb_id = foldseek_result.rpartition('/')[2].rpartition('.')[0].rpartition('foldseek_search_')[2]
-    # load parameters
-    prob_threshold = param_to_num(snakemake.params.prob_threshold)
-    qcov_threshold = param_to_num(snakemake.params.qcov_threshold)
-    scov_threshold = param_to_num(snakemake.params.scov_threshold)
-    evalue_threshold = param_to_num(snakemake.params.evalue_threshold)
     # create target folder
     seed_folder = foldseek_result.rpartition('/')[0].rpartition('/')[0]
     target_dir = '{5}/{0}_prob_{1}_qcov_{2}_scov_{3}_eval_{4}_uniref90_homologs_structs/'.format(pdb_id,str(prob_threshold),str(qcov_threshold),str(scov_threshold),str(evalue_threshold), seed_folder)
@@ -368,7 +550,7 @@ for foldseek_result in snakemake.input:
     for group,member_list in tqdm.tqdm(foldseek_uniref90_members[0]['results'].items()):
         # prune the groups
         if len(member_list) > 1:
-            selected_seqs = prune_group_by_length(uniprot_ids = member_list)
+            selected_seqs = prune_group_by_length(uniprot_ids = member_list, std_filter = std_threshold)
             selected_groups.update({group: selected_seqs})
         else:
             # update the dictionary
@@ -376,18 +558,21 @@ for foldseek_result in snakemake.input:
     # filter sequences by length
     # get the whole list
     selected_pdb_ids = [pdb_id for key,item in selected_groups.items() for pdb_id in item]
-    # save ID list as identifiers.txt file
-    print('                                ')
-    print('################################')
-    print('Creating identifiers.txt file...')
-    print('################################')
-    print('                                ')
-    with open(target_dir+'/identifiers.txt', 'w') as output_file:
-        for ID in selected_pdb_ids:
-            output_file.write(ID)
-            output_file.write('\n')
+    print('                                                                            ')
+    print('############################################################################')
+    print('Downloading target PDBs (when possible).')
+    print('############################################################################')
+    print('                                                                            ')
+    for selected_pdb in tqdm.tqdm(selected_pdb_ids):
+        try:
+            # download the structure
+            grab_struct(selected_pdb, target_dir)
+        except:
+            pass
     print('     ')
     print('#####')
     print('Done!')
     print('#####')
     print('     ')
+    # close request session
+    session.close()
