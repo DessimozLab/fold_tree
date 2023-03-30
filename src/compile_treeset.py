@@ -39,7 +39,8 @@ def compile_folder(rootfolder , scorefunc = 'score_x_frac'):
                         nseqs = fstin.read().count('>')
                     pbar.set_description('processed: %d' % (1 + i))
                     pbar.update(1)
-                    
+                    print(folder, nseqs, nstructs)
+
                     if nseqs == nstructs :
                         for score in treescores:
                             with open(score) as taxin:
@@ -89,5 +90,7 @@ def compare_treesets(tree_resdf , refcols, colfilter= 'sequence' ):
                 y1=maxval)
             fig.show()
     # Create distplot of scores
-    fig = ff.create_distplot( np.array(tree_resdf[refcols]) , group_labels = refcols, show_rug=True)
+    rescols = [ 'lddt_1_raw_struct_tree' , 'fident_1_raw_struct_tree' , 'sequences' ]
+    #use figure factory to create a distplot of the treescores in tree_resdf
+    fig = ff.create_distplot([tree_resdf[col] for col in rescols ], [col for col in rescols] , bin_size = 150, show_rug = True)
     fig.show()

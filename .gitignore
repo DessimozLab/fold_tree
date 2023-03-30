@@ -17,10 +17,14 @@ testdata/**
 !examples/**/*.nwk
 foldseek/bin/foldseek
 foldseek/README.md
+OMA_data/**
 CATH_data/**
 CAT_data/**
 CATH_data/**
 SCOP_data/**
+OMA_data_unfiltered/**
+CATH_data_unfiltered/**
+CAT_data_unfiltered/**
 !SCOP_data/pdb_chain_scop_uniprot.csv
 !CATH_data/cath-domain-list.txt
 !CATH_data/pdb_chain_cath_uniprot.csv

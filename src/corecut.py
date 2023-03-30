@@ -13,10 +13,12 @@ def extract_core(resdf , outfile,  hitthresh = .8 ,minthresh = .6, corefolder = 
     corefolder: name of folder to output core structures to
     structfolder: name of folder to find structures in
     """
+    
     #read all results
     folder =''.join([ sub + '/' for sub in resdf.split('/')[:-1] ])
     print(folder)
-    resdf = pd.read_table(resdf , header = None)
+    resdf = pd.read_csv(resdf)
+    
     #map hits to each struc
     hits = {}
     #proportion of structures that need to map to a residue fo
@@ -39,11 +41,8 @@ def extract_core(resdf , outfile,  hitthresh = .8 ,minthresh = .6, corefolder = 
                     core = np.where(hitvec>=subthresh)[1]
                     hits[q]= { 'min': np.amin(core), 'max': np.amax(core)}
                     print(q , 'added')
-                
                 else:
                     print(q , 'rejected')
-
-
             pbar.set_description('processed: %d' % (1 + i))
             pbar.update(1)
     #make core struct folder
