@@ -1,7 +1,6 @@
 import AFDB_tools
 import os
 import shutil
-
 import glob
 import pandas as pd
 infolder = snakemake.input[0].split('/')[:-1]
