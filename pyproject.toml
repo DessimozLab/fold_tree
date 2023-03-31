@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+
+
+build-backend = "setuptools.build_meta"
+[project]
+name = "foldtree"
+dynamic = ["entry-points"]
+version = "0.0.1"
+authors = [
+  { name="Dave Moi", email="dmoi@unil.ch" },
+  { name="Mauricio Langlieb", email="dmoi@unil.ch" },
+  
+]
+dependencies = ["biopython",
+"requests",
+"pandas",
+"numpy",
+"wget",
+"toytree",
+
+"scipy",
+"six",
+"tables",
+"urllib3",
+"tqdm"
+]
+description = "Phylogenetic Profiling with OMA and minhashing"
+readme = "README.md"
+
+license = { file="LICENSE" }
+
+requires-python = ">=3.7"
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+[project.urls]
+"Homepage" = "https://github.com/DessimozLab/foldtree"
+"Bug Tracker" = "https://github.com/DessimozLab/foldtree/issues"
+"Docs" = "https://dessimozlab.github.io/fold_tree/"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
