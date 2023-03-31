@@ -8,7 +8,7 @@ import pandas as pd
 import re
 import os
 from scipy.stats import chi2
-
+import argparse
 
 def consensustree(treelist):
 	'''get a consensus tree from a list of tree files
@@ -121,7 +121,7 @@ def runFoldseek_allvall_EZsearch(infolder , outpath , foldseekpath = '../foldsee
 
 		'''
 	
-	args = foldseekpath + ' easy-search ' + infolder + ' ' + infolder +' '+ outpath + " tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --format-mode 3 --exhaustive-search "
+	args = foldseekpath + ' easy-search ' + infolder + ' ' + infolder +' '+ infolder + " tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --exhaustive-search "
 	p = runargs(args)
 	return outpath
 
@@ -221,11 +221,10 @@ def structblob2tree(input_folder, outfolder, overwrite = False, fastmepath = 'fa
 	'''
 	
 	#check if the foldseek output is already there
-	if os.path.exists(outfolder + 'res.m8'):
+	if os.path.exists(outfolder + 'res.m8') and overwrite == False:
 		print('found foldseek output, skipping foldseek')
 		alnres = outfolder + 'res.m8'
-
-	elif overwrite == True:
+	else:
 		alnres = runFoldseek_allvall_EZsearch(input_folder , outfolder + 'res.m8', foldseekpath = foldseekpath)
 	
 	res = pd.read_table(alnres , header = None )
@@ -244,15 +243,14 @@ def structblob2tree(input_folder, outfolder, overwrite = False, fastmepath = 'fa
 			matrices[k][pos[row['query']] , pos[row['target']]] += row[k]
 			matrices[k][pos[row['target']] , pos[row['query']]] += row[k]
 
+	trees = {}
 	for i,k in enumerate(matrices):
 		matrices[k] /= 2
 		matrices[k] = 1-matrices[k]
 		print(matrices[k], np.amax(matrices[k]), np.amin(matrices[k]) )
-		np.save( infolder + k + '_distmat.npy' , matrices[k])
-		distmat_txt = foldseek2tree.distmat_to_txt( ids , matrices[k] , snakemake.output[i] )
-
-	distmat_txt = distmat_to_txt( ids , distmat , input_folder + 'fastme_mat.txt'  )
-	out_tree = runQuicktree( distmat_txt , quicktreepath= quicktreepath )
-	out_tree = postprocess(out_tree, input_folder + 'structblob_tree.nwk' , delta = delta)
-
-	return out_tree , alnres
+		np.save( input_folder + k + '_distmat.npy' , matrices[k])
+		distmat_txt = distmat_to_txt( ids , matrices[k] , outfolder + k + '_distmat.txt' )
+		out_tree = runFastme(  fastmepath = fastmepath , clusterfile = distmat_txt )
+		out_tree = postprocess(out_tree, input_folder + 'structblob_tree.nwk' , delta = delta)
+		trees[k] = out_tree
+	return alnres, trees
