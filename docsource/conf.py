@@ -10,7 +10,10 @@ import AFDB_tools, foldseek2tree, treescore , corecut
 
 
 # List of modules to mock import when building documentation
-#autodoc_mock_imports = ['treescore' , 'foldseek2tree' , 'AFDB_tools']
+
+autodoc_mock_imports = ['scipy' , 'numpy' , 'wget' , 'statsmodels' , 'toytree', 'pandas' , 're' , 'os' , 'scipy.stats' , 'argparse' , 'subprocess' , 'shlex' , 
+'scipy.spatial.distance' , 'scipy.stats' , 'statsmodels', 'Bio' , 'requests'
+]
 
 
 # Default order for members
