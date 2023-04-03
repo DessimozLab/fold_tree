@@ -10,7 +10,7 @@ from scipy.stats import chi2
 
 
 def consensustree(treelist):
-    '''get a consensus tree from a list of tree files
+    '''Get a consensus tree from a list of tree files
     
     Parameters
     ----------
