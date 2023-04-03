@@ -11,21 +11,12 @@ from scipy.stats import chi2
 import argparse
 
 def consensustree(treelist):
-<<<<<<< HEAD
 	'''get a consensus tree from a list of tree files
 	
 	Parameters
 	----------
 	treelist : list
 		list of tree files
-=======
-    '''Get a consensus tree from a list of tree files
-    
-    Parameters
-    ----------
-    treelist : list
-        list of tree files
->>>>>>> docsource_update
 
 	'''
 	#creat a multitree object from the list of tree files
