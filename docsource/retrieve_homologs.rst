@@ -20,9 +20,9 @@ Usage
 Minimal usage of the script only requires specifying a folder with _seed_ structures for which a candidate set of homologs is desired.
 This is achieved by running the following command-line:
 
-```
+``
 ./retrieve_uniref90_homologs.py -s seeds_folder
-```
+``
 
 where, `seeds_folder` is the path to the folder containing the _seed_ structures. This must be in PDB format and ".pdb" extension.
 
@@ -31,9 +31,9 @@ The user can specify additional parameters in order to constrain the output sets
 As an example, one might want to consider only hits showing at least 70% of both query and target structures during the remote Foldseek structural alignment phase, in order to avoid including spurious hits due to usage of similar domains in non-related structures. Also, in order to further ensure avoiding false positives, a maximum _e-value_ of 1e^{-15} might be specified.
 This set of conditions is met by running:
 
-```
+``
 ./retrieve_uniref90_homologs.py -s seeds_folder -qcov 70 -scov 70 -eval 1e-15 -o ouput_folder
-```
+``
 
 Note that the previous line specifies results should be saved in the specified `output_folder`.
 
@@ -60,9 +60,9 @@ Output
 
 For each _seed_ structure provided by the user, an output folder with the candidate set of structural homologs (in PDB format) is provided in an output folder named following the pattern:
 
-```
+``
 <seed_name>_prob_<prob>_qcov_<qcov>_scov_<scov>_eval_<eval>_uniref90_homologs_structs
-```
+``
 
 Where `seed_name` refers to the prefix in the name of each seed's PDB file, and `prob`, `qcov`, `scov` and `eval` refer to the parameters employed when running the script.
 This output folders are by default generated inside a directory named `output` inside the `seed_structures` path. The user can specify alternative output folders by using the `-o` flag when running (see Usage above)
