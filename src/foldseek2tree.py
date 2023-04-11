@@ -121,7 +121,7 @@ def runFoldseek_allvall_EZsearch(infolder , outpath , foldseekpath = '../foldsee
 
 		'''
 	
-	args = foldseekpath + ' easy-search ' + infolder + ' ' + infolder +' '+ infolder + " tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --exhaustive-search "
+	args = foldseekpath + ' easy-search ' + infolder + ' ' + infolder +' '+ outpath + " tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --exhaustive-search "
 	p = runargs(args)
 	return outpath
 
@@ -248,9 +248,9 @@ def structblob2tree(input_folder, outfolder, overwrite = False, fastmepath = 'fa
 		matrices[k] /= 2
 		matrices[k] = 1-matrices[k]
 		print(matrices[k], np.amax(matrices[k]), np.amin(matrices[k]) )
-		np.save( input_folder + k + '_distmat.npy' , matrices[k])
+		np.save( outfolder + k + '_distmat.npy' , matrices[k])
 		distmat_txt = distmat_to_txt( ids , matrices[k] , outfolder + k + '_distmat.txt' )
 		out_tree = runFastme(  fastmepath = fastmepath , clusterfile = distmat_txt )
-		out_tree = postprocess(out_tree, input_folder + 'structblob_tree.nwk' , delta = delta)
+		out_tree = postprocess(out_tree, outfolder + 'structblob_tree.nwk' , delta = delta)
 		trees[k] = out_tree
 	return alnres, trees
