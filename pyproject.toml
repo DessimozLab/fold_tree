@@ -22,7 +22,9 @@ dependencies = ["biopython",
 "Bio",
 "scipy",
 "tqdm",
-
+"leiden-clustering",
+"networkx",
+"nglview"
 ]
 description = "Phylogenetic Profiling with OMA and minhashing"
 readme = "README.md"
