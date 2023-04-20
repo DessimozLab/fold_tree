@@ -60,7 +60,7 @@ def compile_folder(rootfolder , scorefunc = 'score_x_frac'):
         resdf['family'] = resdf.index.map( lambda x :  x.split('/')[-2])
         return resdf, refclols
 
-def compare_treesets(tree_resdf , colfilter= 'sequence' ):
+def compare_treesets(tree_resdf , colfilter= 'sequence' , display_lineplot = False , display_distplot = True):
 
     '''
     this function compares the treescores for all the trees in a folder
@@ -72,24 +72,28 @@ def compare_treesets(tree_resdf , colfilter= 'sequence' ):
     returns:
         None
     '''
+
+    rescols = [ 'lddt_1_raw_struct_tree' , 'fident_1_raw_struct_tree', 'alntmscore_1_raw_struct_tree',   'sequences' ]
+    refcols = [ 'lddt_1_raw_struct_tree' , 'fident_1_raw_struct_tree', 'alntmscore_1_raw_struct_tree','lddt_0_raw_struct_tree' , 'fident_0_raw_struct_tree', 'alntmscore_0_raw_struct_tree', 'sequences' ]
+
     for c1,c2 in combinations(refcols,2):
-        
         if colfilter in c1 or colfilter in c2:
             print(c1,c2)
             print('delta:', tree_resdf[c1+'_'+c2+'_delta'].dropna().sum(),
                 'delta norm:',   tree_resdf[c1+'_'+c2+'_delta_norm'].dropna().sum(),wilcoxon(tree_resdf[c1+'_'+c2+'_delta'].dropna()))
             sub = tree_resdf.dropna(subset = [c1+'_'+c2+'_delta'])
             maxval = sub[[c1, c2]].max().max()
-            fig = px.scatter(sub, x=c1, y=c2 , hover_data=[c1+'_'+c2+'_delta_norm' , c1+'_'+c2+'_delta'  , 'family'])
-            fig.add_shape(type="line",
-                x0=0, 
-                y0=0, 
-                x1=maxval, 
-                y1=maxval)
-            fig.show()
+            if display_lineplot == True:
+                fig = px.scatter(sub, x=c1, y=c2 , hover_data=[c1+'_'+c2+'_delta_norm' , c1+'_'+c2+'_delta'  , 'family'])
+                fig.add_shape(type="line",
+                    x0=0, 
+                    y0=0, 
+                    x1=maxval, 
+                    y1=maxval)
+                fig.show()
     # Create distplot of scores
-    rescols = [ 'lddt_1_raw_struct_tree' , 'fident_1_raw_struct_tree' , 'sequences' ]
     #use figure factory to create a distplot of the treescores in tree_resdf
     clean = tree_resdf.dropna()
-    fig = ff.create_distplot([ clean[col] for col in rescols ], [col for col in rescols] , bin_size = 150, show_rug = True)
-    fig.show()
+    if display_distplot == True:
+        fig = ff.create_distplot([ clean[col] for col in rescols ], [col for col in rescols] , bin_size = 150, show_rug = True)
+        fig.show()
