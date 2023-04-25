@@ -16,13 +16,15 @@ exp = ['raw', 'exp']
 foldseekpath = rootdir + 'foldseek/foldseek '
 print(folders[0:100] , '...')
 
+
+configfile: rootdir+ "workflow/config/config_vars.yaml"
+
+
+
 # remote homologues search parameters
 seed_folders = glob_wildcards("{seed_folders}/seed_structures/").seed_folders
 seed_structures = glob_wildcards("{seed_folders}/seed_structures/{seed_structures}.pdb").seed_structures
-prob_threshold = "0.9"
-qcov_threshold = "70"
-scov_threshold = "0"
-evalue_threshold = "1e-05"
+
 
 rule all:
 	input:
@@ -30,11 +32,9 @@ rule all:
 		expand( "{folder}/RFdistances_{exp}_.json" , folder = folders , exp = exp) ,
 		expand( "{folder}/{mattype}_{alntype}_{exp}_treescores_struct_tree.json" , folder = folders , mattype = mattypes , alntype = alntypes , exp=exp ),
 		expand( "{folder}/treescores_sequences.json" , folder = folders ) ,
-		expand(  "{folder}/consensus_struct_{exp}_.nwk" , folder = folders, exp = exp ) , 
-		expand( "{folder}/consensus_treescores_struct_tree_{exp}_.json" , folder = folders , exp = exp ),
 		expand("{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk.rooted", folder = folders, mattype = mattypes, alntype = alntypes, exp = exp),
 		expand("{seed_folder}/foldseek_searches/foldseek_search_{seed}.tsv", seed = seed_structures, seed_folder = seed_folders),
-        expand("{seed_folder}/{seed}_prob_{prob}_qcov_{qcov}_scov_{scov}_eval_{eval}_uniref90_homologs_structs/identifiers.txt", seed = seed_structures, seed_folder = seed_folders, prob = prob_threshold, qcov = qcov_threshold, scov = {scov_threshold}, eval = {evalue_threshold})
+        expand("{seed_folder}/{seed}_prob_{prob}_qcov_{qcov}_scov_{scov}_eval_{eval}_uniref90_homologs_structs/identifiers.txt", seed = seed_structures, seed_folder = seed_folders, prob = config['prob_threshold'], qcov = config['qcov_threshold'], scov = config['scov_threshold'], eval = config['evalue_threshold'])
 
 rule calc_RF:
 	conda:
@@ -47,45 +47,12 @@ rule calc_RF:
 		"{folder}/alntmscore_1_{exp}_struct_tree.PP.nwk.rooted" , 
 		"{folder}/lddt_1_{exp}_struct_tree.PP.nwk.rooted" ,
 		"{folder}/sequences.aln.fst.nwk.rooted",
-		"{folder}/consensus_struct_{exp}_.nwk.rooted"
 	output:
 		"{folder}/RFdistances_{exp}_.json" 
 	log:
 	    "{folder}/logs/RFdist_{exp}_.log" 
 	script:
 		"../src/calcRF.py"
-
-
-rule calc_tax_score_consensus:
-	conda:
-		"config/snake_tree.yaml"
-	input:
-		"{folder}/sequence_dataset.csv",
-		"{folder}/consensus_struct_{exp}_.nwk"
-	output:
-		"{folder}/consensus_treescores_struct_tree_{exp}_.json"
-	log:
-	    "{folder}/logs/consensus_struct_tree_scoring_{exp}_.log"
-	script:
-		"../src/calctreescores.py"
-		
-rule calc_consensus:
-	conda:
-		"config/snake_tree.yaml"
-	input:
-		"{folder}/fident_0_{exp}_struct_tree.PP.nwk.rooted" , 
-		"{folder}/alntmscore_0_{exp}_struct_tree.PP.nwk.rooted" , 
-		"{folder}/lddt_0_{exp}_struct_tree.PP.nwk.rooted" , 
-		"{folder}/fident_1_{exp}_struct_tree.PP.nwk.rooted" , 
-		"{folder}/alntmscore_1_{exp}_struct_tree.PP.nwk.rooted" , 
-		"{folder}/lddt_1_{exp}_struct_tree.PP.nwk.rooted" ,
-	output:
-		"{folder}/consensus_struct_{exp}_.nwk" 
-	log:
-	    "{folder}/logs/{exp}_CT.log" 
-	script:
-		"../src/getconsensustree.py"
-
 
 rule calc_tax_score:
 	conda:
@@ -112,18 +79,6 @@ rule calc_tax_score_seq:
 	    "{folder}/logs/sequences_scoring.log"
 	script:
 		"../src/calctreescores.py"
-
-rule mad_root_consensus:
-	conda:
-		"config/snake_tree.yaml"
-	input:
-		"{folder}/consensus_struct_{exp}_.nwk" 
-	output:
-		"{folder}/consensus_struct_{exp}_.nwk.rooted"
-	log:
-	    "{folder}/logs/{exp}_consensus_madroot.log"
-	shell:
-		rootdir+'madroot/mad {wildcards.folder}/consensus_struct_{wildcards.exp}_.nwk'
 
 rule mad_root_struct:
 	conda:
@@ -161,7 +116,14 @@ rule postprocess:
 	script:
 		'../src/postprocess.py'
 
+
+
+def get_mem_mb(wildcards, attempt):
+    return attempt * 5000
+
 rule quicktree:
+	resources:
+		mem_mb=get_mem_mb
 	conda:
 		"config/snake_tree.yaml"
 	input:
@@ -174,6 +136,8 @@ rule quicktree:
 		'quicktree -i m {wildcards.folder}/{wildcards.mattype}_{wildcards.alntype}_{wildcards.exp}_fastmemat.txt > {wildcards.folder}/{wildcards.mattype}_{wildcards.alntype}_{wildcards.exp}_struct_tree.nwk '
 
 rule fasttree:
+	resources:
+		mem_mb=get_mem_mb
 	conda:
 		"config/snake_tree.yaml"
 	input:
@@ -188,6 +152,8 @@ rule fasttree:
 		"v1.20.0/bio/fasttree"
 
 rule foldseek2distmat:
+	resources:
+		mem_mb=get_mem_mb
 	conda:
 		"config/snake_tree.yaml"
 	input:
@@ -204,7 +170,9 @@ rule foldseek2distmat:
 	script:
 		"../src/foldseekres2distmat.py"
 
-rule foldseek_allvall_0:
+rule foldseek_allvall_0:	
+	resources:
+		mem_mb=get_mem_mb
 	conda:
 		"config/snake_tree.yaml"
 	input:
@@ -217,6 +185,8 @@ rule foldseek_allvall_0:
 		foldseekpath + " easy-search {wildcards.folder}/structs/ {wildcards.folder}/structs/ {wildcards.folder}/allvall_0.csv {wildcards.folder}/tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --exhaustive-search --alignment-type 0" 
 
 rule foldseek_allvall_1:
+	resources:
+		mem_mb=get_mem_mb
 	conda:
 		"config/snake_tree.yaml"
 	input:
@@ -228,7 +198,13 @@ rule foldseek_allvall_1:
 	shell:
 		foldseekpath + " easy-search {wildcards.folder}/structs/ {wildcards.folder}/structs/ {wildcards.folder}/allvall_1.csv {wildcards.folder}/tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --exhaustive-search --alignment-type 2" 
 
+
+
+
+
 rule clustalo:
+	resources:
+		mem_mb=get_mem_mb
 	conda: 
 		"config/snake_tree.yaml"
 	input:
@@ -303,7 +279,7 @@ rule retrieve_uniref90_homologs:
 		evalue_threshold = "1e-05"
 	output:
         #"{seed_folder}/{seed}_prob_{prob_threshold}_qcov_{qcov_threshold}_scov_{scov_threshold}_eval_{evalue_threshold}_uniref90_homologs_structs"
-		expand("{seed_folder}/{seed}_prob_{prob}_qcov_{qcov}_scov_{scov}_eval_{eval}_uniref90_homologs_structs/identifiers.txt", seed = seed_structures, seed_folder = seed_folders, prob = prob_threshold, qcov = qcov_threshold, scov = {scov_threshold}, eval = {evalue_threshold})
+		expand("{seed_folder}/{seed}_prob_{prob}_qcov_{qcov}_scov_{scov}_eval_{eval}_uniref90_homologs_structs/identifiers.txt", seed = seed_structures, seed_folder = seed_folders, prob = config['prob_threshold'], qcov = config['qcov_threshold'], scov = config['scov_threshold'], eval = config['evalue_threshold'])
 	log: 
         "{seed_folder}/logs/retrieving_uniref90_homologs_{seed}.log"
 		#expand("{seed_folder}/logs/retrieving_uniref90_homologs_{seed}.log", seed = seed_structures, seed_folder = seed_folders)
