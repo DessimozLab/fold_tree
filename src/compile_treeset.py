@@ -11,7 +11,7 @@ from scipy.stats import wilcoxon
 import numpy as np
 
 
-def compile_folder(rootfolder , scorefunc = 'score_x_frac'):
+def compile_folder(rootfolder , scorefunc = 'score_x_frac' , verbose = False):
 
     """
     this function compiles the treescores for all the trees in a folder
@@ -45,14 +45,16 @@ def compile_folder(rootfolder , scorefunc = 'score_x_frac'):
                                 tax_res = json.load(taxin)
                             tax_res= {s.split('/')[-1]:tax_res[s] for s in tax_res}
                             if folder not in res:
-                                res[folder] = { s:tax_res[s][scorefunc], 'nseqs':nseqs, for s in tax_res if  scorefunc  in tax_res[s]}
+                                res[folder] = { s:tax_res[s][scorefunc] for s in tax_res if  scorefunc  in tax_res[s]}
                             else:
                                 res[folder].update({ s:tax_res[s][scorefunc] for s in tax_res if scorefunc in tax_res[s]})
+                        res[folder].update({ 'nseqs':   nseqs})
     if len(res)>0:
         resdf = pd.DataFrame.from_dict(res, orient = 'index')
         resdf.columns = [ c.replace('.PP.nwk.rooted', '').replace('.aln.fst.nwk.rooted' , '' ) for c in  resdf.columns]
-        
-        refcols = resdf.columns
+        if verbose == True:
+            print(resdf.head(), resdf.shape)
+        refcols = list(resdf.columns)
         refcols.remove('nseqs')
 
         #divide the scores by the number of sequences
@@ -71,7 +73,7 @@ def compile_folder(rootfolder , scorefunc = 'score_x_frac'):
 
         return resdf, refcols
 
-def compare_treesets(tree_resdf , colfilter= 'sequence' , display_lineplot = False , display_distplot = True):
+def compare_treesets(tree_resdf , colfilter= 'sequence' , display_lineplot = False , display_distplot = True , verbose = False):
 
     '''
     this function compares the treescores for all the trees in a folder
@@ -89,9 +91,10 @@ def compare_treesets(tree_resdf , colfilter= 'sequence' , display_lineplot = Fal
 
     for c1,c2 in combinations(refcols,2):
         if colfilter in c1 or colfilter in c2:
-            print(c1,c2)
-            print('delta:', tree_resdf[c1+'_'+c2+'_delta'].dropna().sum(),
-                'delta norm:',   tree_resdf[c1+'_'+c2+'_delta_norm'].dropna().sum(),wilcoxon(tree_resdf[c1+'_'+c2+'_delta'].dropna()))
+            if verbose == True:
+                print(c1,c2)
+                print('delta:', tree_resdf[c1+'_'+c2+'_delta'].dropna().sum(),
+                    'delta norm:',   tree_resdf[c1+'_'+c2+'_delta_norm'].dropna().sum(),wilcoxon(tree_resdf[c1+'_'+c2+'_delta'].dropna()))
             sub = tree_resdf.dropna(subset = [c1+'_'+c2+'_delta'])
             maxval = sub[[c1, c2]].max().max()
             if display_lineplot == True:

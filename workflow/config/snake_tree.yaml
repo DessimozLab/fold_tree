@@ -17,14 +17,14 @@ dependencies:
   - pandas
   - scipy
   - biopython
+  - pycairo
   - numpy
   - pip:
     - tqdm
     - wget
     - numpy
     - statsmodels
-    #- toytree
-    - git+https://github.com/cactuskid/toytree.git@fixnp_bool
+    - toytree
     - toyplot
     - requests
     

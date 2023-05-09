@@ -271,20 +271,19 @@ rule foldseek_search:
 	script: 
 		"../src/foldseek_remote_search.py"
 
+"""
 rule retrieve_uniref90_homologs:
 	input:
 		#"{seed_folder}/foldseek_searches/foldseek_search_{seed}.tsv"
 		expand("{seed_folder}/foldseek_searches/foldseek_search_{seed}.tsv", seed = seed_structures, seed_folder = seed_folders)
-	params:
-		prob_threshold = "0.9",
-		qcov_threshold = "70",
-		scov_threshold = "0",
-		evalue_threshold = "1e-05"
 	output:
 		#"{seed_folder}/{seed}_prob_{prob_threshold}_qcov_{qcov_threshold}_scov_{scov_threshold}_eval_{evalue_threshold}_uniref90_homologs_structs"
-		expand("{seed_folder}/{seed}_prob_{prob}_qcov_{qcov}_scov_{scov}_eval_{eval}_uniref90_homologs_structs/identifiers.txt", seed = seed_structures, seed_folder = seed_folders, prob = config['prob_threshold'], qcov = config['qcov_threshold'], scov = config['scov_threshold'], eval = config['evalue_threshold'])
-	log: 
-		"{seed_folder}/logs/retrieving_uniref90_homologs_{seed}.log"
-		#expand("{seed_folder}/logs/retrieving_uniref90_homologs_{seed}.log", seed = seed_structures, seed_folder = seed_folders)
+		expand("{seed_folder}/{seed}_prob_{prob}_qcov_{qcov}_scov_{scov}_eval_{eval}_uniref90_homologs_structs/identifiers.txt", seed = seed_structures, 
+		seed_folder = seed_folders, prob = config['prob_threshold'], qcov = config['qcov_threshold'], scov = config['scov_threshold'], 
+		eval = config['evalue_threshold'] )
+	log:
+		{seed_folder}/logs/uniref90_homologs_{seed}_prob_{prob}_qcov_{qcov}_scov_{scov}_eval_{eval}.log"
 	script: 
 		"../src/retrieve_uniref90_homologs.py"
+
+"""
