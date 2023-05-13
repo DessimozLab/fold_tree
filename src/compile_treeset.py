@@ -29,49 +29,53 @@ def compile_folder(rootfolder , scorefunc = 'score_x_frac' , verbose = False):
     print(rootfolder)
     res = {}
     folders = set(glob.glob(rootfolder + '*/' ))-set([rootfolder+'logs/'])
-    with tqdm.tqdm(total=len(folders)) as pbar:
-        for i,folder in enumerate(folders):                
-            nstructs = len(glob.glob(folder+'structs/*.pdb'))
-            if os.path.isfile(folder+'treescores_sequences.json'):
-                treescores = glob.glob(folder + '*_treescores_struct_tree.json' ) +[folder+'treescores_sequences.json']
-                if len(treescores)>0 and os.path.isfile(folder + 'sequences.fst'):
-                    with open(folder + 'sequences.fst') as fstin:
-                        nseqs = fstin.read().count('>')
-                    pbar.set_description('processed: %d' % (1 + i))
-                    pbar.update(1)
-                    if nseqs == nstructs :
-                        for score in treescores:
-                            with open(score) as taxin:
-                                tax_res = json.load(taxin)
-                            tax_res= {s.split('/')[-1]:tax_res[s] for s in tax_res}
-                            if folder not in res:
-                                res[folder] = { s:tax_res[s][scorefunc] for s in tax_res if  scorefunc  in tax_res[s]}
-                            else:
-                                res[folder].update({ s:tax_res[s][scorefunc] for s in tax_res if scorefunc in tax_res[s]})
-                        res[folder].update({ 'nseqs':   nseqs})
-    if len(res)>0:
-        resdf = pd.DataFrame.from_dict(res, orient = 'index')
-        resdf.columns = [ c.replace('.PP.nwk.rooted', '').replace('.aln.fst.nwk.rooted' , '' ) for c in  resdf.columns]
-        if verbose == True:
-            print(resdf.head(), resdf.shape)
-        refcols = list(resdf.columns)
-        refcols.remove('nseqs')
+    print(len(folders))
+    if len(folders)>0:
+        with tqdm.tqdm(total=len(folders)) as pbar:
+            for i,folder in enumerate(folders):
+                nstructs = len(glob.glob(folder+'structs/*.pdb'))
+                if os.path.isfile(folder+'treescores_sequences.json'):
+                    treescores = glob.glob(folder + '*_treescores_struct_tree.json' ) +[folder+'treescores_sequences.json']
+                    if len(treescores)>0 and os.path.isfile(folder + 'sequences.fst'):
+                        with open(folder + 'sequences.fst') as fstin:
+                            nseqs = fstin.read().count('>')
+                        pbar.set_description('processed: %d' % (1 + i))
+                        pbar.update(1)
+                        if nseqs == nstructs :
+                            for score in treescores:
+                                with open(score) as taxin:
+                                    tax_res = json.load(taxin)
+                                tax_res= {s.split('/')[-1]:tax_res[s] for s in tax_res}
+                                if folder not in res:
+                                    res[folder] = { s:tax_res[s][scorefunc] for s in tax_res if  scorefunc  in tax_res[s]}
+                                else:
+                                    res[folder].update({ s:tax_res[s][scorefunc] for s in tax_res if scorefunc in tax_res[s]})
+                            res[folder].update({ 'nseqs':   nseqs})
+        
+        
+        if len(res)>0:
+            resdf = pd.DataFrame.from_dict(res, orient = 'index')
+            resdf.columns = [ c.replace('.PP.nwk.rooted', '').replace('.aln.fst.nwk.rooted' , '' ) for c in  resdf.columns]
+            if verbose == True:
+                print(resdf.head(), resdf.shape)
+            refcols = list(resdf.columns)
+            refcols.remove('nseqs')
 
-        #divide the scores by the number of sequences
-        for c in refcols:
-            resdf[c+'_norm'] = resdf[c] / resdf['nseqs']
+            #divide the scores by the number of sequences
+            for c in refcols:
+                resdf[c+'_norm'] = resdf[c] / resdf['nseqs']
 
 
 
-        for c1,c2 in combinations(refcols,2):
-            resdf[c1+'_'+c2+'_delta'] = resdf[c1] - resdf[c2]
-            resdf[c1+'_'+c2+'_max'] = resdf[[c1,c2]].apply( max , axis = 1)
+            for c1,c2 in combinations(refcols,2):
+                resdf[c1+'_'+c2+'_delta'] = resdf[c1] - resdf[c2]
+                resdf[c1+'_'+c2+'_max'] = resdf[[c1,c2]].apply( max , axis = 1)
 
-            resdf[c1+'_'+c2+'_delta_norm'] = resdf[c1+'_'+c2+'_delta'] / resdf[c1+'_'+c2+'_max']
-        resdf['clade'] = rootfolder.split('/')[-2]
-        resdf['family'] = resdf.index.map( lambda x :  x.split('/')[-2])
+                resdf[c1+'_'+c2+'_delta_norm'] = resdf[c1+'_'+c2+'_delta'] / resdf[c1+'_'+c2+'_max']
+            resdf['clade'] = rootfolder.split('/')[-2]
+            resdf['family'] = resdf.index.map( lambda x :  x.split('/')[-2])
 
-        return resdf, refcols
+            return resdf, refcols
 
 def compare_treesets(tree_resdf , colfilter= 'sequence' , display_lineplot = False , display_distplot = True , verbose = False):
 

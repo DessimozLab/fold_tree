@@ -32,7 +32,6 @@ def filter_plddt(pdb_path , thresh= .6 , minthresh = .5 ):
 	Parameters:
 		pdb_path (str): The path to the PDB file.'''
 	
-
 	lddt=[]
 	parser = PDBParser()
 	struc = parser.get_structure("a", pdb_path)
@@ -44,6 +43,7 @@ def filter_plddt(pdb_path , thresh= .6 , minthresh = .5 ):
 		return False
 	else:
 		return True
+
 
 def grab_struct(uniID, structfolder, rejected = None, overwrite=False):
 
@@ -82,6 +82,8 @@ def grab_struct(uniID, structfolder, rejected = None, overwrite=False):
 		print('structure not found', uniID)
 		return uniID
 	return None
+
+
 
 #lets pull in the tor pathway members with some gene names
 

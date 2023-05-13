@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 
 res = pd.read_table(snakemake.input[0], header = None)
+
+
 print(res.head())
 
 #get the folder of the input file
@@ -14,6 +16,15 @@ res.columns = 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,te
 ids = list( set(list(res['query'].unique()) + list(res['target'].unique())))
 pos = { protid : i for i,protid in enumerate(ids)}
 kernels = ['fident', 'alntmscore', 'lddt']
+
+#set kernel columns to float
+for k in kernels:
+    res[k] = res[k].astype(float)
+
+#change nan to 0
+res = res.fillna(0)
+
+
 matrices = { k:np.zeros((len(pos), len(pos))) for k in kernels }
 print(res)
 
