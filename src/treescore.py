@@ -56,8 +56,14 @@ ts = None,  save_file = False  , tiplabels = None ,  layout='c', edge_type='p' )
 
 
 
+def exp_score( v , exp = 1.5):
+	return v**exp
+
+def frac_score( v ):
+	return v+1
+
 #taxonomy overlap score
-def getTaxOverlap(node , treelen  = None):
+def getTaxOverlap(node , treelen  = None , scorefun = frac_score):
 	
 	"""
     Calculate the taxonomy overlap score for the given node in a phylogenetic tree.
@@ -104,7 +110,8 @@ def getTaxOverlap(node , treelen  = None):
 				if i == 0:
 					nset = cset
 				else:
-					nset = { k:v+1 for k,v in nset.items() if k in cset}
+					nset = { k:scorefun(v) for k,v in nset.items() if k in cset}
+				
 				lengths.append(len(cset))
 			#add the number of unique lineages
 			score = len(nset) + total

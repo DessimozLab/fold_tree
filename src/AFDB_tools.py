@@ -149,7 +149,13 @@ def grab_entries(ids, verbose = True):
 	Notes:
 	This function makes requests to the UniProt API for information about proteins with the given IDs. If a request is successful, the returned data is processed and added to a DataFrame. If a request is unsuccessful, an error message is printed to the console.
 	"""
-	name_results = pd.concat([unirequest_tab( '+OR+'.join(c) , verbose = True) for c in chunk(ids, 50 )] , ignore_index= True)
+	try:
+		name_results = pd.concat([unirequest_tab( '+OR+'.join(c) , verbose = True) for c in chunk(ids, 50 )] , ignore_index= True)
+	except:
+		print('error', ids )
+		time.sleep(10)
+		name_results = pd.concat([unirequest_tab( '+OR+'.join(c) , verbose = True) for c in chunk(ids, 50 )] , ignore_index= True)
+		
 	if verbose == True:
 		print(name_results)
 	return name_results

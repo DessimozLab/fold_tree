@@ -34,5 +34,7 @@ src/**/__pycache__/**
 testdata/**
 !testdata/identifiers.txt
 notebooks/tmp/**
-
+src/dataprep/**
+!src/dataprep/*.py
+!src/dataprep/*.sh
 

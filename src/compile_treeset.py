@@ -51,7 +51,10 @@ def compile_folder(rootfolder , scorefunc = 'score_x_frac' , verbose = False):
                                 else:
                                     res[folder].update({ s:tax_res[s][scorefunc] for s in tax_res if scorefunc in tax_res[s]})
                             res[folder].update({ 'nseqs':   nseqs})
-        
+                        else:
+                            print('nseqs != nstructs', folder)
+                            print(nseqs, nstructs)
+                            
         
         if len(res)>0:
             resdf = pd.DataFrame.from_dict(res, orient = 'index')
@@ -95,23 +98,25 @@ def compare_treesets(tree_resdf , colfilter= 'sequence' , display_lineplot = Fal
 
     for c1,c2 in combinations(refcols,2):
         if colfilter in c1 or colfilter in c2:
-            if verbose == True:
-                print(c1,c2)
-                print('delta:', tree_resdf[c1+'_'+c2+'_delta'].dropna().sum(),
-                    'delta norm:',   tree_resdf[c1+'_'+c2+'_delta_norm'].dropna().sum(),wilcoxon(tree_resdf[c1+'_'+c2+'_delta'].dropna()))
-            sub = tree_resdf.dropna(subset = [c1+'_'+c2+'_delta'])
-            maxval = sub[[c1, c2]].max().max()
-            if display_lineplot == True:
-                fig = px.scatter(sub, x=c1, y=c2 , hover_data=[c1+'_'+c2+'_delta_norm' , c1+'_'+c2+'_delta'  , 'family'])
-                fig.add_shape(type="line",
-                    x0=0, 
-                    y0=0, 
-                    x1=maxval, 
-                    y1=maxval)
-                fig.show()
-    # Create distplot of scores
-    #use figure factory to create a distplot of the treescores in tree_resdf
-    clean = tree_resdf.dropna()
-    if display_distplot == True:
-        fig = ff.create_distplot([ clean[col] for col in rescols ], [col for col in rescols] , bin_size = 150, show_rug = True)
-        fig.show()
+            try:
+                if verbose == True:
+                    print(c1,c2)
+                    print('delta:', tree_resdf[c1+'_'+c2+'_delta'].dropna().sum(),
+                        'delta norm:',   tree_resdf[c1+'_'+c2+'_delta_norm'].dropna().sum(),wilcoxon(tree_resdf[c1+'_'+c2+'_delta'].dropna()))
+            except:
+                print('error', c1,c2)
+
+            try:
+                sub = tree_resdf.dropna(subset = [c1+'_'+c2+'_delta'])
+                maxval = sub[[c1, c2]].max().max()
+                if display_lineplot == True:
+                    fig = px.scatter(sub, x=c1, y=c2 , hover_data=[c1+'_'+c2+'_delta_norm' , c1+'_'+c2+'_delta'  , 'family'])
+                    fig.add_shape(type="line",
+                        x0=0, 
+                        y0=0, 
+                        x1=maxval, 
+                        y1=maxval)
+                    fig.show()
+            except:
+                print('error', c1,c2)
+    
