@@ -21,6 +21,12 @@ for t in snakemake.input[1:]:
     #calc descriptive stats on normalized branch lens to see if trees are balanced  
     lengths = np.array([node.dist for node in tree.treenode.traverse()])
     lengths /= np.sum(lengths)
-    scores[t] = {'score': taxscore, 'stats': describe(lengths) , 'score_x_frac': redscore }
+
+    #calc the root first taxscore
+    treescore.getTaxOverlap_root(tree.treenode)
+    root_score = treescore.sum_rootscore(tree.treenode)
+
+    scores[t] = {'score': taxscore, 'stats': describe(lengths) , 'score_x_frac': redscore , 'score_x_frac': rootscore }
+
 with open(snakemake.output[0], 'w') as snakeout:
     snakeout.write( json.dumps( scores ) )

@@ -1,0 +1,20 @@
+#Plddt filetering parameters for models
+filter: True
+filter_min: 30
+filter_avg: 40
+
+
+#paths to your programs
+foldseek_path: ../../foldseek/foldseek
+fastme_path: fastme
+clustalo_path: clustalo
+fasttree_path: fasttree
+quicktree_path: quicktree
+
+
+#if you need to use the foldseek api to retrieve the structures
+
+prob_threshold : "0.9"
+qcov_threshold : "70"
+scov_threshold : "0"
+evalue_threshold : "1e-05"

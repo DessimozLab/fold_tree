@@ -135,6 +135,46 @@ def getTaxOverlap(node , treelen  = None , scorefun = frac_score):
 	return nset
 
 
+
+#taxonomy overlap score
+def getTaxOverlap_root(node , leaf_lineages = None):
+	
+	"""
+    Calculate the taxonomy overlap score from the root down for the given node in a phylogenetic tree.
+    
+	start with the total set of all clades from leaves
+	use the sets from the leaf to root approach and accumlate score as the total number 
+	of shared elements or frac of shared elements
+
+    The function adds the following features to the node object:
+    - 'root_score': the taxonomy overlap score.
+
+    Parameters:
+    node (Toytree.): The node in a phylogenetic tree.
+    
+    Returns:
+    set: The set of taxonomic labels shared by all the leaf nodes descended from the node, or `None` if
+    the node has no children with taxonomic labels.
+    """
+	if node.is_root() == True:
+		leaf_lineages = [ n.lineage for n in node.get_leaves()]
+		leaf_lineages = [ l for l in leaf_lineages if l ]
+		leaf_lineages = [ item for sublist in leaf_lineages for item in sublist ]
+		leaf_lineages = set(leaf_lineages)
+		node.add_feature( 'root_score' ,  len(node.lineage) )
+		for i,c in enumerate(node.get_children()):
+			getTaxOverlap_root(c , leaf_lineages = leaf_lineages)
+	else:
+		total = node.up.root_score + len(node.lineage)
+		node.add_feature( 'root_score' ,  total )
+		for i,c in enumerate(node.get_children()):
+			getTaxOverlap_root(c ,  leaf_lineages = leaf_lineages)
+
+
+def sum_rootscore(node):
+	return sum([n.root_score for n in node.get_leaves()])
+
+
 def make_lineages(uniprot_df):
 	return dict(zip(uniprot_df['query'] 
 		, uniprot_df['Taxonomic lineage (Ids)'].map( lambda x :  {t:1 for t in  x.split(',')} ) ))
