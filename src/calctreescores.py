@@ -26,7 +26,7 @@ for t in snakemake.input[1:]:
     treescore.getTaxOverlap_root(tree.treenode)
     root_score = treescore.sum_rootscore(tree.treenode)
 
-    scores[t] = {'score': taxscore, 'stats': describe(lengths) , 'score_x_frac': redscore , 'score_x_frac': rootscore }
+    scores[t] = {'score': taxscore, 'stats': describe(lengths) , 'score_x_frac': redscore , 'root_score': root_score }
 
 with open(snakemake.output[0], 'w') as snakeout:
     snakeout.write( json.dumps( scores ) )
