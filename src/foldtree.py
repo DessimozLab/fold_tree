@@ -1,11 +1,10 @@
-from foldseek2tree import *
-from corecut import *
+
+from . import foldseek2tree
+from . import corecut 
 import argparse
 import numpy as np
+import pandas as pd
 import os
-import sys
-
-
 
 def structblob2tree(input_folder, outfolder, overwrite = False,
              fastmepath = 'fastme', quicktreepath = 'quicktree' , 
@@ -42,15 +41,15 @@ def structblob2tree(input_folder, outfolder, overwrite = False,
         print('found foldseek output, skipping foldseek')
         alnres = outfolder + 'res.m8'
     else:
-        alnres = runFoldseek_allvall_EZsearch(input_folder , outfolder + 'res.m8', foldseekpath = foldseekpath)
+        alnres = foldseek2tree.runFoldseek_allvall_EZsearch(input_folder , outfolder + 'res.m8', foldseekpath = foldseekpath)
     
     if core == True:
-        extract_core( alnres , resdf+'.core.csv',  hitthresh = .8 ,minthresh = .6, corefolder = input_folder+'core_structs/' , structfolder = input_folder )
+        corecut.extract_core( alnres , resdf+'.core.csv',  hitthresh = .8 ,minthresh = .6, corefolder = input_folder+'core_structs/' , structfolder = input_folder )
         if os.path.exists(outfolder + 'res.m8') and overwrite == False:
             print('found foldseek core output, skipping foldseek')
             alnres = outfolder + 'core.res.m8'
         else:
-            alnres = runFoldseek_allvall_EZsearch(input_folder , outfolder + 'core.res.m8', foldseekpath = foldseekpath)
+            alnres = foldseek2tree.runFoldseek_allvall_EZsearch(input_folder , outfolder + 'core.res.m8', foldseekpath = foldseekpath)
     
     res = pd.read_table(alnres , header = None )
     res[0] = res[0].map(lambda x :x.replace('.pdb', ''))
@@ -72,6 +71,8 @@ def structblob2tree(input_folder, outfolder, overwrite = False,
     for i,k in enumerate(matrices):
         matrices[k] /= 2
         matrices[k] = 1-matrices[k]
+        matrices[k] = np.clip(matrices[k], 0, 1)
+        
         print(matrices[k], np.amax(matrices[k]), np.amin(matrices[k]) )
         if correction:
             if kernel == 'fident':
@@ -80,9 +81,9 @@ def structblob2tree(input_folder, outfolder, overwrite = False,
                 factor = 1
             matrices[k] = Tajima_dist(matrices[k], factor = factor)
         np.save( input_folder + k + '_distmat.npy' , matrices[k])
-        distmat_txt = distmat_to_txt( ids , matrices[k] , outfolder + k + '_distmat.txt' )
-        out_tree = runFastme(  fastmepath = fastmepath , clusterfile = distmat_txt )
-        out_tree = postprocess(out_tree, input_folder + 'structblob_tree.nwk' , delta = delta)
+        distmat_txt = foldseek2tree.distmat_to_txt( ids , matrices[k] , outfolder + k + '_distmat.txt' )
+        out_tree = foldseek2tree.runFastme(  fastmepath = fastmepath , clusterfile = distmat_txt )
+        out_tree = foldseek2tree.postprocess(out_tree, input_folder + 'structblob_tree.nwk' , delta = delta)
         trees[k] = out_tree
     return alnres, trees
 

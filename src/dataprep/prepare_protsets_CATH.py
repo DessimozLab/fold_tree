@@ -108,8 +108,8 @@ if __name__ == '__main__':
             #os.remove(savepath)
             #raise Exception('error')
 
-    #{'../../CAT_data/':'CAT'  ,
-    datapaths = { '../../CATH_data/' : 'superfam' ,  }
+    
+    datapaths = {'../../CAT_data/':'CAT'  }#, '../../CATH_data/' : 'superfam' ,  }
 
     #iterate over all superfamilies and create a tree for each
     for datapath,category in datapaths.items():

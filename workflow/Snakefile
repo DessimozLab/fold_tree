@@ -29,9 +29,10 @@ seed_structures = glob_wildcards("{seed_folders}/seed_structures/{seed_structure
 rule all:
 	input:
 	#get all treescore and rf distance files for all alntypes
-		expand( "{folder}/RFdistances_{exp}_.json" , folder = folders , exp = exp) ,
+		#expand( "{folder}/RFdistances_{exp}_.json" , folder = folders , exp = exp) ,
 		expand( "{folder}/{mattype}_{alntype}_{exp}_treescores_struct_tree.json" , folder = folders , mattype = mattypes , alntype = alntypes , exp=exp ),
 		expand( "{folder}/treescores_sequences.json" , folder = folders ) ,
+		expand( "{folder}/plddt.json" , folder = folders ) ,
 		expand("{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk.rooted", folder = folders, mattype = mattypes, alntype = alntypes, exp = exp),
 		expand("{seed_folder}/foldseek_searches/foldseek_search_{seed}.tsv", seed = seed_structures, seed_folder = seed_folders),
 		expand("{seed_folder}/{seed}_prob_{prob}_qcov_{qcov}_scov_{scov}_eval_{eval}_uniref90_homologs_structs/identifiers.txt", seed = seed_structures, seed_folder = seed_folders, prob = config['prob_threshold'], qcov = config['qcov_threshold'], scov = config['scov_threshold'], eval = config['evalue_threshold'])

@@ -70,7 +70,6 @@ def grab_struct(uniID, structfolder, rejected = None, overwrite=False):
 		os.mkdir(structfolder)
 	except:
 		pass
-	print(uniID)
 	try:
 		prefix = 'https://alphafold.ebi.ac.uk/files/AF-'
 		post = '-F1-model_v4.pdb'
