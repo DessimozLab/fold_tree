@@ -11,7 +11,7 @@ from scipy.stats import wilcoxon
 import numpy as np
 
 
-def compile_folder(rootfolder , scorefunc = 'score_x_frac' , verbose = False):
+def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , verbose = False):
 
     """
     this function compiles the treescores for all the trees in a folder
@@ -52,34 +52,44 @@ def compile_folder(rootfolder , scorefunc = 'score_x_frac' , verbose = False):
                                     res[folder].update({ s:tax_res[s][scorefunc] for s in tax_res if scorefunc in tax_res[s]})
                             res[folder].update({ 'nseqs':   nseqs})
                         else:
-                            print('nseqs != nstructs', folder)
-                            print(nseqs, nstructs)
+                            if verbose == True:
+                                print('nseqs != nstructs', folder)
+                                print(nseqs, nstructs)
+            return res
                             
-        
-        if len(res)>0:
-            resdf = pd.DataFrame.from_dict(res, orient = 'index')
-            resdf.columns = [ c.replace('.PP.nwk.rooted', '').replace('.aln.fst.nwk.rooted' , '' ) for c in  resdf.columns]
-            if verbose == True:
-                print(resdf.head(), resdf.shape)
-            refcols = list(resdf.columns)
-            refcols.remove('nseqs')
+def compile_folder(rootfolder , scorefunc = 'score_x_frac' , verbose = False):
+    res = compile_folder_resdict(rootfolder , scorefunc = scorefunc , verbose = verbose)
+    if len(res)>0:
+        resdf = pd.DataFrame.from_dict(res, orient = 'index')
+        resdf.columns = [ c.replace('.PP.nwk.rooted', '').replace('.aln.fst.nwk.rooted' , '' ) for c in  resdf.columns]
+        if verbose == True:
+            print(resdf.head(), resdf.shape)
+        refcols = list(resdf.columns)
+        refcols.remove('nseqs')
 
-            #divide the scores by the number of sequences
-            for c in refcols:
-                resdf[c+'_norm'] = resdf[c] / resdf['nseqs']
+        #divide the scores by the number of sequences
+        for c in refcols:
+            resdf[c+'_norm'] = resdf[c] / resdf['nseqs']
 
+        for c1,c2 in combinations(refcols,2):
+            resdf[c1+'_'+c2+'_delta'] = resdf[c1] - resdf[c2]
+            resdf[c1+'_'+c2+'_max'] = resdf[[c1,c2]].apply( max , axis = 1)
 
+            resdf[c1+'_'+c2+'_delta_norm'] = resdf[c1+'_'+c2+'_delta'] / resdf[c1+'_'+c2+'_max']
+        resdf['clade'] = rootfolder.split('/')[-2]
+        resdf['family'] = resdf.index.map( lambda x :  x.split('/')[-2])
 
-            for c1,c2 in combinations(refcols,2):
-                resdf[c1+'_'+c2+'_delta'] = resdf[c1] - resdf[c2]
-                resdf[c1+'_'+c2+'_max'] = resdf[[c1,c2]].apply( max , axis = 1)
+        return resdf, refcols
 
-                resdf[c1+'_'+c2+'_delta_norm'] = resdf[c1+'_'+c2+'_delta'] / resdf[c1+'_'+c2+'_max']
-            resdf['clade'] = rootfolder.split('/')[-2]
-            resdf['family'] = resdf.index.map( lambda x :  x.split('/')[-2])
-
-            return resdf, refcols
-
+def compile_folder_treestats(rootfolder , scorefunc = 'ultrametricity_norm' , verbose = False):
+    res = compile_folder_resdict(rootfolder , scorefunc = scorefunc , verbose = verbose)
+    if len(res)>0:
+        resdf = pd.DataFrame.from_dict(res, orient = 'index')
+        resdf.columns = [ c.replace('.PP.nwk.rooted', '').replace('.aln.fst.nwk.rooted' , '' ) for c in  resdf.columns]
+        if verbose == True:
+            print(resdf.head(), resdf.shape)
+        return resdf
+    
 def compare_treesets(tree_resdf , colfilter= 'sequence' , display_lineplot = False , display_distplot = True , verbose = False):
 
     '''

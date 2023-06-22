@@ -165,7 +165,11 @@ def getTaxOverlap_root(node , leaf_lineages = None):
 		for i,c in enumerate(node.get_children()):
 			getTaxOverlap_root(c , leaf_lineages = leaf_lineages)
 	else:
-		total = node.up.root_score + len(node.lineage)
+		if node.is_leaf() == True and node.lineage:
+			total = node.up.root_score + len(node.lineage)
+		else:
+			total = node.up.root_score
+			
 		node.add_feature( 'root_score' ,  total )
 		for i,c in enumerate(node.get_children()):
 			getTaxOverlap_root(c ,  leaf_lineages = leaf_lineages)

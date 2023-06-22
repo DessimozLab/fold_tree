@@ -25,13 +25,11 @@ for t in snakemake.input[1:]:
     #calc the root first taxscore
     treescore.getTaxOverlap_root(tree.treenode)
     root_score = treescore.sum_rootscore(tree.treenode)
-
     #measure the distances of leaves to root
     distances = np.array([ node.get_distance(tree.treenode) for node in tree.treenode.get_leaves() ])
-    
     distances_norm = distances / np.mean(distances)
 
-    scores[t] = {'score': taxscore, 'stats': describe(lengths) , 'ultrametricity':  describe(distances), 'ultrametricity_norm':  describe(distances_norm)  'score_x_frac': redscore , 'root_score': root_score }
+    scores[t] = {'score': taxscore, 'stats': describe(lengths) , 'ultrametricity':  describe(distances), 'ultrametricity_norm':  describe(distances_norm) , 'score_x_frac': redscore , 'root_score': root_score }
 
 with open(snakemake.output[0], 'w') as snakeout:
     snakeout.write( json.dumps( scores ) )
