@@ -17,7 +17,6 @@ for t in snakemake.input[1:]:
     #tree = treescore.labelwRED(tree.treenode)
     overlap = treescore.getTaxOverlap(tree.treenode)
     taxscore = tree.treenode.score
-    redscore = tree.treenode.score_x_frac
     #calc descriptive stats on normalized branch lens to see if trees are balanced  
     lengths = np.array([node.dist for node in tree.treenode.traverse()])
     lengths /= np.sum(lengths)
@@ -28,8 +27,9 @@ for t in snakemake.input[1:]:
     #measure the distances of leaves to root
     distances = np.array([ node.get_distance(tree.treenode) for node in tree.treenode.get_leaves() ])
     distances_norm = distances / np.mean(distances)
+    scores[t] = {'score': taxscore, 'stats': describe(lengths) , 'ultrametricity':  describe(distances), 
+                 'ultrametricity_norm':  describe(distances_norm) , 'root_score': root_score }
 
-    scores[t] = {'score': taxscore, 'stats': describe(lengths) , 'ultrametricity':  describe(distances), 'ultrametricity_norm':  describe(distances_norm) , 'score_x_frac': redscore , 'root_score': root_score }
 
 with open(snakemake.output[0], 'w') as snakeout:
     snakeout.write( json.dumps( scores ) )

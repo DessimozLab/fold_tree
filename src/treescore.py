@@ -103,23 +103,19 @@ def getTaxOverlap(node , treelen  = None , scorefun = frac_score):
 		for i,c in enumerate(node.get_children()):
 			sets.append( getTaxOverlap(c))
 			total += c.score
-			fractotal += c.score_x_frac
 		sets = [s for s in sets if s]
 		if len(sets)> 0:
 			for i,cset in enumerate(sets):
 				if i == 0:
 					nset = cset
 				else:
-					nset = { k:scorefun(v) for k,v in nset.items() if k in cset}
-				
+					nset = cset.intersection(nset)
 				lengths.append(len(cset))
 			#add the number of unique lineages
 			score = len(nset) + total
 			#add the number of unique lineages weighted by the fraction of the tree
-			score_x_frac = sum([ nset[i] for i in nset.keys() ]) + fractotal
-
+			
 			node.add_feature( 'score' ,  score )
-			node.add_feature( 'score_x_frac' , score_x_frac)
 			
 			#show the biggest loss in lineage length
 			node.add_feature( 'size' ,  abs( len(nset) - max(lengths) ) )
@@ -128,13 +124,10 @@ def getTaxOverlap(node , treelen  = None , scorefun = frac_score):
 			nset = None
 			node.add_feature( 'size' ,  0 )
 			node.add_feature( 'score' ,  0 )
-			node.add_feature( 'score_x_frac' ,  0 )
-
+			
 		node.add_feature( 'lineage' ,  nset )
 		#only in the case of a leaf with no label
 	return nset
-
-
 
 #taxonomy overlap score
 def getTaxOverlap_root(node , leaf_lineages = None):
@@ -161,15 +154,17 @@ def getTaxOverlap_root(node , leaf_lineages = None):
 		leaf_lineages = [ l for l in leaf_lineages if l ]
 		leaf_lineages = [ item for sublist in leaf_lineages for item in sublist ]
 		leaf_lineages = set(leaf_lineages)
-		node.add_feature( 'root_score' ,  len(node.lineage) )
+		if node.lineage:
+			node.add_feature( 'root_score' ,  len(node.lineage) )
+		else:
+			node.add_feature( 'root_score' ,  0 )
 		for i,c in enumerate(node.get_children()):
 			getTaxOverlap_root(c , leaf_lineages = leaf_lineages)
 	else:
-		if node.is_leaf() == True and node.lineage:
+		if node.lineage:
 			total = node.up.root_score + len(node.lineage)
 		else:
 			total = node.up.root_score
-			
 		node.add_feature( 'root_score' ,  total )
 		for i,c in enumerate(node.get_children()):
 			getTaxOverlap_root(c ,  leaf_lineages = leaf_lineages)
@@ -181,8 +176,7 @@ def sum_rootscore(node):
 
 def make_lineages(uniprot_df):
 	return dict(zip(uniprot_df['query'] 
-		, uniprot_df['Taxonomic lineage (Ids)'].map( lambda x :  {t:1 for t in  x.split(',')} ) ))
-
+		, uniprot_df['Taxonomic lineage (Ids)'].map( lambda x :  set( x.split(',') ) ) ) )
 
 def label_leaves( tree , leaf_lineages):
 	"""

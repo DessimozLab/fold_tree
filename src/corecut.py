@@ -46,7 +46,7 @@ def extract_core(resdf , outfile,  hitthresh = .8 ,minthresh = .6, corefolder = 
 			hitvec /= nqueries
 			core = np.where(hitvec>hitthresh)[1]
 			try:
-				hits[q]= { 'min': np.amin(core), 'max': np.amax(core)}
+				hits[q]= { 'min': np.amin(core), 'max': np.amax(core) }
 			except:
 				#be more lenient...
 				subthresh = np.amax(hitvec)
@@ -87,9 +87,12 @@ def extract_core(resdf , outfile,  hitthresh = .8 ,minthresh = .6, corefolder = 
 			#select from max to end
 			struct_core = Bio.PDB.Dice.extract( struct ,'A' , hits[q]['max']+1 , len(struct[0]['A'])  ,folder+cterfolder+q  )
 
+			hits[q]['len'] = [ len(chain) for model in struct for chain in model ][0]
 
 			pbar.set_description('processed: %d' % (1 + i))
 			pbar.update(1)
+
+
 	hitsdf = pd.DataFrame.from_dict( hits , orient='index'  )
 	hitsdf.to_csv(outfile)
 	return folder +'struct_cores.csv'

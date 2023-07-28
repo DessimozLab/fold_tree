@@ -109,7 +109,8 @@ if __name__ == '__main__':
             #raise Exception('error')
 
     
-    datapaths = {'../../CAT_data/':'CAT'  }#, '../../CATH_data/' : 'superfam' ,  }
+    #datapaths = {'../../CAT_data/':'CAT'  }
+    datapaths = { '../../CATH_data/' : 'superfam' ,  }
 
     #iterate over all superfamilies and create a tree for each
     for datapath,category in datapaths.items():
@@ -134,7 +135,7 @@ if __name__ == '__main__':
                 #output the sequence dataset to a file
                 #create a folder for the superfam if it does not exist
                 #output the uniport ids to a file
-                if len(prots)> 100:
+                if len(prots)> 10:
                     print(fam)
                     random.shuffle(prots)
                     prots = prots[:nprots]

@@ -26,6 +26,7 @@ def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , verbose = F
         refclols: list of the columns in the dataframe
 
     """
+    
     print(rootfolder)
     res = {}
     folders = set(glob.glob(rootfolder + '*/' ))-set([rootfolder+'logs/'])
@@ -102,7 +103,6 @@ def compare_treesets(tree_resdf , colfilter= 'sequence' , display_lineplot = Fal
     returns:
         None
     '''
-
     rescols = [ 'lddt_1_raw_struct_tree' , 'fident_1_raw_struct_tree', 'alntmscore_1_raw_struct_tree',   'sequences' ]
     refcols = [ 'lddt_1_raw_struct_tree' , 'fident_1_raw_struct_tree', 'alntmscore_1_raw_struct_tree','lddt_0_raw_struct_tree' , 'fident_0_raw_struct_tree', 'alntmscore_0_raw_struct_tree', 'sequences' ]
 

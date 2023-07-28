@@ -32,6 +32,7 @@ rule all:
 		#expand( "{folder}/RFdistances_{exp}_.json" , folder = folders , exp = exp) ,
 		expand( "{folder}/{mattype}_{alntype}_{exp}_treescores_struct_tree.json" , folder = folders , mattype = mattypes , alntype = alntypes , exp=exp ),
 		expand( "{folder}/treescores_sequences.json" , folder = folders ) ,
+		expand( "{folder}/treescores_sequences_iq.json" , folder = folders ) ,
 		expand( "{folder}/plddt.json" , folder = folders ) ,
 		expand("{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk.rooted", folder = folders, mattype = mattypes, alntype = alntypes, exp = exp),
 		expand("{seed_folder}/foldseek_searches/foldseek_search_{seed}.tsv", seed = seed_structures, seed_folder = seed_folders),
@@ -82,6 +83,20 @@ rule calc_tax_score_seq:
 	script:
 		"../src/calctreescores.py"
 
+rule calc_tax_score_iq:
+	conda:
+		"config/snake_tree.yaml"
+	input:
+		"{folder}/sequence_dataset.csv",
+		"{folder}/sequences.aln.fst.treefile.rooted"
+	output:
+		"{folder}/treescores_sequences_iq.json"
+	log:
+		"{folder}/logs/iq_scoring.log"
+	script:
+		"../src/calctreescores.py"
+
+
 rule mad_root_struct:
 	conda:
 		"config/snake_tree.yaml"
@@ -105,6 +120,18 @@ rule mad_root_seq:
 		"{folder}/logs/madrootseq.log"
 	shell:
 		rootdir +'madroot/mad  {wildcards.folder}/sequences.aln.fst.nwk'
+
+rule mad_root_iq:
+	conda:
+		"config/snake_tree.yaml"
+	input:
+		"{folder}/sequences.aln.fst.treefile"
+	output:
+		"{folder}/sequences.aln.fst.treefile.rooted"
+	log:
+		"{folder}/logs/madrootiq.log"
+	shell:
+		rootdir +'madroot/mad  {wildcards.folder}/sequences.aln.fst.treefile'
 
 rule postprocess:
 	conda:
@@ -152,6 +179,27 @@ rule fasttree:
 		extra="",
 	wrapper:
 		"v1.20.0/bio/fasttree"
+
+
+
+rule iqtree:
+	resources:
+		mem_mb=get_mem_mb
+	conda:
+		"config/snake_tree.yaml"
+	input:
+		alignment="{folder}/sequences.aln.fst"
+	output:
+		tree="{folder}/sequences.aln.fst.treefile"
+	log:
+		"{folder}/logs/iqtree.log"
+	params:
+		extra="",
+	shell:
+		'iqtree -s {wildcards.folder}/sequence.aln.fst  -m LG+I+G -seed 42 -nt 1 '
+
+
+
 
 rule foldseek2distmat:
 	resources:
