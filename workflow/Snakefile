@@ -196,7 +196,7 @@ rule iqtree:
 	params:
 		extra="",
 	shell:
-		'iqtree -s {wildcards.folder}/sequence.aln.fst  -m LG+I+G -seed 42 -nt 1 '
+		'iqtree -s {wildcards.folder}/sequences.aln.fst  -m LG+I+G -seed 42 -nt 1 '
 
 
 
