@@ -36,7 +36,7 @@ def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , verbose = F
             for i,folder in enumerate(folders):
                 nstructs = len(glob.glob(folder+'structs/*.pdb'))
                 if os.path.isfile(folder+'treescores_sequences.json'):
-                    treescores = glob.glob(folder + '*_treescores_struct_tree.json' ) +[folder+'treescores_sequences.json']
+                    treescores = glob.glob(folder + '*_treescores_struct_tree.json' ) +[folder+'treescores_sequences.json' , folder+'treescores_sequences_iq.json' ]
                     if len(treescores)>0 and os.path.isfile(folder + 'sequences.fst'):
                         with open(folder + 'sequences.fst') as fstin:
                             nseqs = fstin.read().count('>')
@@ -44,13 +44,17 @@ def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , verbose = F
                         pbar.update(1)
                         if nseqs == nstructs :
                             for score in treescores:
-                                with open(score) as taxin:
-                                    tax_res = json.load(taxin)
-                                tax_res= {s.split('/')[-1]:tax_res[s] for s in tax_res}
-                                if folder not in res:
-                                    res[folder] = { s:tax_res[s][scorefunc] for s in tax_res if  scorefunc  in tax_res[s]}
-                                else:
-                                    res[folder].update({ s:tax_res[s][scorefunc] for s in tax_res if scorefunc in tax_res[s]})
+                                #check if score exists
+                                if os.path.isfile(score):
+
+                                    with open(score) as taxin:
+                                        tax_res = json.load(taxin)
+                                    tax_res= {s.split('/')[-1]:tax_res[s] for s in tax_res}
+                                    if folder not in res:
+                                        res[folder] = { s:tax_res[s][scorefunc] for s in tax_res if  scorefunc  in tax_res[s]}
+                                    else:
+                                        res[folder].update({ s:tax_res[s][scorefunc] for s in tax_res if scorefunc in tax_res[s]})
+
                             res[folder].update({ 'nseqs':   nseqs})
                         else:
                             if verbose == True:
