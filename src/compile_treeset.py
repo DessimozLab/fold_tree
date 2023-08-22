@@ -110,6 +110,7 @@ def compare_treesets(tree_resdf , colfilter= 'sequence' , display_lineplot = Fal
     rescols = [ 'lddt_1_raw_struct_tree' , 'fident_1_raw_struct_tree', 'alntmscore_1_raw_struct_tree',   'sequences' ]
     refcols = [ 'lddt_1_raw_struct_tree' , 'fident_1_raw_struct_tree', 'alntmscore_1_raw_struct_tree','lddt_0_raw_struct_tree' , 'fident_0_raw_struct_tree', 'alntmscore_0_raw_struct_tree', 'sequences' ]
 
+
     for c1,c2 in combinations(refcols,2):
         if colfilter in c1 or colfilter in c2:
             try:

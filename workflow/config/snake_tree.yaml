@@ -9,6 +9,7 @@ dependencies:
   - snakemake>=5.15.0
   - pip
   - iqtree
+  - muscle
   - quicktree
   - python=3.10
   - fasttree=2.1.11
