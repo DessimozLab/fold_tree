@@ -1,3 +1,6 @@
+
+![logo](foldtree_logo.png)
+
 # Snakemake workflow: `snake_tree`
 [![Snakemake](https://img.shields.io/badge/snakemake-≥6.3.0-brightgreen.svg)](https://snakemake.github.io)
 

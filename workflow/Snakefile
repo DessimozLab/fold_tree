@@ -42,7 +42,8 @@ rule all:
 
 rule calc_RF:
 	conda:
-		"config/snake_tree.yaml"
+		#"config/snake_tree.yaml"
+		"foldtree"
 	input:
 		"{folder}/fident_0_{exp}_struct_tree.PP.nwk.rooted" , 
 		"{folder}/alntmscore_0_{exp}_struct_tree.PP.nwk.rooted" , 
@@ -60,7 +61,8 @@ rule calc_RF:
 
 rule calc_tax_score:
 	conda:
-		"config/snake_tree.yaml"
+		#"config/snake_tree.yaml"
+		"foldtree"
 	input:
 		"{folder}/sequence_dataset.csv",
 		"{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk.rooted"
@@ -73,7 +75,8 @@ rule calc_tax_score:
 
 rule calc_tax_score_seq:
 	conda:
-		"config/snake_tree.yaml"
+		#"config/snake_tree.yaml"
+		"foldtree"
 	input:
 		"{folder}/sequence_dataset.csv",
 		"{folder}/sequences.aln.{aligner}.fst.nwk.rooted"
@@ -86,7 +89,8 @@ rule calc_tax_score_seq:
 
 rule calc_tax_score_iq:
 	conda:
-		"config/snake_tree.yaml"
+		#"config/snake_tree.yaml"
+		"foldtree"
 	input:
 		"{folder}/sequence_dataset.csv",
 		"{folder}/sequences.aln.{aligner}.fst.treefile.rooted"
@@ -100,7 +104,8 @@ rule calc_tax_score_iq:
 
 rule mad_root_struct:
 	conda:
-		"config/snake_tree.yaml"
+		#"config/snake_tree.yaml"
+		"foldtree"
 	input:
 		"{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk"
 	output:
@@ -112,7 +117,8 @@ rule mad_root_struct:
 
 rule mad_root_seq:
 	conda:
-		"config/snake_tree.yaml"
+		#"config/snake_tree.yaml"
+		"foldtree"
 	input:
 		"{folder}/sequences.aln.{aligner}.fst.nwk"
 	output:
@@ -120,11 +126,12 @@ rule mad_root_seq:
 	log:
 		"{folder}/logs/madrootseq.{aligner}.log"
 	shell:
-		rootdir +'madroot/mad  {wildcards.folder}/sequences.aln.{aligner}.fst.nwk'
+		rootdir +'madroot/mad  {wildcards.folder}/sequences.aln.{wildcards.aligner}.fst.nwk'
 
 rule mad_root_iq:
 	conda:
-		"config/snake_tree.yaml"
+		#"config/snake_tree.yaml"
+		"foldtree"
 	input:
 		"{folder}/sequences.aln.{aligner}.fst.treefile"
 	output:
@@ -132,11 +139,12 @@ rule mad_root_iq:
 	log:
 		"{folder}/logs/madrootiq.{aligner}.log"
 	shell:
-		rootdir +'madroot/mad  {wildcards.folder}/sequences.aln.{aligner}.fst.treefile'
+		rootdir +'madroot/mad  {wildcards.folder}/sequences.aln.{wildcards.aligner}.fst.treefile'
 
 rule postprocess:
 	conda:
-		"config/snake_tree.yaml"
+		#"config/snake_tree.yaml"
+		"foldtree"
 	input:
 		"{folder}/{mattype}_{alntype}_{exp}_struct_tree.nwk"
 	output:
@@ -153,7 +161,8 @@ rule quicktree:
 	resources:
 		mem_mb=get_mem_mb
 	conda:
-		"config/snake_tree.yaml"
+		#"config/snake_tree.yaml"
+		"foldtree"
 	input:
 		"{folder}/{mattype}_{alntype}_{exp}_fastmemat.txt"
 	output:
@@ -167,7 +176,8 @@ rule fasttree:
 	resources:
 		mem_mb=get_mem_mb
 	conda:
-		"config/snake_tree.yaml"
+		#"config/snake_tree.yaml"
+		"foldtree"
 	input:
 		alignment="{folder}/sequences.aln.{aligner}.fst"
 	output:
@@ -183,7 +193,8 @@ rule iqtree:
 	resources:
 		mem_mb=get_mem_mb
 	conda:
-		"config/snake_tree.yaml"
+		#"config/snake_tree.yaml"
+		"foldtree"
 	input:
 		alignment="{folder}/sequences.aln.{aligner}.fst"
 	output:
@@ -193,14 +204,15 @@ rule iqtree:
 	params:
 		extra="",
 	shell:
-		'iqtree -s {wildcards.folder}/sequences.aln.{aligner}.fst  -m LG+I+G -seed 42 -nt 1 '
+		'iqtree -s {wildcards.folder}/sequences.aln.{wildcards.aligner}.fst  -m LG+I+G -seed 42 -nt 1 '
 
 
 rule foldseek2distmat:
 	resources:
 		mem_mb=get_mem_mb
 	conda:
-		"config/snake_tree.yaml"
+		#"config/snake_tree.yaml"
+		"foldtree"
 	input:
 		"{folder}/allvall_{alntype}.csv"
 	output:
@@ -219,7 +231,8 @@ rule foldseek_allvall_0:
 	resources:
 		mem_mb=get_mem_mb
 	conda:
-		"config/snake_tree.yaml"
+		#"config/snake_tree.yaml"
+		"foldtree"
 	input:
 		"{folder}/finalset.csv"
 	output:
@@ -233,7 +246,8 @@ rule foldseek_allvall_1:
 	resources:
 		mem_mb=get_mem_mb
 	conda:
-		"config/snake_tree.yaml"
+		#"config/snake_tree.yaml"
+		"foldtree"
 	input:
 		"{folder}/finalset.csv"
 	output:
@@ -247,7 +261,8 @@ rule clustalo:
 	resources:
 		mem_mb=get_mem_mb
 	conda: 
-		"config/snake_tree.yaml"
+		#"config/snake_tree.yaml"
+		"foldtree"
 	input:
 		"{folder}/sequences.fst",
 	output:
@@ -261,23 +276,22 @@ rule clustalo:
 		"v1.20.0/bio/clustalo"
 
 rule muscle:
-    resources:
+	resources:
 		mem_mb=get_mem_mb
 	input:
-		"{folder}/sequences.fst",
-    output:
-		"{folder}/sequences.aln.muscle.fst",
-    log:
-        "logs/muscle/{sample}.log",
-    params:
-        extra="-refineiters 50",  # Additional arguments
-    threads: 1
-    wrapper:
-        "v2.3.2/bio/muscle"
+		fasta ="{folder}/sequences.fst",
+	output:
+		alignment="{folder}/sequences.aln.muscle.fst",
+	log:
+		"{folder}/logs/muscle/muscle.log",
+	threads: 1
+	wrapper:
+		"v2.3.2/bio/muscle"
 
 rule dl_ids_sequences:
 	conda: 
-		"config/snake_tree.yaml"
+		#"config/snake_tree.yaml"
+		"foldtree"
 	input:
 		ids="{folder}/identifiers.txt",
 	output:
@@ -289,7 +303,8 @@ rule dl_ids_sequences:
 
 rule plddt:
 	conda:
-		"config/snake_tree.yaml"
+		#"config/snake_tree.yaml"
+		"foldtree"
 	input:
 		"{folder}/finalset.csv",
 	output:
@@ -306,7 +321,8 @@ rule dl_ids_structs:
 		"{folder}/sequences.fst",
 		"{folder}/finalset.csv",
 	conda: 
-		"config/snake_tree.yaml",
+		#"config/snake_tree.yaml"
+		"foldtree",
 	log:
 		"{folder}/logs/dlstructs.log",
 	params:

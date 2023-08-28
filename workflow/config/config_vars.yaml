@@ -1,6 +1,6 @@
 #Plddt filetering parameters for models
 filter: True
-filter_min: 30
+filter_min: 0
 filter_avg: 40
 
 
