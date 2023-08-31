@@ -33,3 +33,6 @@ for t in snakemake.input[1:]:
 
 with open(snakemake.output[0], 'w') as snakeout:
     snakeout.write( json.dumps( scores ) )
+
+
+

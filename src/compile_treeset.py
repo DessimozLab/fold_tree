@@ -36,7 +36,7 @@ def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , verbose = F
             for i,folder in enumerate(folders):
                 nstructs = len(glob.glob(folder+'structs/*.pdb'))
                 if os.path.isfile(folder+'treescores_sequences.json'):
-                    treescores = glob.glob(folder + '*_treescores_struct_tree.json' ) +[folder+'treescores_sequences.json' , folder+'treescores_sequences_iq.json' ]
+                    treescores = glob.glob(folder + '*_treescores_struct_tree.json' ) + list(glob.glob(folder+'treescores_sequences*.json')) + list(glob.glob( folder+'treescores_sequences_iq*.json'))
                     if len(treescores)>0 and os.path.isfile(folder + 'sequences.fst'):
                         with open(folder + 'sequences.fst') as fstin:
                             nseqs = fstin.read().count('>')
@@ -90,7 +90,7 @@ def compile_folder_treestats(rootfolder , scorefunc = 'ultrametricity_norm' , ve
     res = compile_folder_resdict(rootfolder , scorefunc = scorefunc , verbose = verbose)
     if len(res)>0:
         resdf = pd.DataFrame.from_dict(res, orient = 'index')
-        resdf.columns = [ c.replace('.PP.nwk.rooted', '').replace('.aln.fst.nwk.rooted' , '' ) for c in  resdf.columns]
+        #resdf.columns = [ c.replace('.PP.nwk.rooted', '').replace('.aln.fst.nwk.rooted' , '' ) for c in  resdf.columns]
         if verbose == True:
             print(resdf.head(), resdf.shape)
         return resdf
