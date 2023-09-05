@@ -20,7 +20,7 @@ Next we need to clone the repo and execute the workflow.
 
 ```
 git clone git@github.com:DessimozLab/fold_tree.git
-cd cd fold_tree
+cd fold_tree
 ```
 
 Now create a conda environment for foldtree with all of the required software to avoid creating many environments ( and lots of files ).
@@ -57,7 +57,7 @@ snakemake --cores 4 --use-conda -s ./workflow/fold_tree --config folder=./myfam 
 
 ```
 
-The Foldtree metric, LDDT and TM trees are output alongside some information retreived fromt the uniprot API on the proteins, foldseek comparisons, distance matrices and descriptors of the pLDDT of the structures.
+The Foldtree metric (Fident), LDDT and TM trees are output alongside some information retreived fromt the uniprot API on the proteins, foldseek comparisons, distance matrices and descriptors of the pLDDT of the structures.
 
 
 ## Repo table of contents
@@ -71,7 +71,7 @@ The src folder contains python code used to interact with the Uniprot and Alphaf
 
 ## Benchmarking experiments
 
-To rerun the benchmarking experiments use the benchmarking workflow. Typically this should be done on a cluster environment since thousands of trees will be generated. We performed experiments on a slurm cluster and the slurmsimple module is included in this repo to allow snakemake to schedule jobs. Other cluster approaches to using snakemake on a cluster should also work. The benchmarking pipeline will output 4 types of trees for sequence-based analysis for each family using 2 possible aligners ( muscle5 or clustalo ) and 2 possible tree building approaches ( iqtree of fasttree). The pipeline also output 12 structural trees for each family. These either use only 3di or 3di and amino acid alignments, 3 different strutural distances ( Fident or Foldtree metric, LDDT and TM score) and with or without statistical correction. The trees are then rooted with MAD and scored using ultrametricity and taxonomic congruence metrics.
+To rerun the benchmarking experiments use the benchmarking workflow. This should be done on a cluster environment since thousands of trees will be generated. We performed experiments on a slurm cluster and the slurmsimple module is included in this repo to allow snakemake to schedule jobs. Other cluster approaches to using snakemake on a cluster should also work. The benchmarking pipeline will output 4 types of trees for sequence-based analysis for each family using 2 possible aligners ( muscle5 or clustalo ) and 2 possible tree building approaches ( iqtree of fasttree). The pipeline also output 12 structural trees for each family. These either use only 3di or 3di and amino acid alignments, 3 different strutural distances ( Fident or Foldtree metric, LDDT and TM score) and with or without statistical correction. The trees are then rooted with MAD and scored using ultrametricity and taxonomic congruence metrics.
 
 To rerun the OMA HOG experiments download the identifier data from zenodo. (###)
 
@@ -85,10 +85,7 @@ snakemake  --profile slurmsimple/simple --use-conda -s ./workflow/Benchmarking_w
 
 To rerun the CATH/CAT experiments you will need to install openMM to deal with discontinuous structures and the Pebble multiprocessing librarx. These packages can be install in the foldree environment
 
-#activate the environment
-
-
-#install openmm and pebble
+Let's activate the environment and install openmm, pdbfixer and pebble
 
 ```
 mamba activate foldtree
