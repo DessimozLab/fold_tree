@@ -62,9 +62,7 @@ if __name__ == '__main__':
 
     
     def dlchain(pdb_id , chainID , savepath , unid , verbose = False):
-        #wait a random interval between 0 and 3 seconds
-        #time.sleep(random.random()*3)
-        #try:
+
         if  os.path.isfile(savepath) == False:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
@@ -103,14 +101,9 @@ if __name__ == '__main__':
                     print("err", savepath)
                     return None
 
-        #except:
-        #    print('error', pdb_id , chainID , savepath)
-            #os.remove(savepath)
-            #raise Exception('error')
 
     
-    #datapaths = {'../../CAT_data/':'CAT'  }
-    datapaths = { '../../CATH_data/' : 'superfam' ,  }
+    datapaths = { '../../CATH_data/' : 'superfam' ,  '../../CAT_data/':'CAT'  }
 
     #iterate over all superfamilies and create a tree for each
     for datapath,category in datapaths.items():
@@ -129,11 +122,8 @@ if __name__ == '__main__':
             
             if not os.path.exists(datapath+fam+ datapath+fam+'/sequences.fst'):
                 #create a tree for each superfam
-                #sample 1000 proteins from the superfam
                 sub = siftsdf[siftsdf[category] == fam]
                 prots = list( set(sub['SP_PRIMARY'].unique()) )
-                #output the sequence dataset to a file
-                #create a folder for the superfam if it does not exist
                 #output the uniport ids to a file
                 if len(prots)> 10:
                     print(fam)
@@ -146,19 +136,12 @@ if __name__ == '__main__':
                     protdict = {p:protdict[p] for p in prots }
                     chaindict = dict(zip( sub['SP_PRIMARY'] , sub.CHAIN ))
 
-                    #sdownload the sequences
-                    #unires_df = AFDB_tools.grab_entries(prots)
-                    #unires_df = unires_df[unires_df['query'].isin(prots)]
-                    #print(unires_df.head())
 
 
                     if not os.path.exists(datapath+fam+'/structs/'):
                         os.mkdir(datapath+fam+'/structs/')
 
-                    #pool = mp.Pool(8)
-                    #pool.starmap(dlchain, [ (protdict[unid], chaindict[unid] , datapath+fam+'/structs/'+unid.upper()+'.pdb' , unid.upper() , True ) for unid in prots ]  , chunksize= 8 )
-                    #pool.close()
-                    #pool.join()
+                   
                     
                     with ProcessPool() as pool:
                         futures = [ pool.schedule( dlchain,  ( protdict[unid], chaindict[unid] , datapath+fam+'/structs/'+unid.upper()+'.pdb' , unid.upper() , False ) , timeout = 60) for unid in prots  ] 
@@ -176,23 +159,9 @@ if __name__ == '__main__':
                         pool.close()
                         pool.join()
                         
-                    #found = glob.glob(datapath+'structs/'+'*.pdb')
-                    #found = { i.split('/')[-1].replace('.pdb',''):i for i in found}
-                    #missing_structs = set(prots)-set(found.keys())
-                    #missing_sequences = set(prots)-set(unires_df['query'].unique())
-
-                    #print('missing in pdb:',missing_structs)
-                    #print( 'missing in sequences:',missing_sequences)
-                    #finalset = set(prots)-set(missing_sequences)
-                    #finalset = set(finalset)-set(missing_structs)
-                    #unires_df.to_csv(datapath+fam+'/sequence_dataset.csv')
-                    #unires_df = unires_df[unires_df['query'].isin(finalset)]
-                    #unires_df.to_csv(datapath+fam+'/finalset.csv')
-                    #fasta = AFDB_tools.res2fasta(unires_df 
+                 
                     with open(datapath+fam+'/identifiers.txt', 'w') as f:
                         f.write('\n'.join( prots ))
-                    
-                    #with open(datapath+fam+'/sequences.fst', 'w') as f:
-                    #    f.write(fasta)
+                 
 
     print('done', total)

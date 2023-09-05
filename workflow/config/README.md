@@ -1,14 +1,5 @@
-Describe how to configure the workflow (using config.yaml and maybe additional files).
-All of them need to be present with example entries inside of the config folder.
+In the config_vars.yaml file you can use the provided version of foldseek which was used for benchmarking purposes ( version: ) by setting the foldseek_path variable to provided. You can also use the latest version available on bioconda by setting this argument to 'foldseek'. 
 
-you need to install the latest version of foldseek
-the binaries on conda are out of date so its not included in the snakemake env
+The custom_structs variable should be set to False if you don't want to provide your own structures and would instead like to download them from the AFDB using uniprot identifiers. You can also change this option and other options on the command line by using snakemake's configuration flag. ( e.g. --config custom_structs=True)
 
-# static Linux AVX2 build (check using: cat /proc/cpuinfo | grep avx2)
-wget https://mmseqs.com/foldseek/foldseek-linux-avx2.tar.gz; tar xvzf foldseek-linux-avx2.tar.gz; export PATH=$(pwd)/foldseek/bin/:$PATH
-# static Linux SSE4.1 build (check using: cat /proc/cpuinfo | grep sse4_1)
-wget https://mmseqs.com/foldseek/foldseek-linux-sse41.tar.gz; tar xvzf foldseek-linux-sse41.tar.gz; export PATH=$(pwd)/foldseek/bin/:$PATH
-# static macOS build (universal binary with SSE4.1/AVX2/M1 NEON)
-wget https://mmseqs.com/foldseek/foldseek-osx-universal.tar.gz; tar xvzf foldseek-osx-universal.tar.gz; export PATH=$(pwd)/foldseek/bin/:$PATH
-
-One of these should do it. foldseek path is set in the workflow at the top. it defaults to project_dir/foldseek/bin/foldseek.
+Using the fold_tree workflow you should specify the folder using the --config flag ( e.g. --config folder=./testdata ). Using the benchmarking pipeline you should use the directory flag to run the full 12 structure trees + 4 sequence trees for each protein family ( e.g. --directory OMA_data/LUCA ). This will create jobs for all of the protein families in this folder.

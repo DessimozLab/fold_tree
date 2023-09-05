@@ -4,12 +4,21 @@ filter_min: 0
 filter_avg: 40
 
 
-#paths to your programs
-foldseek_path: ../../foldseek/foldseek
-fastme_path: fastme
-clustalo_path: clustalo
-fasttree_path: fasttree
-quicktree_path: quicktree
+#Path to the foldseek executable is set to the local folder with a precompiled version of foldseek
+#If you want to use the foldseek api, you need to provide the path to the foldseek executable
+#use 'foldseek' to use the latest one installed by conda in the pipeline
+#use 'provided' to use the one provided in the repository
+
+foldseek_path: provided
+
+
+#If set to True then use a folder of structures that is provided by the user. This will skip the structure downloading step
+#when using the fold_tree workflow. If all of your structures are in the AFDB then just use an identifier file.
+#If you have a mix of structures in the AFDB and some that are not then use the folder option.
+#Place structures in a folder called structs within the working directory.
+# e.g. myfamily/structs/
+
+customstructs: False
 
 
 #if you need to use the foldseek api to retrieve the structures

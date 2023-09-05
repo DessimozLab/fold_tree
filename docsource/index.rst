@@ -18,39 +18,90 @@ This is the documentation for foldtree, it's a combination of some utility funct
 Installation
 ------------
 
-To use foldtree, clone the git rep and install it with pip:
+To use foldtree, first install snakemake:
+https://snakemake.readthedocs.io/en/stable/getting_started/installation.html
 
-test project
+
+Now we can clone the repo and create a conda environment with the software need to run fold tree
+
+
+.. code-block:: bash
+   $git clone git@github.com:DessimozLab/fold_tree.git
+   $cd cd fold_tree
+   $mamba create -n foldtree --file= ./workflow/config/fold_tree.yaml
+   $mamba activate foldtree
+
+
+Now, we're ready to run the pipeline. For most users, using the fold_tree pipeline should be sufficient for their needs. 
+You can setup a fold_tree run by creating a folder for your output. 
+
+
+.. code-block:: bash
+   $mkdir myfam
+
+Now we can either add an identifiers.txt file containing the uniprot identifiers of all of the proteins we would like to make a tree with.
+
+.. code-block:: bash
+   $mkdir myfam
+
+
+.. code-block:: bash
+   └── myfam
+      └── identifiers.txt
+
+
+
+
+Or we can run the pipeline on our own set of structures. Please note that discontinuities or other defects in the PDBs may adversly affect results.
+Let's make our structure directory and add some PDB files to it. In this case the identifiers file is blank.
+
+.. code-block:: bash
+   └── myfam
+      ├── identifiers.txt
+      └── structs
+         ├── struct1.pdb
+         ├── struct2.pdb
+         └── struct3.pdb
+
+Now we're ready to build our trees. Let's run the pipeline.
+
+
+
+Usage
+-----
+
+To run the snakemake workflow on the test dataset try using. You can change the folder variable to the location of your data. 
+
+.. code-block:: bash
+
+   $ snakemake --cores 4 --use-conda -s ./workflow/fold_tree --config folder=./testdata filter=False customstructs=False  --use-conda 
+
+
+
+Or if you are using a slurm cluster you can use the slurm profile:
+
+.. code-block:: bash
+
+   $ snakemake --cores 4 --use-conda -s ./workflow/fold_tree --config folder=./testdata filter=False customstructs=False  --profile slurmsimple --use-conda 
+
+The fold_tree workflow will create a tree for each of the uniprot identifiers in the identifier.txt file in the input folder. 
+
+To use custom structures leave a blank identifier file and set the customstructs variable to True. 
+
+.. code-block:: bash
+
+   $ snakemake --cores 4 --use-conda -s ./workflow/fold_tree --config folder=./myfam filter=False customstructs=True  --profile slurmsimple --use-conda 
+
+
+To use the foldtree utility functions in your own work first install the repo as a python library.
+
 .. code-block:: bash
 
    $ git clone 
    $ cd foldtree
    $ pip install -e .
 
-
-Usage
------
-
-You can use the functions in the different source module to design your own workflows or use the snakemake workflow.
-
-To run the snakemake workflow on the test dataset try using 
-
-.. code-block:: bash
-
-   $ snakemake  --cores 4 --use-conda  --use-conda 
-
-Or if you are using a slurm cluster you can use the slurm profile:
-
-.. code-block:: bash
-
-   $ snakemake  --profile slurmsimple --use-conda --use-conda 
-
-
-This workflow will try to create a tree for each of the uniprot identifiers in the identifier.txt file in the test_data folder. The output will be in the test_output folder.
-You can use this workflow on your own data by creating a folder with an identifier file. The workflow will attempt to to download all the necesary data to produce a sequence and structure based tree.
-
-
-To use the foldtree utility functions, import the different modules in your code:
+Then import the libraries in your script or notebooks
 
 .. code-block:: python
 
@@ -59,9 +110,10 @@ To use the foldtree utility functions, import the different modules in your code
    from foldtree.src import treescore
 
    
-   # use the functions in the modules
+   # use the functions somehow.
+   # comments/help are provided in the code
 
-There are examples of how to use the different functions in the notebooks in the notebooks folder.
+There are also examples of how to use the different functions in the notebooks in the notebooks folder.
 
 Troubleshooting
 ---------------

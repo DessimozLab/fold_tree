@@ -39,24 +39,6 @@ def Tajima_dist( kn_ratio,bfactor=1, iter = 100 ):
 	np.fill_diagonal(taj, 0)
 	return taj
 
-def clock_test(distmats, ntriplets = 1000):
-	'''test if a distance matrix is clocklike using a xi squared test for n random triplets'''
-	#get n random triplets without replacement
-	triplets = np.random.choice(distmat.shape[0], size=(ntriplets, 3), replace=False)
-	#get the distances between the triplets
-	res = {}
-	for mattype in distmats:
-		distmat = distmats[mattype]
-
-		dists = np.array( [ sorted[distmat[i,j],distmat[i,k],distmat[j,k]] for i,j,k in triplets ] )
-		x2 = (dists[:,0] - dists[:,1])**2 / dists[:,0] + dists[:,1]
-		pvals = chi2.cdf(x2, 1)
-
-		#apply bonferroni correction
-		corrected = statsmodels.stats.multitest.multipletests(pvals, alpha=0.05, method='hs', maxiter=1, is_sorted=False, returnsorted=False)
-		res[mattype] = corrected
-
-	return res
 
 def runargs(args):
 	'''run a command line command

@@ -63,6 +63,13 @@ def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , verbose = F
             return res
                             
 def compile_folder(rootfolder , scorefunc = 'score_x_frac' , verbose = False):
+    '''
+    This function compiles the treescores for all the trees in a folder
+    it checks that the number of sequences and structures are the same
+    it also checks that the treescores are present
+    
+    '''
+
     res = compile_folder_resdict(rootfolder , scorefunc = scorefunc , verbose = verbose)
     if len(res)>0:
         resdf = pd.DataFrame.from_dict(res, orient = 'index')
