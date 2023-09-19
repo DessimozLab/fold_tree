@@ -85,7 +85,7 @@ The src folder contains python code used to interact with the Uniprot and Alphaf
 
 To rerun the benchmarking experiments use the benchmarking workflow. This should be done on a cluster environment since thousands of trees will be generated. We performed experiments on a slurm cluster and the slurmsimple module is included as a module in this repo to allow snakemake to schedule jobs. Other cluster approaches to using snakemake on a cluster should also work (snakemake provides extensive documentation on this). The benchmarking pipeline will output 4 types of trees for sequence-based analysis for each family using 2 possible aligners ( muscle5 or clustalo ) and 2 possible tree building approaches ( iqtree of fasttree). The pipeline also output 12 structural trees for each family. These either use only 3di or 3di and amino acid alignments, 3 different strutural distances ( Fident or Foldtree metric, LDDT and TM score) and with or without statistical correction. The trees are then rooted with MAD and scored using ultrametricity and taxonomic congruence metrics.
 
-To rerun the OMA HOG experiments download the identifier data from zenodo. (###)
+To rerun the OMA HOG experiments download the identifier data from zenodo. (https://doi.org/10.5281/zenodo.8346286)
 
 Then unzip the archives to create the folder structure
 
