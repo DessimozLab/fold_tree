@@ -1,13 +1,11 @@
 import foldseek2tree
 import toytree
 
-with open(snakemake.input[0]) as madrootinfile:
-    with open(  snakemake.output[0]  , 'w') as madrootoutfile:
-        infile = madrootinfile.read()
-        trees = infile.split(';\n')
-        if len( trees) > 1:
-            print('selecting first MAD-root tree')
-            madrootoutfile.write( trees[0] + ';\n')
-        else:
-            madrootoutfile.write( infile  )
+
+#load the tree
+tre = toytree.tree(snakemake.input[0])
+#output the 1st tree
+
+tre.write(snakemake.output[0], tree_format=0)
+
 print( 'postprocessing MAD-root done')
