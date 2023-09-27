@@ -1,4 +1,5 @@
-name: snake_tree
+name: fold_tree
+
 channels:
   - bioconda
   - conda-forge

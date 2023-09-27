@@ -16,7 +16,7 @@ structfolder = infolder+'structs/'
 rejectedfolder = infolder+'rejected/'
 
 
-custom_structs = snakemake.params.customstructs
+custom_structs = snakemake.params.custom_structs
 if custom_structs == True:
 	print('custom structures, skipping download of structures')
 

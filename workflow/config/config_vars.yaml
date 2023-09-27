@@ -18,7 +18,7 @@ foldseek_path: provided
 #Place structures in a folder called structs within the working directory.
 # e.g. myfamily/structs/
 
-customstructs: False
+custom_structs: False
 
 
 #if you need to use the foldseek api to retrieve the structures

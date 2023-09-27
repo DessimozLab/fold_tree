@@ -1,13 +1,14 @@
 import AFDB_tools
 
+custom_structs = snakemake.params.custom_structs
 
-custom_structs = snakemake.params.customstructs
+print('custom_structs: ', custom_structs)
 
 if custom_structs == True:
 	print('custom structures, skipping download of sequences')
 	#writes a dummy file with the structs included
 	with open(snakemake.output[0] , 'w') as outfile:
-		outfile.write(''.join(['>'+i+'\n'+i+'\n' for i in snakemake.params.structs]))
+		outfile.write('')
 
 else:
 	with open(snakemake.input[0]) as infile:

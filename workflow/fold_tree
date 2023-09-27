@@ -100,7 +100,7 @@ rule dl_ids_sequences:
 	log:
 		"{folder}/logs/dlsequences.log"
 	params:
-		customstructs=config["customstructs"]
+		custom_structs=config["custom_structs"]
 	script:
 		"../src/dl_sequences.py"
 
@@ -132,6 +132,6 @@ rule dl_ids_structs:
 		filtervar=config["filter"],
 		filtervar_min=config["filter_min"],
 		filtervar_avg=config["filter_avg"],
-		customstructs=config["customstructs"],
+		custom_structs=config["custom_structs"],
 	script:
 		"../src/dl_structs.py"
