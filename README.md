@@ -27,7 +27,7 @@ Now create a conda environment for foldtree with all of the required software to
 We can use the yaml file found in the workflow configuration. 
 
 ```
-mamba env create -n foldtree --file= ./workflow/config/fold_tree.yaml
+mamba env create -n foldtree --file=./workflow/config/fold_tree.yaml
 mamba activate foldtree
 ```
 

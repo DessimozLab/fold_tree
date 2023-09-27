@@ -20,8 +20,21 @@ rule all:
 	#get all treescore and rf distance files for all alntypes
 		#expand( "{folder}/RFdistances_{exp}_.json" , folder = folders , exp = exp) ,
 		expand( "{folder}/plddt.json" , folder = config["folder"] ) ,
-		expand("{folder}/{mattype}_struct_tree.PP.nwk.rooted", folder = config["folder"], mattype = mattypes),
+		expand("{folder}/{mattype}_struct_tree.PP.nwk.rooted.final", folder = config["folder"], mattype = mattypes),
 
+rule mad_root_post:
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/{mattype}_struct_tree.PP.nwk"
+	output:
+		"{folder}/{mattype}_struct_tree.PP.nwk.rooted.final"
+	log:
+		"{folder}/logs/{mattype}_struct_madroot_post.log"
+	script:
+		'../src/process_madroot.py'
+	
 rule mad_root_struct:
 	conda:
 		#"config/fold_tree.yaml"
