@@ -18,6 +18,8 @@ mattypes = ['foldtree', 'alntmscore', 'lddt']
 
 
 
+
+
 configfile: rootdir+ "workflow/config/config_vars.yaml"
 # remote homologues search parameters
 
