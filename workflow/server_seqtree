@@ -6,15 +6,15 @@ snake_dir = workflow.basedir
 
 rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
 print(rootdir)
-
 configfile: rootdir+ "workflow/config/config_vars.yaml"
 # remote homologues search parameters
+
 
 rule all:
 	input:
 	#get all treescore and rf distance files for all alntypes
 		#expand( "{folder}/RFdistances_{exp}_.json" , folder = folders , exp = exp) ,
-		expand("{folder}/sequences.aln.fst.nwk.rooted.final", folder = config["folder"], mattype = mattypes),
+		expand("{folder}/sequences.aln.fst.nwk.rooted.final", folder = config["folder"]),
 
 rule mad_root_post:
 	conda:
@@ -25,7 +25,7 @@ rule mad_root_post:
 	output:
 		"{folder}/sequences.aln.fst.nwk.rooted.final"
 	log:
-		"{folder}/logs/{mattype}_struct_madroot_post.log"
+		"{folder}/logs/seq_madroot_post.log"
 	script:
 		'../src/process_madroot.py'
 	
@@ -34,7 +34,7 @@ rule mad_root_struct:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/{mattype}_struct_tree.PP.nwk"
+		"{folder}/sequences.aln.fst.nwk"
 	output:
 		"{folder}/sequences.aln.fst.nwk.rooted"
 	log:
@@ -43,8 +43,6 @@ rule mad_root_struct:
 		rootdir+'madroot/mad {wildcards.folder}/sequences.aln.fst.nwk'
 
 rule fasttree:
-	resources:
-		mem_mb=get_mem_mb
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
@@ -60,8 +58,6 @@ rule fasttree:
 		"v1.20.0/bio/fasttree"
 
 rule clustalo:
-	resources:
-		mem_mb=get_mem_mb
 	conda: 
 		#"config/fold_tree.yaml"
 		"foldtree"
@@ -78,13 +74,13 @@ rule clustalo:
 		"v1.20.0/bio/clustalo"
 
 rule structs2fasta:
+	conda: 
+		#"config/fold_tree.yaml"
+		"foldtree",
 	input:
 		"{folder}/identifiers.txt",
 	output:
 		"{folder}/sequences.fst",
-	conda: 
-		#"config/fold_tree.yaml"
-		"foldtree",
 	log:
 		"{folder}/logs/dlstructs.log",
 	params:
