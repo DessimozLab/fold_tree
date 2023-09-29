@@ -1,0 +1,93 @@
+
+#once snakemake is installed use the following command to test the struct tree
+import snakemake.utils
+snakemake.utils.min_version("7.8.0")
+snake_dir = workflow.basedir
+
+rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
+print(rootdir)
+
+configfile: rootdir+ "workflow/config/config_vars.yaml"
+# remote homologues search parameters
+
+rule all:
+	input:
+	#get all treescore and rf distance files for all alntypes
+		#expand( "{folder}/RFdistances_{exp}_.json" , folder = folders , exp = exp) ,
+		expand("{folder}/sequences.aln.fst.nwk.rooted.final", folder = config["folder"], mattype = mattypes),
+
+rule mad_root_post:
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/sequences.aln.fst.nwk.rooted"
+	output:
+		"{folder}/sequences.aln.fst.nwk.rooted.final"
+	log:
+		"{folder}/logs/{mattype}_struct_madroot_post.log"
+	script:
+		'../src/process_madroot.py'
+	
+rule mad_root_struct:
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/{mattype}_struct_tree.PP.nwk"
+	output:
+		"{folder}/sequences.aln.fst.nwk.rooted"
+	log:
+		"{folder}/logs/madroot.log"
+	shell:
+		rootdir+'madroot/mad {wildcards.folder}/sequences.aln.fst.nwk'
+
+rule fasttree:
+	resources:
+		mem_mb=get_mem_mb
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		alignment="{folder}/sequences.aln.fst"
+	output:
+		tree="{folder}/sequences.aln.fst.nwk"
+	log:
+		"{folder}/logs/fasttree.log"
+	params:
+		extra="",
+	wrapper:
+		"v1.20.0/bio/fasttree"
+
+rule clustalo:
+	resources:
+		mem_mb=get_mem_mb
+	conda: 
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/sequences.fst",
+	output:
+		"{folder}/sequences.aln.fst",
+	params:
+		extra="",
+	log:
+		"{folder}/logs/clustalo.log",
+	threads: 1
+	wrapper:
+		"v1.20.0/bio/clustalo"
+
+rule structs2fasta:
+	input:
+		"{folder}/identifiers.txt",
+	output:
+		"{folder}/sequences.fst",
+	conda: 
+		#"config/fold_tree.yaml"
+		"foldtree",
+	log:
+		"{folder}/logs/dlstructs.log",
+	params:
+		custom_structs=config["custom_structs"],
+	script:
+		"../src/structs2fasta.py"
