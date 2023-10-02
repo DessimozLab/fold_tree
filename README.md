@@ -9,6 +9,12 @@ This repo contains the scripts and snakemake workflow for making and benchmarkin
 
 It's associated with the manuscript located at # (DOI #). Please cite us if you use foldtree in your work.
 
+## Try it out on Collab
+
+We have created a collab notebook which allows you to try out foldtree without installing anything. You can find it here:
+https://colab.research.google.com/github/DessimozLab/fold_tree/blob/main/notebooks/Foldtree.ipynb
+
+
 ## Running the pipeline
 
 First, install snakemake. Instructions are available here.
