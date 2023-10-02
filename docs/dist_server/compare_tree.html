@@ -5,9 +5,11 @@
 
     <meta charset="UTF-8">
 
-    <title>Phylo.io refactoring 0.0.1</title>
+    <title>Fold Tree viewer</title>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://kit.fontawesome.com/e83f86a8ac.js" crossorigin="anonymous"></script>
+
 
     <!-- CSS only -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet"  crossorigin="anonymous">
@@ -21,23 +23,32 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
 
     <!-- PHYLO.IO -->
-    <script src="/content/fold_tree/docs/dist/phylo.js"></script>
-    <script src="/content/fold_tree/docs/dist/src_utils_js.phylo.js"></script>
-    <script src="/content/fold_tree/docs/dist/src_worker_bcn_js.phylo.js"></script>
-    <script src="/content/fold_tree/docs/dist/src_worker_distance_js.phylo.js"></script>
-    <script src="/content/fold_tree/docs/dist/vendors-node_modules_biojs-io-newick_src_index_js-node_modules_minhashjs_index_js.phylo.js"></script>
-    <script src="/content/fold_tree/docs/dist/vendors-node_modules_d3_index_js-node_modules_file-saver_dist_FileSaver_min_js.phylo.js"></script>
+    <script src="/nbextensions/google.colab/phylo.js"></script>
 
-    <link href="/content/fold_tree/docs/dist/index.css" rel="stylesheet" >
+    <script src="/nbextensions/google.colab/src_utils_js.phylo.js"></script>
+    <script src="/nbextensions/google.colab/src_worker_bcn_js.phylo.js"></script>
+    <script src="/nbextensions/google.colab/src_worker_distance_js.phylo.js"></script>
+    <script src="/nbextensions/google.colab/vendors-node_modules_biojs-io-newick_src_index_js-node_modules_minhashjs_index_js.phylo.js"></script>
+    <script src="/nbextensions/google.colab/vendors-node_modules_d3_index_js-node_modules_file-saver_dist_FileSaver_min_js.phylo.js"></script>
+
+    <link href="/nbextensions/google.colab/index.css" rel="stylesheet" >
 
 </head>
 
 <script>
 
+    var datalookup = {
+        "foldseek_rooted": "foldseek_rooted_123456789",
+        "foldseek": "foldseek_123456789",
+        "lddt_rooted": "lddt_rooted_123456789",
+        "lddt": "lddt_123456789",
+        "alntmscore_rooted" : "alntmscore_rooted_123456789",
+        "alntmscore" :  "alntmscore_123456789"
+    }
+
 
     var t1 = ['foldtree_struct_tree.PP.nwk.rooted.final', 'foldseek_rooted'];
     var t2 = null;
-    var path = '123456789/'
 
     var load_data_single = function( tree, name){
 
@@ -54,20 +65,21 @@
 
         div.appendChild(c1)
 
+        left = datalookup[String(name)]
 
-        $.get(path + String(tree), function(left) {
-
-                var  phylo = PhyloIO.init()
-                var c1 = phylo.create_container(div_id + "container1")
-
-                c1.add_tree(left, {'name':name,  'use_branch_lenght': true})
-
-                phylo.settings.compareMode = false;
-
-                phylo.start()
+        console.log(datalookup, String(name))
 
 
-        });
+
+        var  phylo = PhyloIO.init()
+        var c1 = phylo.create_container(div_id + "container1")
+
+        c1.add_tree(left, {'name':name,  'use_branch_lenght': true})
+
+        phylo.settings.compareMode = false;
+
+        phylo.start()
+
 
     }
 
@@ -94,53 +106,44 @@
         div.appendChild(c2)
 
 
+        left = datalookup[String(t1[1])]
+        right = datalookup[String(t2[1])]
 
-        $.get(path + String(t1[0]), function(right) {
+        var  phylo = PhyloIO.init()
+        var c1 = phylo.create_container(div_id + "container1")
+        var c2 = phylo.create_container(div_id + "container2")
 
+        c1.add_tree(left, {'name':t1[1],  'use_branch_lenght': true})
 
-            $.get(path + String(t2[0]), function(left) {
+        c2.add_tree(right, {'name':t2[1],  'use_branch_lenght': true})
 
+        phylo.settings.compareMode = true;
+        phylo.bound_container = [c1,c2];
 
-                var  phylo = PhyloIO.init()
-                var c1 = phylo.create_container(div_id + "container1")
-                var c2 = phylo.create_container(div_id + "container2")
+        c2.models[c2.current_model].settings.mirror = true
 
-                c1.add_tree(left, {'name':t1[1],  'use_branch_lenght': true})
+        
 
-                c2.add_tree(right, {'name':t2[1],  'use_branch_lenght': true})
-
-                phylo.settings.compareMode = true;
-                phylo.bound_container = [c1,c2];
-
-                c2.models[c2.current_model].settings.mirror = true
-
-                phylo.start()
+        phylo.start()
 
 
 
-                var myInterval = setInterval(function () {
+        var myInterval = setInterval(function () {
 
-                    if (c1.message_loader == null) {
+            if (c1.message_loader == null) {
 
-                        c1.viewer.update_collapse_level(0, true)
-                        c2.viewer.update_collapse_level(0, true)
+                c1.viewer.update_collapse_level(0, true)
+                c2.viewer.update_collapse_level(0, true)
 
-                        c1.viewer.maximise_zoom()
-                        c2.viewer.maximise_zoom()
+                c1.viewer.maximise_zoom()
+                c2.viewer.maximise_zoom()
 
-                        clearInterval(myInterval);
+                clearInterval(myInterval);
 
-                        return;
-                    }
-                }, 200);
+                return;
+            }
+        }, 200);
 
-
-
-
-
-            });
-
-        });
 
 
     }
