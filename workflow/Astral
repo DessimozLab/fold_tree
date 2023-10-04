@@ -7,22 +7,17 @@ snake_dir = workflow.basedir
 rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
 
 
-folders = glob_wildcards("{folders}/identifiers.txt").folders
+#glob wildcards for all OGs
 
+OGs = glob_wildcards(config['folder'] + "/{og}.fasta")
 
 print(rootdir)
 print(folders[:100], '...')
 
+
 mattypes = ['foldtree', 'alntmscore', 'lddt']
-
-
-
-
-
-
 configfile: rootdir+ "workflow/config/config_vars.yaml"
 # remote homologues search parameters
-
 foldseekpath = config["foldseek_path"]
 if foldseekpath == 'provided':
 	foldseekpath = rootdir + "foldseek/foldseek"
@@ -38,24 +33,38 @@ rule Astral_foldtree:
     conda : 
         "astral"
     input:
-        expand("{folder}/foldtree_struct_tree.PP.nwk.rooted.final" , folder = config["folder"])
+		"{folder}/concatenated_tree.nwk"
     output:
         "{folder}/astral_tree_foldtree.nwk"
     log:
         "{folder}/logs/astral_foldtree.log"
     shell:
+		'java -jar {config["astral_path"]} -i {wildcards.folder}/concatenated_tree.nwk -o {wildcards.folder}/astral_tree_foldtree.nwk'
 
+rule concatenate_trees:
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		expand("{folder}/{og}_{mattype}_struct_tree.PP.nwk.rooted.final", folder = config["folder"], mattype = mattypes)
+	output:
+		"{folder}/concatenated_tree.nwk"
+	log:
+		"{folder}/logs/concatenate_trees.log"
+	script:
+		'../src/concatenate_trees.py'
+	
 
 rule mad_root_post:
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/{mattype}_struct_tree.PP.nwk"
+		"{folder}/{og}_{mattype}_struct_tree.PP.nwk"
 	output:
-		"{folder}/{mattype}_struct_tree.PP.nwk.rooted.final"
+		"{folder}/{og}_{mattype}_struct_tree.PP.nwk.rooted.final"
 	log:
-		"{folder}/logs/{mattype}_struct_madroot_post.log"
+		"{folder}/logs/{og}_{mattype}_struct_madroot_post.log"
 	script:
 		'../src/process_madroot.py'
 	
@@ -64,24 +73,24 @@ rule mad_root_struct:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/{mattype}_struct_tree.PP.nwk"
+		"{folder}/{og}_{mattype}_struct_tree.PP.nwk"
 	output:
-		"{folder}/{mattype}_struct_tree.PP.nwk.rooted"
+		"{folder}/{og}_{mattype}_struct_tree.PP.nwk.rooted"
 	log:
-		"{folder}/logs/{mattype}_struct_madroot.log"
+		"{folder}/logs/{og}_{mattype}_struct_madroot.log"
 	shell:
-		rootdir+'madroot/mad {wildcards.folder}/{wildcards.mattype}_struct_tree.PP.nwk'
+		rootdir+'madroot/mad {wildcards.folder}/{wildcards.og}_{wildcards.mattype}_struct_tree.PP.nwk'
 
 rule postprocess:
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/{mattype}_struct_tree.nwk"
+		"{folder}/{og}_{mattype}_struct_tree.nwk"
 	output:
-		"{folder}/{mattype}_struct_tree.PP.nwk"
+		"{folder}/{og}_{mattype}_struct_tree.PP.nwk"
 	log:
-		"{folder}/logs/{mattype}_struct_postprocess.log"
+		"{folder}/logs/{og}_{mattype}_struct_postprocess.log"
 	script:
 		'../src/postprocess.py'
 
@@ -90,13 +99,13 @@ rule quicktree:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/{mattype}_fastmemat.txt"
+		"{folder}/{og}_{mattype}_fastmemat.txt"
 	output:
-		"{folder}/{mattype}_struct_tree.nwk"
+		"{folder}/{og}_{mattype}_struct_tree.nwk"
 	log:
-		"{folder}/logs/{mattype}_quicktree.log"
+		"{folder}/logs/{og}_{mattype}_quicktree.log"
 	shell:
-		'quicktree -i m {wildcards.folder}/{wildcards.mattype}_fastmemat.txt > {wildcards.folder}/{wildcards.mattype}_struct_tree.nwk '
+		'quicktree -i m {wildcards.folder}/{og}_{wildcards.mattype}_fastmemat.txt > {wildcards.folder}/{wildcards.mattype}_struct_tree.nwk '
 
 rule foldseek2distmat:
 	conda:
@@ -118,39 +127,39 @@ rule foldseek_allvall_1:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/finalset.csv"
+		"{folder}/{og}_finalset.csv"
 	output:
-		"{folder}/allvall_1.csv"
+		"{folder}/{og}_allvall_1.csv"
 	log:
 		"{folder}/logs/foldseekallvall.log"
 	shell:
-		foldseekpath + " easy-search {wildcards.folder}/structs/ {wildcards.folder}/structs/ {wildcards.folder}/allvall_1.csv {wildcards.folder}/tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --exhaustive-search --alignment-type 2 -e inf" 
+		foldseekpath + " easy-search {wildcards.folder}/{og}_structs/ {wildcards.folder}/{og}_structs/ {wildcards.folder}/{og}_allvall_1.csv {wildcards.folder}/{og}_tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --exhaustive-search --alignment-type 2 -e inf" 
 
 rule dl_ids_sequences:
 	conda: 
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		ids="{folder}/identifiers.txt",
+		ids="{folder}/{og}_identifiers.txt",
 	output:
-		"{folder}/sequence_dataset.csv",
+		"{folder}/{og}_sequence_dataset.csv",
 	log:
-		"{folder}/logs/dlsequences.log"
+		"{folder}/logs/{og}_dlsequences.log"
 	params:
-		custom_structs=config["custom_structs"]
+		custom_structs=False
 	script:
-		"../src/dl_sequences.py"
+		"../src/dl_sequences_ogs.py"
 
 rule plddt:
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/finalset.csv",
+		"{folder}/{og}_finalset.csv",
 	output:
-		"{folder}/plddt.json",
+		"{folder}/{og}_plddt.json",
 	log:
-		"{folder}/logs/plddt.log"
+		"{folder}/logs/{og}_plddt.log"
 	script:
 		'../src/grabplddt.py'
 
@@ -158,13 +167,13 @@ rule dl_ids_structs:
 	input:
 		"{folder}/sequence_dataset.csv",
 	output:
-		"{folder}/sequences.fst",
-		"{folder}/finalset.csv",
+		"{folder}/{og}_sequences.fst",
+		"{folder}/{og}_finalset.csv",
 	conda: 
 		#"config/fold_tree.yaml"
 		"foldtree",
 	log:
-		"{folder}/logs/dlstructs.log",
+		"{folder}/logs/{og}_dlstructs.log",
 	params:
 		filtervar=config["filter"],
 		filtervar_min=config["filter_min"],

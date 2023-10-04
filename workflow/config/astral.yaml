@@ -1,0 +1,10 @@
+name: astral
+
+channels:
+  - bioconda
+  - conda-forge
+  - nodefaults
+dependencies:
+  - astral-tree
+ 
+    
