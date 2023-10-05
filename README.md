@@ -70,12 +70,21 @@ snakemake --cores 4 --use-conda -s ./workflow/fold_tree --config folder=./myfam 
 
 ```
 
+We can also use more cores for the foldseek all vs all comparison step by using the foldseek_cores flag.
+
+```
+snakemake --cores 4 --use-conda -s ./workflow/fold_tree --config folder=./myfam filter=False foldseek_cores=4
+
+```
+
 If we have a custom set of structures we use the following command and leave the identifier file blank.
 
 ```
 snakemake --cores 4 --use-conda -s ./workflow/fold_tree --config folder=./myfam filter=False custom_structs=True
 
 ```
+
+
 
 The Foldtree metric, LDDT and TM trees are output alongside some information retreived from the uniprot API on the proteins, foldseek comparisons, distance matrices and descriptors of the pLDDT of the structures.
 
