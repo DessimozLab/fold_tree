@@ -31,7 +31,8 @@ rule all:
 
 rule Astral_foldtree:
     conda : 
-        "astral"
+		"config/astral.yaml"
+        #"astral"
     input:
 		"{folder}/concatenated_tree.nwk"
     output:
