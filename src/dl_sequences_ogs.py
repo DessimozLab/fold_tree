@@ -17,9 +17,13 @@ if custom_structs == True:
 
 
 else:
-	with open(snakemake.input[0]) as infile:
-		ids = [ i.strip() for i in infile if len(i.strip())>0 ]
-	
-	os.mkdir()
-	resdf = AFDB_tools.grab_entries(ids, verbose = True)
-	resdf.to_csv(snakemake.output[0])
+	for i,file in enumerate(snakemake.input):
+		with open(file) as infile:
+			ids = [ i.strip() for i in infile if len(i.strip())>0 ]
+		#make output directory for structures if it doesn't exist
+		outdir = os.path.dirname( '/'.join(file.split('/')[:-1]) + file.split('_')[0] )
+		if not os.path.exists(outdir):	
+			os.makedirs(outdir)
+		resdf = AFDB_tools.grab_entries(ids, verbose = True)
+		resdf.to_csv(snakemake.output[i])
+		
