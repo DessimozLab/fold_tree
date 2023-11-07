@@ -43,6 +43,10 @@ for i,k in enumerate(matrices):
     distmat_txt = foldseek2tree.distmat_to_txt( ids , matrices[k] , snakemake.output[i] )
 
 for i,k in enumerate(matrices):
-    tajima =  foldseek2tree.Tajima_dist(matrices[k] + 10 **-5 )
+    if k == 'fident':
+        bfactor=19/20
+    else:
+        bfactor=1
+    tajima =  foldseek2tree.Tajima_dist(matrices[k] + 10 **-5 , bfactor=bfactor )
     np.fill_diagonal(tajima, 0)
     distmat_txt = foldseek2tree.distmat_to_txt( ids , tajima , snakemake.output[len(matrices)+i] )
