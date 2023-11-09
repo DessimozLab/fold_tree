@@ -33,7 +33,12 @@ def MDS_smooth(distmat):
 	distmat = cdist(distmat,distmat, 'minkowski', p=1.5 )
 	return distmat
 
-def Tajima_dist( kn_ratio,bfactor=1, iter = 100 ):
+
+
+def Tajima_dist( kn_ratio,bfactor=1, iter = 100 , delta=10**-5):
+	#approx of b*log(1-p/b) from https://doi.org/10.1093/oxfordjournals.molbev.a040031
+	#set all entries to smaller than bfactor
+	kn_ratio[kn_ratio > bfactor] = bfactor - delta
 	taj = np.add.reduce([ (kn_ratio**(np.ones(kn_ratio.shape)*i) )/ (bfactor**(i-1)*i) for i in range(1,iter) ] )
 	#set diagonal to 0
 	np.fill_diagonal(taj, 0)
