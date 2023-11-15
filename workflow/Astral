@@ -6,14 +6,13 @@ snake_dir = workflow.basedir
 
 rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
 
+#glob wildcards for all OGs using directory flag 
+folders = glob_wildcards("{folders}/identifiers.txt").folder
+outdir = config["outfolder"]
 
-#glob wildcards for all OGs
-
-OGs = glob_wildcards(config['folder'] + "/{og}.fasta")
 
 print(rootdir)
 print(folders[:100], '...')
-
 
 mattypes = ['foldtree', 'alntmscore', 'lddt']
 configfile: rootdir+ "workflow/config/config_vars.yaml"
@@ -25,37 +24,35 @@ if foldseekpath == 'provided':
 rule all:
 	input:
 	#get all treescore and rf distance files for all alntypes
-		expand( "{folder}/plddt.json" , folder = config["folder"] ) ,
-		expand("{folder}/{mattype}_struct_tree.PP.nwk.rooted.final", folder = config["folder"], mattype = mattypes),
-        "{folder}/astral_tree_foldtree.nwk" , folder = config["folder"]
+		expand( "{folder}/plddt.json" , folder = folders ) ,
+		expand("{folder}/{mattype}_struct_tree.PP.nwk.rooted.final", folder = folders, mattype = mattypes),
+        "{folder}/astral_tree_foldtree.nwk" , folder = folders
 
 rule Astral_foldtree:
     conda : 
-		"config/astral.yaml"
-        #"astral"
+        "astral"
     input:
-		"{folder}/concatenated_tree.nwk"
+		config['outfolder']+"/concatenated_tree.nwk"
     output:
-        "{folder}/astral_tree_foldtree.nwk"
+        config['outfolder']+"/astral_tree_foldtree.nwk"
     log:
         "{folder}/logs/astral_foldtree.log"
     shell:
-		'java -jar {config["astral_path"]} -i {wildcards.folder}/concatenated_tree.nwk -o {wildcards.folder}/astral_tree_foldtree.nwk'
+		'java -jar {config["astral_path"]} -i {outfolder}/concatenated_tree.nwk  -o {outfolder}/astral_tree_foldtree.nwk' , outfolder = config['outfolder']
 
 rule concatenate_trees:
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		expand("{folder}/{og}_{mattype}_struct_tree.PP.nwk.rooted.final", folder = config["folder"], mattype = mattypes)
+		expand("{folder}/{og}_{mattype}_struct_tree.PP.nwk.rooted.final", folder = folders, mattype = mattypes)
 	output:
-		"{folder}/concatenated_tree.nwk"
+		config['outfolder']+"/concatenated_tree.nwk"
 	log:
-		"{folder}/logs/concatenate_trees.log"
+		config['outfolder']+"/logs/concatenate_trees.log"
 	script:
 		'../src/concatenate_trees.py'
 	
-
 rule mad_root_post:
 	conda:
 		#"config/fold_tree.yaml"
