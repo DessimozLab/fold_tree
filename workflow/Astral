@@ -9,36 +9,34 @@ rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
 #glob wildcards for all OGs using directory flag 
 folders = glob_wildcards("{folders}/identifiers.txt").folder
 outdir = config["outfolder"]
-
-
-print(rootdir)
-print(folders[:100], '...')
-
+astralpath = config["astral_path"]
 mattypes = ['foldtree', 'alntmscore', 'lddt']
 configfile: rootdir+ "workflow/config/config_vars.yaml"
 # remote homologues search parameters
 foldseekpath = config["foldseek_path"]
+outfolder = config["outfolder"]
+
 if foldseekpath == 'provided':
 	foldseekpath = rootdir + "foldseek/foldseek"
 
 rule all:
 	input:
-	#get all treescore and rf distance files for all alntypes
 		expand( "{folder}/plddt.json" , folder = folders ) ,
 		expand("{folder}/{mattype}_struct_tree.PP.nwk.rooted.final", folder = folders, mattype = mattypes),
-        "{folder}/astral_tree_foldtree.nwk" , folder = folders
+        outfolder+"astral_tree_foldtree.nwk", 
+		outfolder+"concatenated_tree.nwk"
 
-rule Astral_foldtree:
-    conda : 
+rule astral_foldtree:
+    conda: 
         "astral"
     input:
-		config['outfolder']+"/concatenated_tree.nwk"
+		concatenate_trees= "{outfolder}/concatenated_tree.nwk"
     output:
-        config['outfolder']+"/astral_tree_foldtree.nwk"
+        final_tree= "{outfolder}/astral_tree_foldtree.nwk"
     log:
-        "{folder}/logs/astral_foldtree.log"
+        logfile= "{outfolder}/logs/astral_foldtree.log"
     shell:
-		'java -jar {config["astral_path"]} -i {outfolder}/concatenated_tree.nwk  -o {outfolder}/astral_tree_foldtree.nwk' , outfolder = config['outfolder']
+		"java -jar {config.astralpath} -i {concatenated_trees} -o {final_tree}"
 
 rule concatenate_trees:
 	conda:
@@ -47,9 +45,9 @@ rule concatenate_trees:
 	input:
 		expand("{folder}/{og}_{mattype}_struct_tree.PP.nwk.rooted.final", folder = folders, mattype = mattypes)
 	output:
-		config['outfolder']+"/concatenated_tree.nwk"
+		"{outfolder}/concatenated_tree.nwk" 
 	log:
-		config['outfolder']+"/logs/concatenate_trees.log"
+		"{outfolder}/logs/concatenate_trees.log" 
 	script:
 		'../src/concatenate_trees.py'
 	
