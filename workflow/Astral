@@ -22,16 +22,17 @@ if foldseekpath == 'provided':
 rule all:
 	input:
 		expand( "{folder}/plddt.json" , folder = folders ) ,
-		expand("{folder}/{mattype}_struct_tree.PP.nwk.rooted.final", folder = folders, mattype = mattypes),
+		expand("{folder}/struct_tree.PP.nwk.rooted.final", folder = folders),
 		outfolder+"astral_tree_foldtree.nwk", 
 		outfolder+"concatenated_tree.nwk"
+
 
 rule concatenate_trees:
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		expand("{folder}/{og}_{mattype}_struct_tree.PP.nwk.rooted.final", folder = folders, mattype = mattypes)
+		expand("{folder}/struct_tree.PP.nwk.rooted.final", folder = folders)
 	output:
 		"{outfolder}/concatenated_tree.nwk" 
 	log:
@@ -49,7 +50,7 @@ rule astral_foldtree:
 	log:
 		"{outfolder}/logs/astral_foldtree.log"
 	shell:
-		"java -jar {config.astralpath} -i {input} -o {output}"
+		"astral -i {outfolder}/concatenated_tree.nwk -o {outfolder}/astral_tree_foldtree.nwk"
 
 
 rule mad_root_post:
@@ -57,11 +58,11 @@ rule mad_root_post:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/{og}_{mattype}_struct_tree.PP.nwk"
+		"{folder}/struct_tree.PP.nwk.rooted"
 	output:
-		"{folder}/{og}_{mattype}_struct_tree.PP.nwk.rooted.final"
+		"{folder}/struct_tree.PP.nwk.rooted.final"
 	log:
-		"{folder}/logs/{og}_{mattype}_struct_madroot_post.log"
+		"{folder}/logs/struct_madroot_post.log"
 	script:
 		'../src/process_madroot.py'
 	
@@ -70,24 +71,24 @@ rule mad_root_struct:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/{og}_{mattype}_struct_tree.PP.nwk"
+		"{folder}/struct_tree.PP.nwk"
 	output:
-		"{folder}/{og}_{mattype}_struct_tree.PP.nwk.rooted"
+		"{folder}/struct_tree.PP.nwk.rooted"
 	log:
-		"{folder}/logs/{og}_{mattype}_struct_madroot.log"
+		"{folder}/logs/struct_madroot.log"
 	shell:
-		rootdir+'madroot/mad {wildcards.folder}/{wildcards.og}_{wildcards.mattype}_struct_tree.PP.nwk'
+		rootdir+'madroot/mad {wildcards.folder}/struct_tree.PP.nwk'
 
 rule postprocess:
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/{og}_{mattype}_struct_tree.nwk"
+		"{folder}/struct_tree.nwk"
 	output:
-		"{folder}/{og}_{mattype}_struct_tree.PP.nwk"
+		"{folder}/struct_tree.PP.nwk"
 	log:
-		"{folder}/logs/{og}_{mattype}_struct_postprocess.log"
+		"{folder}/logs/struct_postprocess.log"
 	script:
 		'../src/postprocess.py'
 
@@ -96,13 +97,13 @@ rule quicktree:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/{og}_{mattype}_fastmemat.txt"
+		"{folder}/foldtree_fastmemat.txt"
 	output:
-		"{folder}/{og}_{mattype}_struct_tree.nwk"
+		"{folder}/struct_tree.nwk"
 	log:
-		"{folder}/logs/{og}_{mattype}_quicktree.log"
+		"{folder}/logs/quicktree.log"
 	shell:
-		'quicktree -i m {wildcards.folder}/{og}_{wildcards.mattype}_fastmemat.txt > {wildcards.folder}/{wildcards.mattype}_struct_tree.nwk '
+		'quicktree -i m {wildcards.folder}/fastmemat.txt > {wildcards.folder}/struct_tree.nwk '
 
 rule foldseek2distmat:
 	conda:
@@ -124,9 +125,9 @@ rule foldseek_allvall_1:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/{og}_finalset.csv"
+		"{folder}/finalset.csv"
 	output:
-		"{folder}/{og}_allvall_1.csv"
+		"{folder}/allvall_1.csv"
 	log:
 		"{folder}/logs/foldseekallvall.log"
 	shell:
@@ -145,7 +146,7 @@ rule dl_ids_sequences:
 	params:
 		custom_structs=False
 	script:
-		"../src/dl_sequences_ogs.py"
+		"../src/dl_sequences.py"
 
 rule plddt:
 	conda:

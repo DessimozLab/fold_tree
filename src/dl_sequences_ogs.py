@@ -1,8 +1,6 @@
 import AFDB_tools
 import os
 
-
-
 custom_structs = snakemake.params.custom_structs
 
 print('custom_structs: ', custom_structs)
