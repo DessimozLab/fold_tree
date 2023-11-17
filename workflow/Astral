@@ -26,7 +26,6 @@ rule all:
 		outfolder+"astral_tree_foldtree.nwk", 
 		outfolder+"concatenated_tree.nwk"
 
-
 rule concatenate_trees:
 	conda:
 		#"config/fold_tree.yaml"
@@ -103,7 +102,7 @@ rule quicktree:
 	log:
 		"{folder}/logs/quicktree.log"
 	shell:
-		'quicktree -i m {wildcards.folder}/fastmemat.txt > {wildcards.folder}/struct_tree.nwk '
+		'quicktree -i m {wildcards.folder}/foldtree_fastmemat.txt > {wildcards.folder}/struct_tree.nwk '
 
 rule foldseek2distmat:
 	conda:
