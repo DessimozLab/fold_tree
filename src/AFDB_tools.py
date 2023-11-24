@@ -1,6 +1,6 @@
 
 import os 
-import wget 
+import wget
 from io import StringIO
 import pandas as pd
 import requests
@@ -153,8 +153,11 @@ def grab_entries(ids, verbose = True):
 	except:
 		print('error', ids )
 		time.sleep(10)
-		name_results = pd.concat([unirequest_tab( '+OR+'.join(c) , verbose = True) for c in chunk(ids, 50 )] , ignore_index= True)
-		
+		res = [unirequest_tab( '+OR+'.join(c) , verbose = True) for c in chunk(ids, 50 )]
+		if len(res) > 0:
+			name_results = pd.concat( res, ignore_index= True)
+		else:	
+			name_results = pd.DataFrame()	
 	if verbose == True:
 		print(name_results)
 	return name_results

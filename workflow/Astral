@@ -26,12 +26,32 @@ rule all:
 		outfolder+"astral_tree_foldtree.nwk", 
 		outfolder+"concatenated_tree.nwk"
 
+
+
+# the checkpoint that shall trigger re-evaluation of the DAG
+checkpoint alltrees:
+    input:
+        "{folder}/struct_tree.PP.nwk.rooted.final"
+    output:
+        "{folder}/struct_tree.PP.nwk.rooted.final.cpt"
+    shell:
+        # simulate some output value
+        "echo {wildcards.folder}/struct_tree.PP.nwk.rooted.final > {wildcards.folder}/struct_tree.PP.nwk.rooted.final.cpt"
+
+
+
+def aggregate_input(wildcards):
+    checkpoints.alltrees.get(folder=wildcards.folder)
+    folders = glob_wildcards(f"{folder}/struct_tree.PP.nwk.rooted.final")
+    return expand("{folder}/struct_tree.PP.nwk.rooted.final", folder=folders)
+
+
 rule concatenate_trees:
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		expand("{folder}/struct_tree.PP.nwk.rooted.final", folder = folders)
+		aggregate_input
 	output:
 		"{outfolder}/concatenated_tree.nwk" 
 	log:
@@ -161,14 +181,14 @@ rule plddt:
 		'../src/grabplddt.py'
 
 rule dl_ids_structs:
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
 	input:
 		"{folder}/sequence_dataset.csv",
 	output:
 		"{folder}/sequences.fst",
 		"{folder}/finalset.csv",
-	conda: 
-		#"config/fold_tree.yaml"
-		"foldtree",
 	log:
 		"{folder}/logs/dlstructs.log",
 	params:
