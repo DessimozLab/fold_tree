@@ -16,6 +16,7 @@ configfile: rootdir+ "workflow/config/config_vars.yaml"
 # remote homologues search parameters
 foldseekpath = config["foldseek_path"]
 outfolder = config["outfolder"]
+current_dir = os.getcwd()
 
 if foldseekpath == 'provided':
 	foldseekpath = rootdir + "foldseek/foldseek"
@@ -28,14 +29,14 @@ rule all:
 		outfolder+"concatenated_tree.nwk"
 	
 # the checkpoint that shall trigger re-evaluation of the DAG
-checkpoint alltrees:
-	input:
-		"{folder}/struct_tree.PP.nwk.rooted.final"
-	output:
-		"{folder}/struct_tree.PP.nwk.rooted.final.cpt"
-	shell:
-		# simulate some output value
-		"echo {wildcards.folder}/struct_tree.PP.nwk.rooted.final > {wildcards.folder}/struct_tree.PP.nwk.rooted.final.cpt"
+#checkpoint alltrees:
+#	input:
+#		"{folder}/struct_tree.PP.nwk.rooted.final"
+#	output:
+#		"{folder}/struct_tree.PP.nwk.rooted.final.cpt"
+#	shell:
+#		# simulate some output value
+#		"echo {wildcards.folder}/struct_tree.PP.nwk.rooted.final > {wildcards.folder}/struct_tree.PP.nwk.rooted.final.cpt"
 
 #def aggregate_input(wildcards):
 #	checkpoints.alltrees.get(folder=wildcards.folder)
@@ -47,13 +48,14 @@ rule concatenate_trees:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		expand("{folder}/struct_tree.PP.nwk.rooted.final.cpt", folder=folder)
+		expand("{folder}/struct_tree.PP.nwk.rooted.final", folder=folder)
 	output:
 		"{outfolder}/concatenated_tree.nwk" 
 	log:
 		"{outfolder}/logs/concatenate_trees.log" 
-	script:
-		'../src/concatenate_trees.py'
+	shell:
+		#'../src/concatenate_trees.py'
+		"parallel 'cat {} && echo' ::: {current_dir}**.struct_tree.PP.nwk.rooted.final > {outfolder}/concatenated_tree.nwk"
 
 rule astral_foldtree:
 	conda: 
