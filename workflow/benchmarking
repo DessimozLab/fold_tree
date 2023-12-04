@@ -9,7 +9,7 @@ rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
 print(rootdir)
 
 folders = glob_wildcards("{folders}/identifiers.txt").folders
-mattypes = ['fident', 'alntmscore', 'lddt']
+mattypes = ['fident', 'alntmscore', 'lddt' , '3difident']
 alntypes = ['0', '1']
 exp = ['raw', 'exp']
 aligners = [ 'clustalo' , 'muscle' ]
@@ -22,7 +22,6 @@ configfile: rootdir+ "workflow/config/config_vars.yaml"
 # remote homologues search parameters
 seed_folders = glob_wildcards("{seed_folders}/seed_structures/").seed_folders
 seed_structures = glob_wildcards("{seed_folders}/seed_structures/{seed_structures}.pdb").seed_structures
-
 
 rule all:
 	input:
@@ -210,12 +209,14 @@ rule foldseek2distmat:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/allvall_{alntype}.csv"
+		"{folder}/allvall_{alntype}.final.csv"
 	output:
 		"{folder}/fident_{alntype}_raw_fastmemat.txt",
+		"{folder}/3difident_{alntype}_raw_fastmemat.txt",
 		"{folder}/alntmscore_{alntype}_raw_fastmemat.txt",
 		"{folder}/lddt_{alntype}_raw_fastmemat.txt",
 		"{folder}/fident_{alntype}_exp_fastmemat.txt",
+		"{folder}/3difident_{alntype}_exp_fastmemat.txt",
 		"{folder}/alntmscore_{alntype}_exp_fastmemat.txt",
 		"{folder}/lddt_{alntype}_exp_fastmemat.txt",
 	log:
@@ -252,6 +253,58 @@ rule foldseek_allvall_1:
 		"{folder}/logs/foldseekallvall.log"
 	shell:
 		foldseekpath + " easy-search {wildcards.folder}/structs/ {wildcards.folder}/structs/ {wildcards.folder}/allvall_1.csv {wildcards.folder}/tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --exhaustive-search --alignment-type 2 -e inf" 
+
+rule transfer_alns:
+	resources:
+		mem_mb=get_mem_mb
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/allvall_{alntype}.csv"
+		"{folder}/3diseq.csv"
+	output:
+		#add the 3di Fident to the allvall csv
+		"{folder}/allvall_{alntype}.final.csv"
+	log:
+		"{folder}/logs/transferal_{alntype}.log"
+	shell:
+		"../src/scrape3di.py"
+
+
+rule scrape_3di:
+	resources:
+		mem_mb=get_mem_mb
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/structdb"
+	output:
+		"{folder}/3diseq.csv"
+	log:
+		"{folder}/logs/scrape3di.log"
+	script:
+		foldseekpath + " createdb {wildcards.folder}/structs/ {wildcards.folder}/structdb tmp" 
+
+rule make_structdb:
+	resources:
+		mem_mb=get_mem_mb
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/finalset.csv"
+	output:
+		"{wildcards.folder}/structdb"
+	log:
+		"{folder}/logs/createdb.log"
+	shell:
+		foldseekpath + " createdb {wildcards.folder}/structs/ {wildcards.folder}/structdb tmp" 
+
+
+
+
 
 rule clustalo:
 	resources:
