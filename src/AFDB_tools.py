@@ -88,7 +88,7 @@ def grab_struct(uniID, structfolder, rejected = None, overwrite=False):
 def chunk(data,csize):
 	return [data[x:x+csize] for x in range(0, len(data), csize)]
 
-def unirequest_tab(name, verbose = False):
+def unirequest_tab(name, sleeptime = 10 , verbose = False):
 
 	"""
 	Makes a request to the UniProt API and returns information about a protein in tab-separated format.
@@ -123,9 +123,10 @@ def unirequest_tab(name, verbose = False):
 			print(data)
 		return data    
 	except:
-		print('error', data )
-		time.sleep(10)
-		unirequest_tab(name, verbose = True)
+		if verbose is True:
+			print('uniprot API error', data )
+		time.sleep(sleeptime)
+		return unirequest_tab(name, sleeptime = sleeptime+10, verbose = True)
 
 def grab_entries(ids, verbose = True):
 	"""

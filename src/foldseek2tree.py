@@ -177,9 +177,15 @@ def postprocess(t, outree, delta=0 ):
 	delta : float
 		small number to replace negative branch lengths with'''
 	#make negative branch lengths a small delta instead
+
 	with open(t) as treein:
 		treestr = ' '.join( [ i.strip() for i in treein ] )
 
+	if len(treestr) == 0:
+		#writing an empty tree
+		with open(outree , 'w') as handle:
+			handle.write('')
+			
 	tre = toytree.tree(treestr , format = 0 )
 	print(tre)
 
@@ -187,7 +193,7 @@ def postprocess(t, outree, delta=0 ):
 		if n.dist< 0:
 			n.dist = delta
 	tre.write( outree, tree_format = 0 )
-
+		
 	return outree
 
 
