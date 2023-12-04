@@ -27,35 +27,20 @@ rule all:
 		expand("{folder}/struct_tree.PP.nwk.rooted.swapped", folder = folder),
 		outfolder+"astral_tree_foldtree.nwk", 
 		outfolder+"concatenated_tree.nwk"
-	
-# the checkpoint that shall trigger re-evaluation of the DAG
-#checkpoint alltrees:
-#	input:
-#		"{folder}/struct_tree.PP.nwk.rooted.final"
-#	output:
-#		"{folder}/struct_tree.PP.nwk.rooted.final.cpt"
-#	shell:
-#		# simulate some output value
-#		"echo {wildcards.folder}/struct_tree.PP.nwk.rooted.final > {wildcards.folder}/struct_tree.PP.nwk.rooted.final.cpt"
-
-#def aggregate_input(wildcards):
-#	checkpoints.alltrees.get(folder=wildcards.folder)
-#	folder = glob_wildcards("{folder}/struct_tree.PP.nwk.rooted.final")
-#	return expand("{folder}/struct_tree.PP.nwk.rooted.final", folder=folder)
 
 rule concatenate_trees:
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		expand("{folder}/struct_tree.PP.nwk.rooted", folder=folder)
+		expand("{folder}/struct_tree.PP.nwk.rooted.swapped", folder=folder)
 	output:
 		"{outfolder}/concatenated_tree.nwk" 
 	log:
 		"{outfolder}/logs/concatenate_trees.log" 
 	shell:
 		#'../src/concatenate_trees.py'
-		"parallel 'cat {} && echo' ::: {current_dir}**.struct_tree.PP.nwk.rooted > {outfolder}/concatenated_tree.nwk"
+		"cat {current_dir}/**/struct_tree.PP.nwk.rooted > {outfolder}/concatenated_tree.nwk"
 
 rule astral_foldtree:
 	conda: 
