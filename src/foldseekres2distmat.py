@@ -38,11 +38,17 @@ for idx,row in res.iterrows():
 for i,k in enumerate(matrices):
     matrices[k] /= 2
     matrices[k] = 1-matrices[k]
+    np.fill_diagonal(matrices[k], 0)
+    
     print(matrices[k], np.amax(matrices[k]), np.amin(matrices[k]) )
     np.save( infolder + k + '_distmat.npy' , matrices[k])
     distmat_txt = foldseek2tree.distmat_to_txt( ids , matrices[k] , snakemake.output[i] )
 
 for i,k in enumerate(matrices):
-    tajima =  foldseek2tree.Tajima_dist(matrices[k] + 10 **-5 )
+    if k == 'fident':
+        tajima =  foldseek2tree.Tajima_dist(matrices[k] + 10 **-5 , bfactor=19/20 )
+    else:
+        tajima =  foldseek2tree.Tajima_dist(matrices[k] + 10 **-5 )
+    
     np.fill_diagonal(tajima, 0)
     distmat_txt = foldseek2tree.distmat_to_txt( ids , tajima , snakemake.output[len(matrices)+i] )

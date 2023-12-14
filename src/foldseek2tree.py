@@ -179,16 +179,14 @@ def postprocess(t, outree, delta=0 ):
 	#make negative branch lengths a small delta instead
 
 	with open(t) as treein:
-		treestr = ' '.join( [ i.strip() for i in treein ] )
-
+		treestr = ' '.join( [ i.strip() for i in treein ] )	
 	if len(treestr) == 0:
+		print('postprocess: empty tree')
 		#writing an empty tree
 		with open(outree , 'w') as handle:
-			handle.write('')
-			
+			handle.write('')	
 	tre = toytree.tree(treestr , format = 0 )
 	print(tre)
-
 	for n in tre.treenode.traverse():
 		if n.dist< 0:
 			n.dist = delta

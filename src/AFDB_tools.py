@@ -37,7 +37,9 @@ def filter_plddt(pdb_path , thresh= .6 , minthresh = .5 ):
 	for res in struc.get_residues():
 		for at in res.get_atoms():
 		   lddt.append(at.get_bfactor())
-		   break
+		   break	
+	#print('struct lddt', pdb_path,  np.mean(lddt), np.amin(lddt))
+
 	if np.mean(lddt) < thresh or np.amin(lddt) < minthresh:
 		return False
 	else:

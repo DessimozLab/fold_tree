@@ -59,7 +59,9 @@ rule swaplabels:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/struct_tree.PP.nwk.rooted"
+		"{folder}/struct_tree.PP.nwk.rooted",
+		"{folder}/sequence_dataset.csv"
+
 	output:
 		"{folder}/struct_tree.PP.nwk.rooted.swapped"
 	log:
@@ -76,11 +78,11 @@ rule mad_root_struct:
 	   "{folder}/struct_tree.PP.nwk"
 	output:
 	   "{folder}/struct_tree.PP.nwk.rooted"
+	   
 	log:
 		"{folder}/logs/struct_madroot.log"
 	params:
 		cmd = lambda w: rootdir+'madroot/mad {}/struct_tree.PP.nwk'.format(w.folder,w.folder),
-		check_empty = lambda w: os.path.getsize(w.folder+'/struct_tree.PP.nwk') > 0
 	script:
 		"../src/runsub.py"
 
@@ -106,8 +108,7 @@ rule quicktree:
 	output:
 		"{folder}/struct_tree.nwk"
 	params:
-		cmd = lambda w: "quicktree -i m {}/foldtree_fastmemat.txt > {}/struct_tree.nwk".format(w.folder,w.folder),
-		check_empty = lambda w: os.path.getsize(w.folder+'/foldtree_fastmemat.txt') > 0
+		cmd = lambda w: "fastme -i {}/foldtree_fastmemat.txt -o {}/struct_tree.nwk ".format(w.folder,w.folder),
 	script:
 		"../src/runsub.py"
 
@@ -123,6 +124,8 @@ rule foldseek2distmat:
 		"{folder}/lddt_fastmemat.txt",
 	log:
 		"{folder}/logs/foldseek2distmat.log"
+	params:
+		varfilter=True,
 	script:
 		"../src/foldseekres2distmat_simple.py"
 

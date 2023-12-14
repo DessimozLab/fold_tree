@@ -41,6 +41,10 @@ else:
 		print(rejectedfolder , 'already exists ')
 
 
+	print('filetervar:',snakemake.params.filtervar)	
+	print('filetervar_min:',snakemake.params.filtervar_min)
+	print('filetervar_avg:',snakemake.params.filtervar_avg)
+
 
 	#with open(snakemake.input[0]) as infile:
 	#	ids = [ i.strip() for i in infile if len(i.strip())>0 ]
@@ -62,6 +66,8 @@ else:
 		else:
 			plddt = { i:True for i in found}
 
+		print(plddt)
+		rejected = []
 		for i in list(found.keys()):
 			if i not in ids or plddt[i] is False:
 				#move to rejected folder
@@ -70,9 +76,11 @@ else:
 				else:
 					os.remove(found[i])
 				missing_structs.add(i)
+				rejected.append(found[i])
 				del found[i]
 
 		missing_sequences = set(ids)-set(seqdf['query'].unique())
+		print('rejected:',rejected)
 		print('missing in afdb:',missing_structs)
 		print( 'missing in sequences:',missing_sequences)
 
