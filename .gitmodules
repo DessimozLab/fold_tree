@@ -7,3 +7,6 @@
 [submodule "slurmsimple"]
 	path = slurmsimple
 	url = git@github.com:jdblischak/smk-simple-slurm.git
+[submodule "3diphy"]
+	path = 3diphy
+	url = git@github.com:nmatzke/3diphy.git
