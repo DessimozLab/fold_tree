@@ -44,12 +44,11 @@ def retalns(allvsall, leafname,leafset):
     return sub.iloc[0]
 
 #traverse tree from root to leaves recursively
-def traverse_tree( treenode , resAA , res3di, allvall ):
+def traverse_tree_merge( treenode , resAA , res3di, allvall ):
     """
     this function traverses a tree from root to leaves recursively
     it returns a dictionary with the distances between nodes
     """
-
     childalns3di = []
     childalnsAA = []
     treenode.leafset = get_leafset(treenode)
