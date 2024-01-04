@@ -11,6 +11,7 @@ from scipy.stats import wilcoxon
 import numpy as np
 
 
+
 def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , verbose = False):
 
     """

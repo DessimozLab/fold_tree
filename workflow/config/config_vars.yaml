@@ -27,3 +27,8 @@ prob_threshold : "0.9"
 qcov_threshold : "70"
 scov_threshold : "0"
 evalue_threshold : "1e-05"
+
+
+#Path to the 3di submat from the root of the workflow repository
+#normally this is set to the default location of the 3di submat file
+submat3di: 3diphy/3DI_substmat/3di_substmat.txt

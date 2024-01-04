@@ -25,8 +25,17 @@ rule all:
 		expand("{wildcards.folder}/{wildcards.frame}_struct_tree.PP.nwk.rooted.final", folder = config["folder"], mattype = mattypes),
 
 
-
-
+rule split_frames:
+    conda:
+        'foldtree'
+    input:
+        "{folder}/structs/{pdbid}.pdb"
+    output:
+        "{wildcards.folder}/structs/{wildcards.frame}/{pdbid}.pdb"
+    log:
+        "{folder}/logs/split_frames.log"
+    script:
+        "../src/split_frames.py"
 
 rule simulate_frames:
     conda:

@@ -15,6 +15,24 @@ allvall = pd.read_table(allvall, header = None)
 #this should already have the 3di alignment as well as the AA aligntment
 
 
+def read_dbfiles3di(folder, name = 'outdb'):
+    #find positions 
+    threeDidb = folder+ name +'_ss'
+    threeDiseq = [ l.strip().replace('\x00','') for l in open(threeDidb)]
+    
+    
+    lookup = folder+name+'.lookup'
+    ids = [ l.split()[1].strip() for l in open(lookup)]
+    
+    AADB = folder+name
+    AAs = [ l.strip().replace('\x00','') for l in open(AADB)]
+
+    mapper3di = dict(zip(ids,threeDiseq))
+    mapperAA = dict(zip(ids,AAs))
+    
+    return mapper3di, mapperAA
+
+
 def get_leafset( treenode ):
     """
     this function returns the leafset of a node

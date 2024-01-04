@@ -12,6 +12,7 @@ dependencies:
   - pip
   - iqtree
   - muscle
+  - mafft
   - quicktree
   - python=3.10
   - fasttree=2.1.11
