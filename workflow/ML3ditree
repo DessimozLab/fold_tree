@@ -12,7 +12,7 @@ foldseekpath = config["foldseek_path"]
 if foldseekpath == 'provided':
 	foldseekpath = rootdir + "foldseek/foldseek"
 
-if config['folder']:
+if 'folder' in config:
 	folders = [config['folder']]
 else:
 	folders = glob_wildcards("{folders}/identifiers.txt").folders
@@ -144,8 +144,52 @@ rule iqtree_just3di:
 """
 
 
-rule scrape_alns:
+#transfer struct aln to seq
+#transfer seq aln to struct
+rule cross_alns:
 	#use 3di and AA alns to make a merged aln
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/seq3di.fasta",
+		"{folder}/sequences.fst",
+	output:
+		"{folder}/alnAAX.fasta",
+		"{folder}/aln3dialnX.fasta",
+	log:
+		"{folder}/logs/cross_alns.log"
+	script:
+		"../src/crossalns.py"
+
+rule mafft_textaln:
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/seq3di.fasta",
+	output:
+		"{folder}/aln3dialn.fasta",
+	params:
+		submat=rootdir+config["mafft_submat3di"]
+	shell:
+		'mafft --textmatrix {params.submat} {input} > {output}'
+	
+rule mafft_seq:
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/sequences.fst",
+	output:
+		"{folder}/alnAA.fasta",
+	shell:
+		'mafft {input} > {output}'
+	
+rule scrape_alns:
+	#use 3di and AA from foldseek
+	#scrape the 3di alphabet and use alignment logic to calculate new fident
+	#working on merging the alns progressively.
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
@@ -154,10 +198,10 @@ rule scrape_alns:
 		"{folder}/struct_tree.PP.nwk.rooted.final",
 		"{folder}/outdb",
 		"{folder}/outdb_ss"
-		
 	output:
-		"{folder}/alnAA.fasta",
-		"{folder}/aln3dialn.fasta",
+		"{folder}/seq3di.fasta",
+		#"{folder}/alnAA.fasta",
+		#"{folder}/aln3dialn.fasta",
 	params:
 		dbname="outdb"
 	log:
