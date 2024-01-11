@@ -17,23 +17,26 @@ if 'folder' in config:
 else:
 	folders = glob_wildcards("{folders}/identifiers.txt").folders
 
+
+alntype = ['X3di','XAA']
 print(folders[0:100] , '...')
 
 rule all:
 	input:
 	#get all treescore and rf distance files for all alntypes
-		expand("{folder}/template.nx.treefile.rooted.final", folder = folders ),
+		expand("{folder}/template{alntype}.nx.treefile.rooted.final", folder = folders , alntype = alntype),
+
 
 rule mad_root_postML:
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/template.nx.treefile.rooted"
+		"{folder}/template{alntype}.nx.treefile.rooted"
 	output:
-		"{folder}/template.nx.treefile.rooted.final"
+		"{folder}/template{alntype}.nx.treefile.rooted.final"
 	log:
-		"{folder}/logs/structML_madroot_post.log"
+		"{folder}/logs/structML_madroot_post_{alntype}.log"
 	script:
 		'../src/process_madroot.py'
 	
@@ -42,13 +45,13 @@ rule mad_root_structML:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/template.nx.treefile"
+		"{folder}/template{alntype}.nx.treefile"
 	output:
-		"{folder}/template.nx.treefile.rooted"
+		"{folder}/template{alntype}.nx.treefile.rooted"
 	log:
-		"{folder}/logs/structML_madroot.log"
+		"{folder}/logs/structML_madroot_{alntype}.log"
 	shell:
-		rootdir+'madroot/mad {wildcards.folder}/template.nx.treefile'
+		rootdir+'madroot/mad {wildcards.folder}/template{wildcards.alntype}.nx.treefile'
 
 
 rule mad_root_post:
@@ -90,39 +93,26 @@ rule postprocess:
 	script:
 		'../src/postprocess.py'
 
-rule iqtree_template:
-	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
-	input:
-		"{folder}/alnAA.fasta",
-		"{folder}/aln3dialn.fasta"
-	output:
-		"{folder}/template.nx"
-	params:
-		submat=rootdir+config["submat3di"]
-	log:
-		"{folder}/logs/template_iqtree.log"
-	script:
-		#todo change this to use the partition file and the model
-		'../src/create_iqtree_template.py'  
 
-rule iqtree:
+rule iqtreex:
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
 		"{folder}/alnAA.fasta",
+		"{folder}/alnAAX.fasta",
+		"{folder}/aln3dialnX.fasta",
 		"{folder}/aln3dialn.fasta",
-		"{folder}/template.nx"
+		"{folder}/template{alntype}.nx"
 	output:
-		"{folder}/template.nx.treefile"
+		"{folder}/template{alntype}.nx.treefile"
 	params:
 		cores=config["iqtree_cores"],
 	log:
-		"{folder}/logs/3diAA_iqtree.log"
+		"{folder}/logs/3diAA_iqtree_{alntype}.log"
 	shell:
-		'iqtree -p {wildcards.folder}/template.nx  -T {params.cores} -redo '
+		'iqtree -p {wildcards.folder}/template{wildcards.alntype}.nx  -T {params.cores} -redo '
+
 
 """
 rule iqtree_just3di:
@@ -143,17 +133,35 @@ rule iqtree_just3di:
 
 """
 
-
-#transfer struct aln to seq
-#transfer seq aln to struct
-rule cross_alns:
-	#use 3di and AA alns to make a merged aln
+rule iqtree_template:
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/seq3di.fasta",
-		"{folder}/sequences.fst",
+		"{folder}/alnAA.fasta",
+		"{folder}/alnAAX.fasta",
+		"{folder}/aln3dialnX.fasta",
+		"{folder}/aln3dialn.fasta",
+	output:
+		"{folder}/templateXAA.nx",
+		"{folder}/templateX3di.nx"
+	params:
+		submat=rootdir+config["submat3di"]
+	log:
+		"{folder}/logs/template_iqtree.log"
+	script:
+		#todo change this to use the partition file and the model
+		'../src/create_iqtree_template.py' 
+
+rule cross_alns:
+	#transfer 3di logic to to AA seq	
+	#transfer seq aln logic to 3di sequences
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/alnAA.fasta",
+		"{folder}/aln3dialn.fasta",
 	output:
 		"{folder}/alnAAX.fasta",
 		"{folder}/aln3dialnX.fasta",
@@ -163,6 +171,7 @@ rule cross_alns:
 		"../src/crossalns.py"
 
 rule mafft_textaln:
+	#use the 3di submat to aln the 3di sequences
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
@@ -176,6 +185,7 @@ rule mafft_textaln:
 		'mafft --textmatrix {params.submat} {input} > {output}'
 	
 rule mafft_seq:
+	#use a normal sequence alignment tool to align the AA sequences
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
@@ -185,11 +195,12 @@ rule mafft_seq:
 		"{folder}/alnAA.fasta",
 	shell:
 		'mafft {input} > {output}'
-	
+
+
 rule scrape_alns:
 	#use 3di and AA from foldseek
 	#scrape the 3di alphabet and use alignment logic to calculate new fident
-	#working on merging the alns progressively.
+	#working on merging the alns progressively for a blend of struct and seq
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
