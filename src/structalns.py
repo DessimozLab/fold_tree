@@ -81,69 +81,24 @@ def mergeAlign( fasta1, fasta2, outfile):
         alnout.write(aln)
     return outfile
 
-def stringconvolution( s1, s2):
-    #convolution of the two sequences
-    #select the smaller sequence
 
+
+def convolve_strings(str1, str2):
+    # Ensure str1 is the longer string
+    if len(str2) > len(str1):
+        str1, str2 = str2, str1
+
+    max_alignment = 0
+    max_count = 0
+
+    # Slide str2 over str1
+    for i in range(len(str1) - len(str2) + 1):
+        count = sum(1 for a, b in zip(str1[i:i+len(str2)], str2) if a == b)
+        if count > max_count:
+            max_count = count
+            max_alignment = i
     
-    if len(s1) < len(s2):
-        s = s1
-        temp = s2
-    else:
-        s = s2
-        temp = s1
-
-    #slide the smaller sequence over the larger one
-    #from a position of -len(s) to len(temp) + len(s)
-    conv = []
-    for i in range(-len(s), len(temp) + len(s)):
-        #select the part of the larger sequence that overlaps with the smaller one
-        if i < 0:
-            temp2 = temp[:i+len(s)]
-            s2 = s[-i:]
-        elif i > len(temp):
-            temp2 = temp[i:]
-            s2 = s[:len(temp2)]
-        else:
-            temp2 = temp[i:i+len(s)]
-            s2 =  s[:len(temp2)]
-       
-        #iterate over the smaller sequence
-        score = 0
-        for j,char in enumerate(s2):
-            try:
-                if char == temp2[j]:
-                    score += 1
-            except IndexError:
-                print('temp2', temp2)
-                print('s2', s2)
-                print('i', i)
-                print('j', j)
-                raise IndexError
-        conv.append(score)
-    maxaln = np.argmax(conv)
-    print('conv', conv)
-    print( 'nchars' , np.amax(conv) ) 
-    print('maxaln', maxaln)
-
-    #chop the larger sequence to the length of the smaller one
-    if maxaln < 0:
-        temp = temp[:maxaln+len(s)]
-    elif maxaln > len(temp):
-        temp = temp[maxaln:]
-    else:
-        temp = temp[maxaln:maxaln+len(s)]
-    
-
-    #chop the smaller one if needed
-    if len(temp) < len(s):
-        s = s[:len(temp)]
-
-    #find the starting position for both sequences
-    if len(s1) > len(s2):
-        return maxaln, temp, s
-    else:
-        return maxaln, s, temp
+    return max_alignment, max_count
 
 def mergealns( aln1f, aln2f, outfile):
     #find sequences in common between the two alignments
@@ -186,7 +141,7 @@ def mergealns( aln1f, aln2f, outfile):
     #if the common subsequence is not found start by removing the first character of the common sequence
     if coidx1 == -1 and coidx2 == -1:
         #convolution of the two sequences
-        maxaln, subs1, subs2 = stringconvolution(s1,s2)
+        maxaln, maxcount = stringconvolution(s1,s2)
 
         #find the start of the common sequence in each alignment
         if len(s1) > len(s2):
