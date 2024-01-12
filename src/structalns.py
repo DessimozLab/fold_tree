@@ -82,22 +82,25 @@ def mergeAlign( fasta1, fasta2, outfile):
     return outfile
 
 
-
 def convolve_strings(str1, str2):
-    # Ensure str1 is the longer string
-    if len(str2) > len(str1):
-        str1, str2 = str2, str1
+    # Determine the lengths of the strings
+    len1, len2 = len(str1), len(str2)
 
     max_alignment = 0
     max_count = 0
 
-    # Slide str2 over str1
-    for i in range(len(str1) - len(str2) + 1):
-        count = sum(1 for a, b in zip(str1[i:i+len(str2)], str2) if a == b)
+    # Slide str2 over str1, starting with one character overlap
+    # and continue until str2 is again overlapping by just one character
+    for i in range(-len2 + 1, len1):
+        count = 0
+        for j in range(len2):
+            if 0 <= i + j < len1 and str1[i + j] == str2[j]:
+                count += 1
+
         if count > max_count:
             max_count = count
             max_alignment = i
-    
+
     return max_alignment, max_count
 
 def mergealns( aln1f, aln2f, outfile):
@@ -141,19 +144,19 @@ def mergealns( aln1f, aln2f, outfile):
     #if the common subsequence is not found start by removing the first character of the common sequence
     if coidx1 == -1 and coidx2 == -1:
         #convolution of the two sequences
-        maxaln, maxcount = stringconvolution(s1,s2)
+        maxaln, maxcount = convolve_strings(s1,s2)
 
         #find the start of the common sequence in each alignment
         if len(s1) > len(s2):
             coidx1 = maxaln
-            coidx2 = len(s2) - (len(s1) - maxaln)
+            coidx2 = 0
         else:
-            coidx1 = len(s1) - (len(s2) - maxaln)
+            coidx1 = 0
             coidx2 = maxaln
-    
-    print('commonid', commonid)
-    print('coidx1', coidx1)
-    print('coidx2', coidx2)
+        print('convolution', maxaln, maxcount)
+        print('coidx1', coidx1)
+        print('coidx2', coidx2)
+
 
 
 
