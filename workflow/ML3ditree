@@ -17,15 +17,13 @@ if 'folder' in config:
 else:
 	folders = glob_wildcards("{folders}/identifiers.txt").folders
 
-
-alntype = ['X3di','XAA', 'foldtree']
+alntype = ['3di','AA', 'foldtree']
 print(folders[0:100] , '...')
 
 rule all:
 	input:
 	#get all treescore and rf distance files for all alntypes
 		expand("{folder}/template{alntype}.nx.treefile.rooted.final", folder = folders , alntype = alntype),
-
 
 rule mad_root_postML:
 	conda:
@@ -99,7 +97,7 @@ rule iqtreex:
 	input:
 		"{folder}/alnAA_{alntype}.fasta",
 		"{folder}/aln3di_{alntype}.fasta",
-		"{folder}/template{alntype}.nx"
+		"{folder}/templateX{alntype}.nx"
 	output:
 		"{folder}/template{alntype}.nx.treefile"
 	params:
@@ -107,27 +105,8 @@ rule iqtreex:
 	log:
 		"{folder}/logs/3diAA_iqtree_{alntype}.log"
 	shell:
-		'iqtree -p {wildcards.folder}/template{wildcards.alntype}.nx  -T {params.cores} -redo '
+		'iqtree -p {wildcards.folder}/templateX{wildcards.alntype}.nx  -T {params.cores} -redo '
 
-
-"""
-rule iqtree_just3di:
-	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
-	input:
-		"{folder}/aln3dialn.fasta"
-	output:
-		"{folder}/template.nx.iqtree"
-	params:
-		submat=rootdir+config["submat3di"]
-	log:
-		"{folder}/logs/3di_iqtree.log"
-	shell:
-		#todo finish this iqtree command to use the submat
-		'iqtree -p {wildcards.folder}/template.nx  -nt {params.cores} '
-
-"""
 
 rule iqtree_template:
 	conda:
@@ -139,7 +118,6 @@ rule iqtree_template:
 		
 	output:
 		"{folder}/templateX{alntype}.nx",
-		"{folder}/templateX{alntype}.nx"
 	params:
 		submat=rootdir+config["submat3di"]
 	log:
@@ -155,11 +133,11 @@ rule cross_alns:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/alnAA.fasta",
-		"{folder}/aln3dialn.fasta",
+		"{folder}/alnAA_AA.fasta",
+		"{folder}/aln3di_3di.fasta",
 	output:
-		"{folder}/alnAAX.fasta",
-		"{folder}/aln3dialnX.fasta",
+		"{folder}/alnAA_3di.fasta",
+		"{folder}/aln3di_AA.fasta",
 	log:
 		"{folder}/logs/cross_alns.log"
 	script:
@@ -173,7 +151,7 @@ rule mafft_textaln:
 	input:
 		"{folder}/seq3di.fasta",
 	output:
-		"{folder}/aln3dialn.fasta",
+		"{folder}/aln3di_3di.fasta",
 	params:
 		submat=rootdir+config["mafft_submat3di"]
 	shell:
@@ -187,10 +165,9 @@ rule mafft_seq:
 	input:
 		"{folder}/sequences.fst",
 	output:
-		"{folder}/alnAA.fasta",
+		"{folder}/alnAA_AA.fasta",
 	shell:
 		'mafft {input} > {output}'
-
 
 rule scrape_alns:
 	#use 3di and AA from foldseek
@@ -206,8 +183,8 @@ rule scrape_alns:
 		"{folder}/outdb_ss"
 	output:
 		"{folder}/seq3di.fasta",
-		#"{folder}/alnAA.fasta",
-		#"{folder}/aln3dialn.fasta",
+		"{folder}/alnAA_foldtree.fasta",
+		"{folder}/aln3di_foldtree.fasta",
 	params:
 		dbname="outdb"
 	log:
@@ -228,7 +205,6 @@ rule quicktree:
 	shell:
 		'quicktree -i m {wildcards.folder}/foldtree_fastmemat.txt > {wildcards.folder}/struct_tree.nwk '
 
-
 rule foldseek2distmat:
 	conda:
 		#"config/fold_tree.yaml"
@@ -245,8 +221,6 @@ rule foldseek2distmat:
 		"{folder}/logs/foldseek2distmat.log"
 	script:
 		"../src/foldseekres2distmat_simple.py"
-
-
 
 rule foldseek_allvall_1:
 	conda:
