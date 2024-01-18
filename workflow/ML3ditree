@@ -115,7 +115,6 @@ rule iqtree_template:
 	input:
 		"{folder}/alnAA_{alntype}.fasta",
 		"{folder}/aln3di_{alntype}.fasta",
-		
 	output:
 		"{folder}/templateX{alntype}.nx",
 	params:
