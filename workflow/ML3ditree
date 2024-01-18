@@ -24,7 +24,6 @@ print(folders[0:100] , '...')
 def get_mem_mb(wildcards, attempt):
 	return attempt * 20000
 
-
 rule all:
 	input:
 	#get all treescore and rf distance files for all alntypes
