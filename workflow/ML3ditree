@@ -18,7 +18,7 @@ else:
 	folders = glob_wildcards("{folders}/identifiers.txt").folders
 
 
-alntype = ['X3di','XAA']
+alntype = ['X3di','XAA', 'foldtree']
 print(folders[0:100] , '...')
 
 rule all:
@@ -52,7 +52,6 @@ rule mad_root_structML:
 		"{folder}/logs/structML_madroot_{alntype}.log"
 	shell:
 		rootdir+'madroot/mad {wildcards.folder}/template{wildcards.alntype}.nx.treefile'
-
 
 rule mad_root_post:
 	conda:
@@ -93,16 +92,13 @@ rule postprocess:
 	script:
 		'../src/postprocess.py'
 
-
 rule iqtreex:
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/alnAA.fasta",
-		"{folder}/alnAAX.fasta",
-		"{folder}/aln3dialnX.fasta",
-		"{folder}/aln3dialn.fasta",
+		"{folder}/alnAA_{alntype}.fasta",
+		"{folder}/aln3di_{alntype}.fasta",
 		"{folder}/template{alntype}.nx"
 	output:
 		"{folder}/template{alntype}.nx.treefile"
@@ -138,17 +134,16 @@ rule iqtree_template:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/alnAA.fasta",
-		"{folder}/alnAAX.fasta",
-		"{folder}/aln3dialnX.fasta",
-		"{folder}/aln3dialn.fasta",
+		"{folder}/alnAA_{alntype}.fasta",
+		"{folder}/aln3di_{alntype}.fasta",
+		
 	output:
-		"{folder}/templateXAA.nx",
-		"{folder}/templateX3di.nx"
+		"{folder}/templateX{alntype}.nx",
+		"{folder}/templateX{alntype}.nx"
 	params:
 		submat=rootdir+config["submat3di"]
 	log:
-		"{folder}/logs/template_iqtree.log"
+		"{folder}/logs/template_iqtree_{alntype}.log"
 	script:
 		#todo change this to use the partition file and the model
 		'../src/create_iqtree_template.py' 

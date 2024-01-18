@@ -32,12 +32,8 @@ with open(snakemake.output[0] , 'w') as out:
     for seq in alndf['query'].unique():
         out.write('>'+seq.replace('.pdb', '' )+'\n')
         out.write(mapper3di[seq]+'\n')
-
-
 alndf['query'] = alndf['query'].map(lambda x :x.replace('.pdb', ''))
 alndf['target'] = alndf['target'].map(lambda x :x.replace('.pdb', ''))
-
-
 #prepare tree attributes
 for i,n in enumerate(tre.treenode.traverse()):
     n.aln = None
@@ -51,8 +47,6 @@ if not os.path.exists(alnfolder):
     os.mkdir(infolder+'alnscratch/')
 
 finalaln, finalaln3di = structalns.traverse_tree_merge( tre.treenode.get_tree_root(), structalns.get_leafset(tre.treenode.get_tree_root()) , alndf , infolder+'alnscratch/')
-#for fasta in [finalaln, finalaln3di]:
-#    structalns.remove_redundant(fasta)
 
 for fasta,data in {snakemake.output[1]:finalaln, snakemake.output[2]:finalaln3di}.items():
     with open(fasta , 'w') as fastout:
