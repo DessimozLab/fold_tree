@@ -23,16 +23,16 @@ print(folders[0:100] , '...')
 rule all:
 	input:
 	#get all treescore and rf distance files for all alntypes
-		expand("{folder}/template{alntype}.nx.treefile.rooted.final", folder = folders , alntype = alntype),
+		expand("{folder}/templateX{alntype}.nx.treefile.rooted.final", folder = folders , alntype = alntype),
 
 rule mad_root_postML:
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/template{alntype}.nx.treefile.rooted"
+		"{folder}/templateX{alntype}.nx.treefile.rooted"
 	output:
-		"{folder}/template{alntype}.nx.treefile.rooted.final"
+		"{folder}/templateX{alntype}.nx.treefile.rooted.final"
 	log:
 		"{folder}/logs/structML_madroot_post_{alntype}.log"
 	script:
@@ -43,13 +43,13 @@ rule mad_root_structML:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/template{alntype}.nx.treefile"
+		"{folder}/templateX{alntype}.nx.treefile"
 	output:
-		"{folder}/template{alntype}.nx.treefile.rooted"
+		"{folder}/templateX{alntype}.nx.treefile.rooted"
 	log:
 		"{folder}/logs/structML_madroot_{alntype}.log"
 	shell:
-		rootdir+'madroot/mad {wildcards.folder}/template{wildcards.alntype}.nx.treefile'
+		rootdir+'madroot/mad {wildcards.folder}/templateX{wildcards.alntype}.nx.treefile'
 
 rule mad_root_post:
 	conda:
@@ -99,7 +99,7 @@ rule iqtreex:
 		"{folder}/aln3di_{alntype}.fasta",
 		"{folder}/templateX{alntype}.nx"
 	output:
-		"{folder}/template{alntype}.nx.treefile"
+		"{folder}/templateX{alntype}.nx.treefile"
 	params:
 		cores=config["iqtree_cores"],
 	log:
