@@ -20,10 +20,30 @@ else:
 alntype = ['3di','AA', 'foldtree']
 print(folders[0:100] , '...')
 
+
+def get_mem_mb(wildcards, attempt):
+	return attempt * 20000
+
+
 rule all:
 	input:
 	#get all treescore and rf distance files for all alntypes
 		expand("{folder}/templateX{alntype}.nx.treefile.rooted.final", folder = folders , alntype = alntype),
+		expand("{folder}/templateX{alntype}.nx.treefile.rooted.final.treescore", folder = folders , alntype = alntype),
+
+rule treescore:
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/sequence_dataset.csv",
+		"{folder}/templateX{alntype}.nx.treefile.rooted.final",
+	output:
+		"{folder}/templateX{alntype}.nx.treefile.rooted.final.treescore",
+	log:
+		"{folder}/logs/treescore_{alntype}.log"
+	script:
+		'../src/calc_treescores.py'
 
 rule mad_root_postML:
 	conda:
@@ -91,6 +111,8 @@ rule postprocess:
 		'../src/postprocess.py'
 
 rule iqtreex:
+	resources:
+		mem_mb=get_mem_mb
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
@@ -106,7 +128,6 @@ rule iqtreex:
 		"{folder}/logs/3diAA_iqtree_{alntype}.log"
 	shell:
 		'iqtree -p {wildcards.folder}/templateX{wildcards.alntype}.nx  -T {params.cores} -redo '
-
 
 rule iqtree_template:
 	conda:
