@@ -215,20 +215,50 @@ def traverse_tree_merge_mafft( treenode, topleafset, allvall , alnfolder , subma
                     c.aln,c.aln3di = traverse_tree_merge_mafft(c , treenode.leafset , allvall, alnfolder , verbose = verbose)
                 childalnsAA[c] = { 'fasta': c.aln  }
                 childalns3di[c] = { 'fasta': c.aln3di  }
+            if len(children) >= 2:
+                for i, combo in enumerate( itertools.combinations(children,2) ) :
+                    c1, c2 = combo
+                    if i == 0:
+                        if c1.is_leaf() and c2.is_leaf():
+                            #cherry on root
+                            treenode.aln = sub2fasta( retalns(allvall, [c1.name] , [c2.name]) , alnfolder + treenode.name + '_inter.fasta')
+                            treenode.aln3di = sub2fasta( retalns(allvall, [c1.name] , [c2.name]) , alnfolder + treenode.name + '_inter.3di.fasta' , fastacol1='3di_qaln_mode2' , fastacol2='3di_taln_mode2')
+                        else:
+                            if c1.is_leaf():
+                                treenode.aln = mafft_addfull(childalnsAA[c1]['fasta'], childalnsAA[c2]['fasta'], alnfolder + treenode.name + '_inter.fasta' )
+                                treenode.aln3di = mafft_addfull(childalns3di[c1]['fasta'], childalns3di[c2]['fasta'], alnfolder + treenode.name + '_inter3di.fasta' , submat =submat )
+                            elif c2.is_leaf():
+                                treenode.aln = mafft_addfull(childalnsAA[c2]['fasta'], childalnsAA[c1]['fasta'], alnfolder + treenode.name + '_inter.fasta' )
+                                treenode.aln3di = mafft_addfull(childalns3di[c1]['fasta'], childalns3di[c2]['fasta'], alnfolder + treenode.name + '_inter3di.fasta' , submat = submat)
+                            else:                
+                                treenode.aln = mafft_profile(childalnsAA[c1]['fasta'], childalnsAA[c2]['fasta'], alnfolder + treenode.name + '_inter.fasta' )
+                                treenode.aln3di = mafft_profile(childalns3di[c1]['fasta'], childalns3di[c2]['fasta'], alnfolder + treenode.name + '_inter3di.fasta' , submat =  submat)
+                    else:
+                        print('not first')
+                        print( treenode.name , [ c.name for c in children] )
+                        if c1.is_leaf() and c2.is_leaf():
+                            #cherry on root...2nd aln
+                            inter = sub2fasta( retalns(allvall, [c1.name] , [c2.name]) , alnfolder + treenode.name + '_rootcherry.fasta')
+                            inter3di = sub2fasta( retalns(allvall, [c1.name] , [c2.name]) , alnfolder + treenode.name + '_rootcherry.3di.fasta' , fastacol1='3di_qaln_mode2' , fastacol2='3di_taln_mode2')
+                            treenode.aln = mafft_profile(treenode.aln, inter, treenode.aln )
+                            treenode.aln3di = mafft_profile(treenode.aln3di, inter3di, treenode.aln3di , submat =  submat)
 
-            c1,c2 = children
-            if c1.is_leaf():
-                treenode.aln = mafft_addfull(childalnsAA[c1]['fasta'], childalnsAA[c2]['fasta'], alnfolder + treenode.name + '_inter.fasta' )
-                treenode.aln3di = mafft_addfull(childalns3di[c1]['fasta'], childalns3di[c2]['fasta'], alnfolder + treenode.name + '_inter3di.fasta' , submat =submat )
-
-            elif c2.is_leaf():
-                treenode.aln = mafft_addfull(childalnsAA[c2]['fasta'], childalnsAA[c1]['fasta'], alnfolder + treenode.name + '_inter.fasta' )
-                treenode.aln3di = mafft_addfull(childalns3di[c1]['fasta'], childalns3di[c2]['fasta'], alnfolder + treenode.name + '_inter3di.fasta' , submat = submat)
-
-            else:                
-                treenode.aln = mafft_profile(childalnsAA[c1]['fasta'], childalnsAA[c2]['fasta'], alnfolder + treenode.name + '_inter.fasta' )
-                treenode.aln3di = mafft_profile(childalns3di[c1]['fasta'], childalns3di[c2]['fasta'], alnfolder + treenode.name + '_inter3di.fasta' , submat =  submat)
-
+                        else:
+                            if c1.is_leaf():
+                                treenode.aln = mafft_addfull(childalnsAA[c1]['fasta'], treenode.aln, treenode.aln )
+                                treenode.aln3di = mafft_addfull(childalns3di[c1]['fasta'], treenode.aln3di , treenode.aln3di , submat =submat )            
+                            else:
+                                treenode.aln = mafft_profile(treenode.aln, childalnsAA[c1]['fasta'], treenode.aln )
+                                treenode.aln3di = mafft_profile(treenode.aln3di, childalns3di[c1]['fasta'], treenode.aln3di , submat =  submat)
+                            if c2.is_leaf():
+                                treenode.aln = mafft_addfull(  childalnsAA[c2]['fasta'] , treenode.aln  , treenode.aln )
+                                treenode.aln3di = mafft_addfull(  childalns3di[c2]['fasta'], treenode.aln3di,  treenode.aln3di  , submat = submat)
+                            else:            
+                                treenode.aln = mafft_profile(   childalnsAA[c2]['fasta'], treenode.aln , treenode.aln)
+                                treenode.aln3di = mafft_profile( childalns3di[c2]['fasta'] ,treenode.aln3di , treenode.aln3di , submat =  submat)
+            elif len(children) == 1:
+                treenode.aln = childalnsAA[children[0]]['fasta']
+                treenode.aln3di = childalns3di[children[0]]['fasta']
             if verbose == True:
                 #check if node is root  
                 if treenode.up == None:

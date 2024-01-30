@@ -46,13 +46,20 @@ alnfolder = infolder+'alnscratch/'
 if not os.path.exists(alnfolder):
     os.mkdir(infolder+'alnscratch/')
 
-finalaln, finalaln3di = structalns.traverse_tree_merge( tre.treenode.get_tree_root(), structalns.get_leafset(tre.treenode.get_tree_root()) , alndf , infolder+'alnscratch/')
+finalaln, finalaln3di = structalns.traverse_tree_merge_mafft( tre.treenode.get_tree_root(), structalns.get_leafset(tre.treenode.get_tree_root()) , alndf , infolder+'alnscratch/')
+
+
+finalaln = structalns.remove_seeds(finalaln)
+finalaln3di = structalns.remove_seeds(finalaln3di)
+
+finalaln = structalns.remove_redundant(finalaln)
+finalaln3di = structalns.remove_redundant(finalaln3di)
+
 
 for fasta,data in {snakemake.output[1]:finalaln, snakemake.output[2]:finalaln3di}.items():
     with open(fasta , 'w') as fastout:
         with open( data ) as fastin:
             fastout.write( fastin.read())
-
 #cleanup the aln files
 for f in glob.glob(infolder+'alnscratch/*inter*'):
     os.remove(f)

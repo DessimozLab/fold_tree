@@ -17,7 +17,7 @@ if 'folder' in config:
 else:
 	folders = glob_wildcards("{folders}/identifiers.txt").folders
 
-alntype = ['3di','AA']#, 'foldtree']
+alntype = ['3di','AA', 'foldtree']
 print(folders[0:100] , '...')
 
 
@@ -126,7 +126,7 @@ rule iqtreex:
 	log:
 		"{folder}/logs/3diAA_iqtree_{alntype}.log"
 	shell:
-		'iqtree -p {wildcards.folder}/templateX{wildcards.alntype}.nx  -T {params.cores} -redo '
+		'iqtree -p {wildcards.folder}/templateX{wildcards.alntype}.nx  -redo -seed 42 -nt 1 '
 
 rule iqtree_template:
 	conda:
