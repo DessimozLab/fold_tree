@@ -30,6 +30,20 @@ rule all:
 		expand("{folder}/templateX{alntype}.nx.treefile.rooted.final", folder = folders , alntype = alntype),
 		expand("{folder}/templateX{alntype}.nx.treefile.rooted.final.treescore", folder = folders , alntype = alntype),
 
+
+rule calcfident_distributions:
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		expand("{folder}/aln{restype}_{alntype}.fasta", folder = folders, alntype = alntype, restype = ['AA', '3di']),
+	output:
+		'{folder}/alnfident_dist.json',
+	log:
+		'{folder}/logs/alnfident_dist.log'
+	script:
+		'../src/calcfident_distributions.py'
+
 rule treescore:
 	conda:
 		#"config/fold_tree.yaml"
