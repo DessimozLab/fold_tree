@@ -9,7 +9,7 @@ filter_avg: 40
 #use 'foldseek' to use the latest one installed by conda in the pipeline
 #use 'provided' to use the one provided in the repository
 
-foldseek_path: provided
+foldseek_path: foldseek
 foldseek_cores: 1
 
 #If set to True then use a folder of structures that is provided by the user. This will skip the structure downloading step
