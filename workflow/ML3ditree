@@ -42,7 +42,7 @@ rule treescore:
 	log:
 		"{folder}/logs/treescore_{alntype}.log"
 	script:
-		'../src/calc_treescores.py'
+		'../src/calctreescores.py'
 
 rule mad_root_postML:
 	conda:
