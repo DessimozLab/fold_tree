@@ -23,7 +23,6 @@ def get_amino_acid_sequence(pdb_filename):
 
 	for model in structure:
 		for chain in model:
-			print(f"Chain {chain.id}:")
 			sequence = ''
 			for residue in chain.get_residues():
 				if residue.get_resname() in ['HOH', 'WAT']:
