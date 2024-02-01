@@ -13,24 +13,20 @@ import numpy as np
 
 def get_amino_acid_sequence(pdb_filename):
 	""" This function extracts the amino acid sequence from a PDB file."""
-
-
-    # Initialize the parser
-    parser = PDBParser()
-
-    # Parse the structure from file
-    structure = parser.get_structure('PDB_structure', pdb_filename)
-
-    # Extract amino acid sequences from the structure
-    for model in structure:
-        for chain in model:
-            print(f"Chain {chain.id}:")
-            sequence = ''
-            for residue in chain.get_residues():
-                if residue.get_resname() in ['HOH', 'WAT']:
-                    continue  # Ignore water molecules
-                sequence += seq1(residue.get_resname(), undef_code='X')
-            return sequence
+	# Initialize the parser
+	parser = PDBParser()
+	# Parse the structure from file
+	structure = parser.get_structure('PDB_structure', pdb_filename)
+	# Extract amino acid sequences from the structure
+	for model in structure:
+		for chain in model:
+			print(f"Chain {chain.id}:")
+			sequence = ''
+			for residue in chain.get_residues():
+				if residue.get_resname() in ['HOH', 'WAT']:
+					continue  # Ignore water molecules
+				sequence += seq1(residue.get_resname(), undef_code='X')
+			return sequence
 
 
 
