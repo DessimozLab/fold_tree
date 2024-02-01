@@ -3,12 +3,15 @@ import os
 import shutil
 import glob
 import pandas as pd
+from Bio import PDB as pdb
 
 '''
 This script is used to download the structures from the afdb
 it also filters the structures based on the plddt score
 
 '''
+
+
 
 infolder = snakemake.input[0].split('/')[:-1]
 infolder = ''.join( [i + '/' for i in infolder])
@@ -20,15 +23,12 @@ custom_structs = snakemake.params.custom_structs
 
 if custom_structs == True:
 	print('custom structures, skipping download of structures')
-
 	found = glob.glob(structfolder+'*.pdb')
-	found = { i.split('/')[-1].replace('.pdb',''):i for i in found}
-	finalset = found
-	#output a dummy file with the structs included
+	finalset = { f.replace('*.pdb', '' ) : AFDB_tools.get_amino_acid_sequence(f) }
 	with open(snakemake.output[0] , 'w') as outfile:
-		outfile.write(''.join(['>'+i+'\n'+i+'\n' for i in finalset]))
+		outfile.write(''.join(['>'+i+'\n'+finalset[i]+'\n' for i in finalset]))
 	with open(snakemake.output[1] , 'w') as outfile:
-		outfile.write(''.join(['>'+i+'\n'+i+'\n' for i in finalset]))
+		outfile.write(''.join(['>'+i+'\n'+finalset[i]+'\n' for i in finalset]))
 else:
 	try:
 		os.mkdir(structfolder)
