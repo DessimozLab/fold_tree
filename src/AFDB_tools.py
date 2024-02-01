@@ -6,6 +6,8 @@ import pandas as pd
 import requests
 from scipy.stats import describe
 from Bio.PDB import *
+from Bio.SeqUtils import seq1
+
 import time
 import numpy as np
 
@@ -18,6 +20,7 @@ def get_amino_acid_sequence(pdb_filename):
 	# Parse the structure from file
 	structure = parser.get_structure('PDB_structure', pdb_filename)
 	# Extract amino acid sequences from the structure
+
 	for model in structure:
 		for chain in model:
 			print(f"Chain {chain.id}:")
