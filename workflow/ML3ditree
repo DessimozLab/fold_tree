@@ -52,7 +52,7 @@ rule treescore:
 		"{folder}/sequence_dataset.csv",
 		"{folder}/templateX{alntype}.nx.treefile.rooted.final",
 	output:
-		"{folder}/templateX{alntype}.nx.treefile.rooted.final.treescore",
+		"{folder}/templateX{alntype}.nx.treefile.rooted.final._treescores_struct_tree.json",
 	log:
 		"{folder}/logs/treescore_{alntype}.log"
 	script:
@@ -141,6 +141,8 @@ rule iqtreex:
 		"{folder}/logs/3diAA_iqtree_{alntype}.log"
 	shell:
 		'iqtree -p {wildcards.folder}/templateX{wildcards.alntype}.nx  -redo -seed 42 -nt 1 '
+
+
 
 rule iqtree_template:
 	conda:

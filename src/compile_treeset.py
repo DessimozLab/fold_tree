@@ -38,6 +38,7 @@ def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , verbose = F
                 nstructs = len(glob.glob(folder+'structs/*.pdb'))
                 if os.path.isfile(folder+'treescores_sequences.json'):
                     treescores = glob.glob(folder + '*_treescores_struct_tree.json' ) + list(glob.glob(folder+'treescores_sequences*.json')) + list(glob.glob( folder+'treescores_sequences_iq*.json'))
+                    treescores += glob.glob(folder + 'treefile.rooted.final.treescore' )
                     if len(treescores)>0 and os.path.isfile(folder + 'sequences.fst'):
                         with open(folder + 'sequences.fst') as fstin:
                             nseqs = fstin.read().count('>')
