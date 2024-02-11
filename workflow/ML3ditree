@@ -52,7 +52,7 @@ rule treescore:
 		"{folder}/sequence_dataset.csv",
 		"{folder}/templateX{alntype}.nx.treefile.rooted.final",
 	output:
-		"{folder}/templateX{alntype}.nx.treefile.rooted.final._treescores_struct_tree.json",
+		"{folder}/templateX{alntype}.nx.treefile.rooted.final.treescore",
 	log:
 		"{folder}/logs/treescore_{alntype}.log"
 	script:

@@ -8,7 +8,7 @@ def crossaln(aln1f, aln2f, outaln):
     #aln1 and al2 are both file names
 
     #read in the alignments
-    aln1 = [ rec for rec in Bio.SeqIO.parse(aln1f, "fasta")]
+    aln1 = [ rec for rec in Bio.SeqIO.parse(aln1f, "fasta") ]
     aln2 = [ rec for rec in  Bio.SeqIO.parse(aln2f, "fasta") ]
 
     #get the sequences by removing the gaps
@@ -17,21 +17,23 @@ def crossaln(aln1f, aln2f, outaln):
 
     print('seqs1',seqs1.keys())
     print('seqs2',seqs2.keys())
+
+
     #copy the gap positions from aln1 to aln2
     for rec in aln2:
-        seq = seqs2[rec.id]
+        seq = seqs2[str(rec.id)]
         seq = list(seq)
         i = 0
-        for c in seqs1[rec.id]:
+        for c in seqs1[str(rec.id)]:
             if c == "-":
                 seq.insert(i, "-")
             else:
                 i += 1
-        seqs2[rec.id] = "".join(seq)
+        seqs2[str(rec.id)] = "".join(seq)
     #write out the new alignment
     with open(outaln, "w") as f:
         for rec in aln2:
-            f.write(">%s\n%s\n" % (rec.id, seqs2[rec.id]))
+            f.write(">%s\n%s\n" % (rec.id, seqs2[str(rec.id)]))
     return outaln
 
 if __name__ == "__main__":

@@ -24,7 +24,7 @@ custom_structs = snakemake.params.custom_structs
 if custom_structs == True:
 	print('custom structures, skipping download of structures')
 	found = glob.glob(structfolder+'*.pdb')
-	finalset = { f.replace('*.pdb', '' ) : AFDB_tools.get_amino_acid_sequence(f) for f in found }
+	finalset = { f.replace('.pdb', '' ).split('/')[-1] : AFDB_tools.get_amino_acid_sequence(f) for f in found }
 	with open(snakemake.output[0] , 'w') as outfile:
 		outfile.write(''.join(['>'+i+'\n'+finalset[i]+'\n' for i in finalset]))
 	with open(snakemake.output[1] , 'w') as outfile:

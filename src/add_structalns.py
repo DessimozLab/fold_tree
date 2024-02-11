@@ -15,25 +15,45 @@ tre = toytree.tree(snakemake.input[1] )
 infolder = snakemake.input[0].split('/')[:-1]
 infolder = ''.join( [i + '/' for i in infolder])
 mapper3di, mapperAA = structalns.read_dbfiles3di( snakemake.input[2] , snakemake.input[3])
+
 #add the 3di alignment to the dataframe
 columns = 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,qaln,taln,cigar,lntmscore'.split(',')
 alndf.columns = columns
+
+
+print(alndf.head() ) 
+
+
+alndf['query'] = alndf['query'].map(lambda x :x.replace('.pdb', ''))
+alndf['target'] = alndf['target'].map(lambda x :x.replace('.pdb', ''))
+
+
 
 alndf['3diq']= alndf['query'].map(mapper3di)
 alndf['3dit']= alndf['target'].map(mapper3di)
 alndf['AAq']= alndf['query'].map(mapperAA)
 alndf['AAt']= alndf['target'].map(mapperAA)
 
+
+
+
+print('alndfaugemnted',alndf.head())
+
+
 #output a fasta with the 3di sequences
 res = alndf.apply(structalns.calc_fident_crossaln , axis = 1)
+
+
+print(res)
+
+
 alndf = pd.concat([alndf,res] , axis = 1)
 
 with open(snakemake.output[0] , 'w') as out:
     for seq in alndf['query'].unique():
         out.write('>'+seq.replace('.pdb', '' )+'\n')
-        out.write(mapper3di[seq]+'\n')
-alndf['query'] = alndf['query'].map(lambda x :x.replace('.pdb', ''))
-alndf['target'] = alndf['target'].map(lambda x :x.replace('.pdb', ''))
+        out.write(mapper3di[seq.replace('.pdb', '')]+'\n')
+
 #prepare tree attributes
 for i,n in enumerate(tre.treenode.traverse()):
     n.aln = None
