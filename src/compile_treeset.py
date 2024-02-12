@@ -50,7 +50,7 @@ def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , verbose = F
                         pbar.set_description('processed: %d' % (1 + i))
                         pbar.update(1)
 
-                        checkfastas = True:
+                        checkfastas = True
                         for k in seqcount:
                             if seqcount[k] != nseqs:
                                 checkfastas = False
