@@ -68,12 +68,7 @@ def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , verbose = F
                                         res[folder] = { s:tax_res[s][scorefunc] for s in tax_res if  scorefunc  in tax_res[s]}
                                     else:
                                         res[folder].update({ s:tax_res[s][scorefunc] for s in tax_res if scorefunc in tax_res[s]})
-
                             res[folder].update({ 'nseqs':   nseqs})
-                        else:
-                            if verbose == True:
-                                print('nseqs != nstructs', folder)
-                                print(nseqs, nstructs)
             return res
                             
 def compile_folder(rootfolder , scorefunc = 'score_x_frac' , verbose = False):
