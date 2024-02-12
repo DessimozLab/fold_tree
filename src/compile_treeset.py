@@ -49,11 +49,13 @@ def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , verbose = F
                                 seqcount[fasta] = nseqs
                         pbar.set_description('processed: %d' % (1 + i))
                         pbar.update(1)
-
                         checkfastas = True
                         for k in seqcount:
-                            if seqcount[k] != nseqs:
+                            if seqcount[k] != nstructs:
                                 checkfastas = False
+                                if verbose == True:
+                                    print('nseqs != nstructs', folder)
+                                    print(seqcount[k], nseqs , k)
                         if checkfastas == True:
                             for score in treescores:
                                 #check if score exists
