@@ -87,6 +87,7 @@ def calc_fident_crossaln(row , verbose = False):
     t3diAA_newgaps = copyaln(taln_2, structT[tstart_2-1:tend_2]) 
     q3diAA_newgaps = copyaln(qaln_2, structQ[qstart_2-1:qend_2])
     row = pd.Series( { '3di_qaln_mode2':q3diAA_newgaps , '3di_taln_mode2':t3diAA_newgaps })
+    
     #return columns
     return row
 

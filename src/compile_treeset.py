@@ -40,11 +40,21 @@ def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , verbose = F
                     treescores = glob.glob(folder + '*_treescores_struct_tree.json' ) + list(glob.glob(folder+'treescores_sequences*.json')) + list(glob.glob( folder+'treescores_sequences_iq*.json'))
                     treescores += glob.glob(folder + '*.treescore' )
                     if len(treescores)>0 and os.path.isfile(folder + 'sequences.fst'):
-                        with open(folder + 'sequences.fst') as fstin:
-                            nseqs = fstin.read().count('>')
+                        
+                        fastas = glob.glob(folder+ '*.fst') + glob.glob(folder + '*.fasta')
+                        seqcount = {}
+                        for fasta in fastas:
+                            with open(fasta) as fstin:
+                                nseqs = fstin.read().count('>')
+                                seqcount[fasta] = nseqs
                         pbar.set_description('processed: %d' % (1 + i))
                         pbar.update(1)
-                        if nseqs == nstructs :
+
+                        checkfastas = True:
+                        for k in seqcount:
+                            if seqcount[k] != nseqs:
+                                checkfastas = False
+                        if checkfastas == True:
                             for score in treescores:
                                 #check if score exists
                                 if os.path.isfile(score):
