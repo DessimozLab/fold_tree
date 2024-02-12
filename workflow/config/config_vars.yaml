@@ -19,7 +19,7 @@ foldseek_cores: 1
 # e.g. myfamily/structs/
 
 custom_structs: False
-
+cath: False
 
 #if you need to use the foldseek api to retrieve the structures
 

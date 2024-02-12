@@ -24,6 +24,9 @@ print(folders[0:100] , '...')
 def get_mem_mb(wildcards, attempt):
 	return attempt * 20000
 
+def get_time(wildcards, attempt):
+	return attempt * 60
+
 rule all:
 	input:
 	#get all treescore and rf distance files for all alntypes
@@ -53,6 +56,8 @@ rule treescore:
 		"{folder}/templateX{alntype}.nx.treefile.rooted.final",
 	output:
 		"{folder}/templateX{alntype}.nx.treefile.rooted.final.treescore",
+	params:
+		custom_structs=config["custom_structs"]
 	log:
 		"{folder}/logs/treescore_{alntype}.log"
 	script:
@@ -125,7 +130,8 @@ rule postprocess:
 
 rule iqtreex:
 	resources:
-		mem_mb=get_mem_mb
+		mem_mb=get_mem_mb,
+		time=get_time
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
@@ -295,6 +301,7 @@ rule dl_ids_sequences:
 	log:
 		"{folder}/logs/dlsequences.log"
 	params:
+		cath=config["cath"],
 		custom_structs=config["custom_structs"]
 	script:
 		"../src/dl_sequences.py"
@@ -325,6 +332,7 @@ rule dl_ids_structs:
 		"{folder}/logs/dlstructs.log",
 	params:
 		filtervar=config["filter"],
+		cath=config["cath"],
 		filtervar_min=config["filter_min"],
 		filtervar_avg=config["filter_avg"],
 		custom_structs=config["custom_structs"],

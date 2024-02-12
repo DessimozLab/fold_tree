@@ -4,7 +4,7 @@ custom_structs = snakemake.params.custom_structs
 
 print('custom_structs: ', custom_structs)
 
-if custom_structs == True:
+if custom_structs == True and snakemake.params.cath == False:
 	print('custom structures, skipping download of sequences')
 	#writes a dummy file with the structs included
 	with open(snakemake.output[0] , 'w') as outfile:
