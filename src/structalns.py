@@ -51,7 +51,7 @@ def read_dbfiles3di(  AADB , threeDidb):
     #find positions 
     threeDiseq = [ l.strip().replace('\x00','') for l in open(threeDidb)]
     lookup = AADB+'.lookup'
-    ids = [ l.split()[1].strip() for l in open(lookup)]
+    ids = [ l.split()[1].strip().replace('.pdb', '').split('/')[-1] for l in open(lookup)]
     AAs = [ l.strip().replace('\x00','') for l in open(AADB)]
 
     mapper3di = dict(zip(ids,threeDiseq))

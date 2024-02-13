@@ -21,13 +21,11 @@ mapper3di, mapperAA = structalns.read_dbfiles3di( snakemake.input[2] , snakemake
 columns = 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,qaln,taln,cigar,alntmscore'.split(',')
 alndf.columns = columns
 
-
-
+print(mapper3di)
+print(mapperAA)
 
 alndf['query'] = alndf['query'].map(lambda x :x.replace('.pdb', ''))
 alndf['target'] = alndf['target'].map(lambda x :x.replace('.pdb', ''))
-
-
 
 alndf['3diq']= alndf['query'].map(mapper3di)
 alndf['3dit']= alndf['target'].map(mapper3di)
@@ -66,7 +64,7 @@ finalaln = structalns.remove_seeds(finalaln)
 finalaln3di = structalns.remove_seeds(finalaln3di)
 
 finalaln = structalns.remove_redundant(finalaln)
-finalaln3di = rstructalns.emove_redundant(finalaln3di)
+finalaln3di = structalns.remove_redundant(finalaln3di)
 
 with open(finalaln) as f:
     aacount = f.read().count('>')
