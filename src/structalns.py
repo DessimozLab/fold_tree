@@ -220,9 +220,19 @@ def traverse_tree_merge_mafft( treenode, topleafset, allvall , alnfolder , subma
                     treenode.aln = mafft_addfull(childalnsAA[c2]['fasta'], childalnsAA[c1]['fasta'], alnfolder + treenode.name + '_inter.fasta' )
                     treenode.aln3di = mafft_addfull(childalns3di[c1]['fasta'], childalns3di[c2]['fasta'], alnfolder + treenode.name + '_inter3di.fasta' , submat = submat)
 
-                else:                
-                    treenode.aln = mafft_profile(childalnsAA[c1]['fasta'], childalnsAA[c2]['fasta'], alnfolder + treenode.name + '_inter.fasta' )
-                    treenode.aln3di = mafft_profile(childalns3di[c1]['fasta'], childalns3di[c2]['fasta'], alnfolder + treenode.name + '_inter3di.fasta' , submat =  submat)
+                else:
+                    with open(childalnsAA[c2]['fasta'], 'r') as f:
+                        c2seqs = f.read().count('>')
+                    with open(childalnsAA[c1]['fasta'], 'r') as f:
+                        c1seqs = f.read().count('>')
+                    
+                    if c1seqs > c2seqs:
+                        treenode.aln = mafft_profile(childalnsAA[c1]['fasta'], childalnsAA[c2]['fasta'], alnfolder + treenode.name + '_inter.fasta' )
+                        treenode.aln3di = mafft_profile(childalns3di[c1]['fasta'], childalns3di[c2]['fasta'], alnfolder + treenode.name + '_inter3di.fasta' , submat =submat )
+                    else:
+                        treenode.aln = mafft_profile(childalnsAA[c2]['fasta'], childalnsAA[c1]['fasta'], alnfolder + treenode.name + '_inter.fasta' )
+                        treenode.aln3di = mafft_profile(childalns3di[c2]['fasta'], childalns3di[c1]['fasta'], alnfolder + treenode.name + '_inter3di.fasta' , submat =submat )
+                    
             elif len(children) > 2 and treenode.up == None:
                 print('final aln')
                 print('childalnsAA', childalnsAA)
