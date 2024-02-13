@@ -14,14 +14,14 @@ tre = toytree.tree(snakemake.input[1] )
 
 infolder = snakemake.input[0].split('/')[:-1]
 infolder = ''.join( [i + '/' for i in infolder])
+
 mapper3di, mapperAA = structalns.read_dbfiles3di( snakemake.input[2] , snakemake.input[3])
 
 #add the 3di alignment to the dataframe
-columns = 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,qaln,taln,cigar,lntmscore'.split(',')
+columns = 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,qaln,taln,cigar,alntmscore'.split(',')
 alndf.columns = columns
 
 
-print(alndf.head() ) 
 
 
 alndf['query'] = alndf['query'].map(lambda x :x.replace('.pdb', ''))
@@ -34,19 +34,8 @@ alndf['3dit']= alndf['target'].map(mapper3di)
 alndf['AAq']= alndf['query'].map(mapperAA)
 alndf['AAt']= alndf['target'].map(mapperAA)
 
-
-
-
-print('alndfaugemnted',alndf.head())
-
-
 #output a fasta with the 3di sequences
 res = alndf.apply(structalns.calc_fident_crossaln , axis = 1)
-
-
-print(res)
-
-
 alndf = pd.concat([alndf,res] , axis = 1)
 
 with open(snakemake.output[0] , 'w') as out:
@@ -66,15 +55,23 @@ alnfolder = infolder+'alnscratch/'
 if not os.path.exists(alnfolder):
     os.mkdir(infolder+'alnscratch/')
 
-finalaln, finalaln3di = structalns.traverse_tree_merge_mafft( tre.treenode.get_tree_root(), structalns.get_leafset(tre.treenode.get_tree_root()) , alndf , infolder+'alnscratch/')
+finalaln, finalaln3di = structalns.traverse_tree_merge_mafft( tre.treenode.get_tree_root(), structalns.get_leafset(tre.treenode.get_tree_root()) , alndf , infolder+'alnscratch/' , submat = snakemake.params.submat , verbose = True ) 
 
+print('finalaln',finalaln)
+#print the final alignments
+print('nsequences' , len(tre.get_tip_labels()))
 
-finalaln = structalns.remove_seeds(finalaln)
-finalaln3di = structalns.remove_seeds(finalaln3di)
+finalaln = remove_redundant(finalaln)
+finalaln3di = remove_redundant(finalaln3di)
 
-finalaln = structalns.remove_redundant(finalaln)
-finalaln3di = structalns.remove_redundant(finalaln3di)
+with open(finalaln) as f:
+    aacount = f.read().count('>')
 
+with open(finalaln3di) as f:
+    count3di = f.read().count('>')
+
+assert len(tre.get_tip_labels()) == aacount
+assert len(tre.get_tip_labels()) == count3di
 
 for fasta,data in {snakemake.output[1]:finalaln, snakemake.output[2]:finalaln3di}.items():
     with open(fasta , 'w') as fastout:

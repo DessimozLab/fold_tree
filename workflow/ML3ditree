@@ -25,14 +25,13 @@ def get_mem_mb(wildcards, attempt):
 	return attempt * 20000
 
 def get_time(wildcards, attempt):
-	return attempt * 60
+	return min(attempt,3) * 60
 
 rule all:
 	input:
 	#get all treescore and rf distance files for all alntypes
 		expand("{folder}/templateX{alntype}.nx.treefile.rooted.final", folder = folders , alntype = alntype),
 		expand("{folder}/templateX{alntype}.nx.treefile.rooted.final.treescore", folder = folders , alntype = alntype),
-
 
 rule calcfident_distributions:
 	conda:
@@ -146,7 +145,7 @@ rule iqtreex:
 	log:
 		"{folder}/logs/3diAA_iqtree_{alntype}.log"
 	shell:
-		'iqtree -p {wildcards.folder}/templateX{wildcards.alntype}.nx  -redo -seed 42 -nt 1 '
+		'iqtree -p {wildcards.folder}/templateX{wildcards.alntype}.nx -seed 42 -nt 1 --undo '
 
 
 
@@ -227,7 +226,8 @@ rule scrape_alns:
 		"{folder}/alnAA_foldtree.fasta",
 		"{folder}/aln3di_foldtree.fasta",
 	params:
-		dbname="outdb"
+		dbname="outdb",
+		submat=rootdir+config["mafft_submat3di"]
 	log:
 		"{folder}/logs/scrape_alns.log"
 	script:
