@@ -61,8 +61,12 @@ print('finalaln',finalaln)
 #print the final alignments
 print('nsequences' , len(tre.get_tip_labels()))
 
-finalaln = remove_redundant(finalaln)
-finalaln3di = remove_redundant(finalaln3di)
+
+finalaln = structalns.remove_seeds(finalaln)
+finalaln3di = structalns.remove_seeds(finalaln3di)
+
+finalaln = structalns.remove_redundant(finalaln)
+finalaln3di = rstructalns.emove_redundant(finalaln3di)
 
 with open(finalaln) as f:
     aacount = f.read().count('>')
@@ -73,10 +77,12 @@ with open(finalaln3di) as f:
 assert len(tre.get_tip_labels()) == aacount
 assert len(tre.get_tip_labels()) == count3di
 
+
 for fasta,data in {snakemake.output[1]:finalaln, snakemake.output[2]:finalaln3di}.items():
     with open(fasta , 'w') as fastout:
         with open( data ) as fastin:
             fastout.write( fastin.read())
+
 #cleanup the aln files
 for f in glob.glob(infolder+'alnscratch/*inter*'):
     os.remove(f)
