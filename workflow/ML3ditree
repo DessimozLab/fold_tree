@@ -93,7 +93,7 @@ rule mad_root_post:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/struct_tree.PP.nwk"
+		"{folder}/struct_tree.PP.nwk.rooted"
 	output:
 		"{folder}/struct_tree.PP.nwk.rooted.final"
 	log:
