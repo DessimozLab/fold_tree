@@ -107,10 +107,10 @@ def mafft_addfull(aln1,aln2, outprofile , submat = None):
     """
     #make profile
     profile = aln1 + '.profile'
-    if submat:
-        cmd = 'mafft --textmatrix {} --addfull {} --keeplength {} > {}'.format(submat, aln1,aln2, outprofile)
+    if submat is not None:
+        cmd = 'mafft --textmatrix {} --addfull {} {} > {}'.format(submat, aln1,aln2, outprofile)
     else:
-        cmd = 'mafft --addfull  {} --keeplength {} > {}'.format(aln1,aln2, outprofile)
+        cmd = 'mafft --addfull  {} {} > {}'.format(aln1,aln2, outprofile)
     print(cmd)
 
     subprocess.run(cmd , shell = True)
@@ -202,7 +202,7 @@ def traverse_tree_merge_mafft( treenode, topleafset, allvall , alnfolder , subma
                 if verbose == True:
                     print('traverse', c.name , c.is_leaf() , c.leafset)
                 if not c.aln:
-                    c.aln,c.aln3di = traverse_tree_merge_mafft(c , treenode.leafset , allvall, alnfolder , verbose = verbose)
+                    c.aln,c.aln3di = traverse_tree_merge_mafft(c , treenode.leafset , allvall, alnfolder , verbose = verbose , submat=submat)
                 childalnsAA[c] = { 'fasta': c.aln  }
                 childalns3di[c] = { 'fasta': c.aln3di  }
             

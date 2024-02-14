@@ -18,6 +18,10 @@ else:
 	folders = glob_wildcards("{folders}/identifiers.txt").folders
 
 alntype = ['3di','AA', 'foldtree']
+
+print( 'custom submat' , rootdir+config["mafft_submat3di"])
+
+
 print(folders[0:100] , '...')
 
 

@@ -21,8 +21,8 @@ mapper3di, mapperAA = structalns.read_dbfiles3di( snakemake.input[2] , snakemake
 columns = 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,qaln,taln,cigar,alntmscore'.split(',')
 alndf.columns = columns
 
-print(mapper3di)
-print(mapperAA)
+print('submat', snakemake.params.submat)
+
 
 alndf['query'] = alndf['query'].map(lambda x :x.replace('.pdb', ''))
 alndf['target'] = alndf['target'].map(lambda x :x.replace('.pdb', ''))
@@ -52,6 +52,8 @@ for i,n in enumerate(tre.treenode.traverse()):
 alnfolder = infolder+'alnscratch/'
 if not os.path.exists(alnfolder):
     os.mkdir(infolder+'alnscratch/')
+
+
 
 finalaln, finalaln3di = structalns.traverse_tree_merge_mafft( tre.treenode.get_tree_root(), structalns.get_leafset(tre.treenode.get_tree_root()) , alndf , infolder+'alnscratch/' , submat = snakemake.params.submat , verbose = True ) 
 
