@@ -88,19 +88,18 @@ def get_leafset( treenode ):
         return treenode.get_leaf_names()
 
 
+
 def mafft_profile(aln1,aln2, outprofile , submat = None):
     """
-    this function aligns two alignments using MAFFT
+    this function aligns two alignments using clustalo
     """
     #make profile
-    if submat:
-        cmd = 'mafft --textmatrix {} --seed {} {} > {}'.format(submat, aln1,aln2, outprofile)
-    else:
-        cmd = 'mafft --seed {} {} > {}'.format(aln1,aln2, outprofile)
-
+    cmd = 'clustalo --profile1 {} --profile2 {} > {}'.format( aln1,aln2, outprofile)
     print(cmd)
     subprocess.run(cmd , shell=True)
     return outprofile
+
+
 
 def mafft_addfull(aln1,aln2, outprofile , submat = None):
     """
