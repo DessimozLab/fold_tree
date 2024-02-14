@@ -36,6 +36,9 @@ alndf['AAt']= alndf['target'].map(mapperAA)
 res = alndf.apply(structalns.calc_fident_crossaln , axis = 1)
 alndf = pd.concat([alndf,res] , axis = 1)
 
+
+
+
 with open(snakemake.output[0] , 'w') as out:
     for seq in alndf['query'].unique():
         out.write('>'+seq.replace('.pdb', '' )+'\n')
@@ -48,6 +51,9 @@ for i,n in enumerate(tre.treenode.traverse()):
     n.leafset = None
     if len(n.name) == 0:
         n.name = 'internal_'+str(i)
+
+
+
 
 alnfolder = infolder+'alnscratch/'
 if not os.path.exists(alnfolder):

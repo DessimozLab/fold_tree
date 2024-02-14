@@ -237,6 +237,29 @@ rule scrape_alns:
 	script:
 		"../src/add_structalns.py"
 
+
+rule out_xalndf:
+	#use 3di and AA from foldseek
+	#scrape the 3di alphabet and use alignment logic to calculate new fident
+	#working on merging the alns progressively for a blend of struct and seq
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/allvall_1.csv",
+		"{folder}/outdb",
+		"{folder}/outdb_ss"
+	output:
+		"{folder}/allvall_1_xaln.csv",
+	params:
+		dbname="outdb",
+		submat=rootdir+config["mafft_submat3di"]
+	log:
+		"{folder}/logs/scrape_alns.log"
+	script:
+		"../src/output_xalndf.py"
+
+
 rule quicktree:
 	conda:
 		#"config/fold_tree.yaml"
