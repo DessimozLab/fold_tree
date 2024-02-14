@@ -94,7 +94,7 @@ def mafft_profile(aln1,aln2, outprofile , submat = None):
     this function aligns two alignments using clustalo
     """
     #make profile
-    cmd = 'clustalo --profile1 {} --profile2 {} > {}'.format( aln1,aln2, outprofile)
+    cmd = 'clustalo --is-profile --profile1 {} --profile2 {} > {}'.format( aln1,aln2, outprofile)
     print(cmd)
     subprocess.run(cmd , shell=True)
     return outprofile
