@@ -3,7 +3,7 @@ import snakemake.utils
 snakemake.utils.min_version("7.8.0")
 snake_dir = workflow.basedir
 rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
-print(rootdir)
+print('ml3ditree running in ' , rootdir)
 
 configfile: rootdir+ "workflow/config/config_vars.yaml"
 # remote homologues search parameters

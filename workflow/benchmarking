@@ -6,7 +6,7 @@ import snakemake.utils
 snakemake.utils.min_version("7.8.0")
 snake_dir = workflow.basedir
 rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
-print(rootdir)
+print('benchmarking running in ', rootdir)
 
 
 configfile: rootdir+ "workflow/config/config_vars.yaml"
@@ -25,7 +25,6 @@ foldseekpath = config["foldseek_path"]
 if foldseekpath == 'provided':
 	foldseekpath = rootdir + "foldseek/foldseek"
 
-print( len(folders) , 'families to benchmark' )
 
 
 # remote homologues search parameters
@@ -246,7 +245,7 @@ rule foldseek_allvall_0:
 	log:
 		"{folder}/logs/foldseekallvall.log"
 	shell:
-		foldseekpath + " easy-search {wildcards.folder}/structs/ {wildcards.folder}/structs/ {wildcards.folder}/allvall_0.csv {wildcards.folder}/tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --exhaustive-search --alignment-type 0 -e inf" 
+		foldseekpath + " easy-search {wildcards.folder}/structs/ {wildcards.folder}/structs/ {wildcards.folder}/allvall_0.csv {wildcards.folder}/tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,qaln,taln,cigar,alntmscore' --exhaustive-search --alignment-type 0 -e inf" 
 
 rule foldseek_allvall_1:
 	resources:
@@ -261,7 +260,7 @@ rule foldseek_allvall_1:
 	log:
 		"{folder}/logs/foldseekallvall.log"
 	shell:
-		foldseekpath + " easy-search {wildcards.folder}/structs/ {wildcards.folder}/structs/ {wildcards.folder}/allvall_1.csv {wildcards.folder}/tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --exhaustive-search --alignment-type 2 -e inf" 
+		foldseekpath + " easy-search {wildcards.folder}/structs/ {wildcards.folder}/structs/ {wildcards.folder}/allvall_1.csv {wildcards.folder}/tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,qaln,taln,cigar,alntmscore' --exhaustive-search --alignment-type 2 -e inf" 
 
 
 rule clustalo:
