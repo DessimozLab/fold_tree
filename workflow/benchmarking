@@ -8,16 +8,25 @@ snake_dir = workflow.basedir
 rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
 print(rootdir)
 
-folders = glob_wildcards("{folders}/identifiers.txt").folders
-mattypes = ['fident', 'alntmscore', 'lddt' , '3difident']
+
+configfile: rootdir+ "workflow/config/config_vars.yaml"
+
+if 'folder' in config:
+	folders = [config['folder']]
+else:
+	folders = glob_wildcards("{folders}/identifiers.txt").folders
+
+mattypes = ['fident', 'alntmscore', 'lddt' ]
 alntypes = ['0', '1']
 exp = ['raw', 'exp']
 aligners = [ 'clustalo' , 'muscle' ]
 
-foldseekpath = rootdir + 'foldseek/foldseek '
+foldseekpath = config["foldseek_path"]
+if foldseekpath == 'provided':
+	foldseekpath = rootdir + "foldseek/foldseek"
+
 print( len(folders) , 'families to benchmark' )
 
-configfile: rootdir+ "workflow/config/config_vars.yaml"
 
 # remote homologues search parameters
 seed_folders = glob_wildcards("{seed_folders}/seed_structures/").seed_folders
@@ -32,9 +41,11 @@ rule all:
 		expand( "{folder}/treescores_sequences_iq.{aligner}.json" , folder = folders , aligner = aligners) ,
 		expand( "{folder}/plddt.json" , folder = folders ) ,
 		expand("{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk.rooted", folder = folders, mattype = mattypes, alntype = alntypes, exp = exp),
-		expand("{seed_folder}/foldseek_searches/foldseek_search_{seed}.tsv", seed = seed_structures, seed_folder = seed_folders),
-		expand("{seed_folder}/{seed}_prob_{prob}_qcov_{qcov}_scov_{scov}_eval_{eval}_uniref90_homologs_structs/identifiers.txt", seed = seed_structures, seed_folder = seed_folders, prob = config['prob_threshold'], qcov = config['qcov_threshold'], scov = config['scov_threshold'], eval = config['evalue_threshold'])
+		#expand("{seed_folder}/foldseek_searches/foldseek_search_{seed}.tsv", seed = seed_structures, seed_folder = seed_folders),
+		#expand("{seed_folder}/{seed}_prob_{prob}_qcov_{qcov}_scov_{scov}_eval_{eval}_uniref90_homologs_structs/identifiers.txt", seed = seed_structures, seed_folder = seed_folders, prob = config['prob_threshold'], qcov = config['qcov_threshold'], scov = config['scov_threshold'], eval = config['evalue_threshold'])
 
+
+"""
 rule calc_RF:
 	conda:
 		#"config/fold_tree.yaml"
@@ -53,6 +64,7 @@ rule calc_RF:
 		"{folder}/logs/RFdist_{exp}_.log" 
 	script:
 		"../src/calcRF.py"
+"""
 
 rule calc_tax_score:
 	conda:
@@ -199,8 +211,7 @@ rule iqtree:
 	params:
 		extra="",
 	shell:
-		'iqtree -s {wildcards.folder}/sequences.aln.{wildcards.aligner}.fst  -m LG+I+G -seed 42 -nt 1 '
-
+		'iqtree -s {wildcards.folder}/sequences.aln.{wildcards.aligner}.fst  -redo -m LG+I+G -seed 42 -nt 1 '
 
 rule foldseek2distmat:
 	resources:
@@ -212,11 +223,9 @@ rule foldseek2distmat:
 		"{folder}/allvall_{alntype}.final.csv"
 	output:
 		"{folder}/fident_{alntype}_raw_fastmemat.txt",
-		"{folder}/3difident_{alntype}_raw_fastmemat.txt",
 		"{folder}/alntmscore_{alntype}_raw_fastmemat.txt",
 		"{folder}/lddt_{alntype}_raw_fastmemat.txt",
 		"{folder}/fident_{alntype}_exp_fastmemat.txt",
-		"{folder}/3difident_{alntype}_exp_fastmemat.txt",
 		"{folder}/alntmscore_{alntype}_exp_fastmemat.txt",
 		"{folder}/lddt_{alntype}_exp_fastmemat.txt",
 	log:
@@ -253,57 +262,6 @@ rule foldseek_allvall_1:
 		"{folder}/logs/foldseekallvall.log"
 	shell:
 		foldseekpath + " easy-search {wildcards.folder}/structs/ {wildcards.folder}/structs/ {wildcards.folder}/allvall_1.csv {wildcards.folder}/tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --exhaustive-search --alignment-type 2 -e inf" 
-
-rule transfer_alns:
-	resources:
-		mem_mb=get_mem_mb
-	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
-	input:
-		"{folder}/allvall_{alntype}.csv"
-		"{folder}/3diseq.csv"
-	output:
-		#add the 3di Fident to the allvall csv
-		"{folder}/allvall_{alntype}.final.csv"
-	log:
-		"{folder}/logs/transferal_{alntype}.log"
-	shell:
-		"../src/scrape3di.py"
-
-
-rule scrape_3di:
-	resources:
-		mem_mb=get_mem_mb
-	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
-	input:
-		"{folder}/structdb"
-	output:
-		"{folder}/3diseq.csv"
-	log:
-		"{folder}/logs/scrape3di.log"
-	script:
-		foldseekpath + " createdb {wildcards.folder}/structs/ {wildcards.folder}/structdb tmp" 
-
-rule make_structdb:
-	resources:
-		mem_mb=get_mem_mb
-	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
-	input:
-		"{folder}/finalset.csv"
-	output:
-		"{wildcards.folder}/structdb"
-	log:
-		"{folder}/logs/createdb.log"
-	shell:
-		foldseekpath + " createdb {wildcards.folder}/structs/ {wildcards.folder}/structdb tmp" 
-
-
-
 
 
 rule clustalo:
@@ -347,11 +305,11 @@ rule dl_ids_sequences:
 		"{folder}/sequence_dataset.csv",
 	log:
 		"{folder}/logs/dlsequences.log"
+	params:
+		custom_structs=config["custom_structs"],
 	script:
 		"../src/dl_sequences.py"
-	params:
-		customstructs=config["customstructs"],
-
+	
 rule plddt:
 	conda:
 		#"config/fold_tree.yaml"
@@ -380,7 +338,7 @@ rule dl_ids_structs:
 		filtervar=config["filter"],
 		filtervar_min=config["filter_min"],
 		filtervar_avg=config["filter_avg"],
-		customstructs=config["customstructs"],
+		custom_structs=config["custom_structs"],
 	script:
 		"../src/dl_structs.py"
 

@@ -29,6 +29,7 @@ if custom_structs == True:
 		outfile.write(''.join(['>'+i+'\n'+finalset[i]+'\n' for i in finalset]))
 	with open(snakemake.output[1] , 'w') as outfile:
 		outfile.write(''.join(['>'+i+'\n'+finalset[i]+'\n' for i in finalset]))
+
 else:
 	try:
 		os.mkdir(structfolder)
@@ -70,18 +71,23 @@ else:
 				os.remove(found[i])
 			missing_structs.add(i)
 			del found[i]
-
+	
+	
 	missing_sequences = set(ids)-set(seqdf['query'].unique())
 	print('missing in afdb:',missing_structs)
 	print( 'missing in sequences:',missing_sequences)
-
 	finalset = set(ids)-set(missing_sequences)
 	finalset = set(finalset)-set(missing_structs)
 
 	resdf = seqdf[seqdf['query'].isin(finalset)]
-	fasta = AFDB_tools.res2fasta(resdf)
+	#fasta = AFDB_tools.res2fasta(resdf)
+
+	found = glob.glob(structfolder+'*.pdb') + glob.glob(rejectedfolder+'*.pdb')
+	finalset = { f.replace('.pdb', '' ).split('/')[-1] : AFDB_tools.get_amino_acid_sequence(f) for f in found if f.replace('.pdb', '' ).split('/')[-1] in finalset }
+	
+	
+	assert len(finalset) == len(resdf['query'].unique()) , 'finalset and resdf do not have the same length'
 
 	with open(snakemake.output[0] , 'w') as outfile:
-		outfile.write(fasta)
-
+		outfile.write(''.join(['>'+i+'\n'+finalset[i]+'\n' for i in finalset]))
 	resdf.to_csv(snakemake.output[1])
