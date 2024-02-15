@@ -336,6 +336,8 @@ rule dl_ids_structs:
 		"{folder}/logs/dlstructs.log",
 	params:
 		filtervar=config["filter"],
+		cath=config["cath"],
+
 		filtervar_min=config["filter_min"],
 		filtervar_avg=config["filter_avg"],
 		custom_structs=config["custom_structs"],

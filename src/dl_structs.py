@@ -85,7 +85,6 @@ else:
 	found = glob.glob(structfolder+'*.pdb') + glob.glob(rejectedfolder+'*.pdb')
 	finalset = { f.replace('.pdb', '' ).split('/')[-1] : AFDB_tools.get_amino_acid_sequence(f) for f in found if f.replace('.pdb', '' ).split('/')[-1] in finalset }
 	
-	
 	assert len(finalset) == len(resdf['query'].unique()) , 'finalset and resdf do not have the same length'
 
 	with open(snakemake.output[0] , 'w') as outfile:

@@ -20,6 +20,7 @@ foldseek_cores: 1
 
 custom_structs: False
 cath: False
+iqtree_redo : False
 
 #if you need to use the foldseek api to retrieve the structures
 
