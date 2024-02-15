@@ -306,6 +306,7 @@ rule dl_ids_sequences:
 	log:
 		"{folder}/logs/dlsequences.log"
 	params:
+		cath=config["cath"],
 		custom_structs=config["custom_structs"],
 	script:
 		"../src/dl_sequences.py"

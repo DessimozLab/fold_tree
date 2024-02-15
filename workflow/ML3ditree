@@ -15,7 +15,7 @@ if foldseekpath == 'provided':
 if 'folder' in config:
 	folders = [config['folder']]
 else:
-	folders = glob_wildcards("{folders}/identifiers.txt").folders
+	folders = glob_wildcards("{folders}/fident_1_raw_struct_tree.PP.nwk.rooted").folders
 
 alntype = ['3di','AA', 'foldtree']
 
@@ -36,6 +36,7 @@ rule all:
 	#get all treescore and rf distance files for all alntypes
 		expand("{folder}/templateX{alntype}.nx.treefile.rooted.final", folder = folders , alntype = alntype),
 		expand("{folder}/templateX{alntype}.nx.treefile.rooted.final.treescore", folder = folders , alntype = alntype),
+		expand( '{folder}/alnfident_dist_{restype}_{alntype}.json', folder = folders, alntype = alntype, restype = ['AA', '3di']),
 
 rule calcfident_distributions:
 	conda:
@@ -44,9 +45,9 @@ rule calcfident_distributions:
 	input:
 		expand("{folder}/aln{restype}_{alntype}.fasta", folder = folders, alntype = alntype, restype = ['AA', '3di']),
 	output:
-		'{folder}/alnfident_dist.json',
+		'{folder}/alnfident_dist_{restype}_{alntype}.json',
 	log:
-		'{folder}/logs/alnfident_dist.log'
+		'{folder}/logs/alnfident_dist{restype}_{alntype}.log'
 	script:
 		'../src/calcfident_distributions.py'
 
@@ -151,8 +152,6 @@ rule iqtreex:
 	shell:
 		'iqtree -p {wildcards.folder}/templateX{wildcards.alntype}.nx -seed 42 -nt 1 --redo '
 
-
-
 rule iqtree_template:
 	conda:
 		#"config/fold_tree.yaml"
@@ -222,7 +221,7 @@ rule scrape_alns:
 		"foldtree"
 	input:
 		"{folder}/allvall_1.csv",
-		"{folder}/struct_tree.PP.nwk.rooted.final",
+		"{folder}/fident_1_raw_struct_tree.PP.nwk.rooted",
 		"{folder}/outdb",
 		"{folder}/outdb_ss"
 	output:
@@ -236,7 +235,6 @@ rule scrape_alns:
 		"{folder}/logs/scrape_alns.log"
 	script:
 		"../src/add_structalns.py"
-
 
 rule out_xalndf:
 	#use 3di and AA from foldseek
@@ -259,7 +257,7 @@ rule out_xalndf:
 	script:
 		"../src/output_xalndf.py"
 
-
+"""
 rule quicktree:
 	conda:
 		#"config/fold_tree.yaml"
@@ -302,6 +300,8 @@ rule foldseek_allvall_1:
 		"{folder}/logs/foldseekallvall.log"
 	shell:
 		foldseekpath + " easy-search {wildcards.folder}/structs/ {wildcards.folder}/structs/ {wildcards.folder}/allvall_1.csv {wildcards.folder}/tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,qaln,taln,cigar,alntmscore' --exhaustive-search --alignment-type 2 -e inf --threads " + str(config['foldseek_cores']) 
+"""
+
 
 rule foldseek_createdb:
 	conda:
@@ -317,6 +317,8 @@ rule foldseek_createdb:
 	shell:
 		foldseekpath + " createdb {wildcards.folder}/structs/ {wildcards.folder}/outdb"
 
+
+"""
 rule dl_ids_sequences:
 	conda: 
 		#"config/fold_tree.yaml"
@@ -365,3 +367,4 @@ rule dl_ids_structs:
 		custom_structs=config["custom_structs"],
 	script:
 		"../src/dl_structs.py"
+"""
