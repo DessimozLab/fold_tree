@@ -10,8 +10,6 @@ import plotly.figure_factory as ff
 from scipy.stats import wilcoxon
 import numpy as np
 
-
-
 def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , verbose = False):
 
     """
@@ -26,8 +24,7 @@ def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , verbose = F
         resdf: dataframe with the treescores
         refclols: list of the columns in the dataframe
 
-    """
-    
+    """    
     print(rootfolder)
     res = {}
     folders = set(glob.glob(rootfolder + '*/' ))-set([rootfolder+'logs/'])
@@ -54,8 +51,7 @@ def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , verbose = F
                             if seqcount[k] != nstructs:
                                 checkfastas = False
                                 if verbose == True:
-                                    print('nseqs != nstructs', folder)
-                                    print(seqcount[k], nseqs , k)
+                                    print('nseqs != nstructs', folder , 'fasta', k , 'nseqs' , seqcount[k], 'nstructs', nstructs )
                         if checkfastas == True:
                             for score in treescores:
                                 #check if score exists
@@ -92,11 +88,14 @@ def compile_folder(rootfolder , scorefunc = 'score_x_frac' , verbose = False):
         for c in refcols:
             resdf[c+'_norm'] = resdf[c] / resdf['nseqs']
 
+        #not very useful... can add this later in the notebook if needed
+        """
         for c1,c2 in combinations(refcols,2):
             resdf[c1+'_'+c2+'_delta'] = resdf[c1] - resdf[c2]
             resdf[c1+'_'+c2+'_max'] = resdf[[c1,c2]].apply( max , axis = 1)
-
             resdf[c1+'_'+c2+'_delta_norm'] = resdf[c1+'_'+c2+'_delta'] / resdf[c1+'_'+c2+'_max']
+        """
+
         resdf['clade'] = rootfolder.split('/')[-2]
         resdf['family'] = resdf.index.map( lambda x :  x.split('/')[-2])
 
@@ -110,7 +109,7 @@ def compile_folder_treestats(rootfolder , scorefunc = 'ultrametricity_norm' , ve
         if verbose == True:
             print(resdf.head(), resdf.shape)
         return resdf
-    
+
 def compare_treesets(tree_resdf , colfilter= 'sequence' , display_lineplot = False , display_distplot = True , verbose = False):
 
     '''
