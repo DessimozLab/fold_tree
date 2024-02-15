@@ -12,7 +12,13 @@ infolder = snakemake.input[0].split('/')[:-1]
 infolder = ''.join( [i + '/' for i in infolder])+'/'
 res[0] = res[0].map(lambda x :x.replace('.pdb', ''))
 res[1] = res[1].map(lambda x :x.replace('.pdb', ''))
-res.columns = 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore'.split(',')
+
+
+if snakemake.params.fmt is None:
+    res.columns = 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore'.split(',')
+else:
+    res.columns = snakemake.params.fmt.split(',')
+
 ids = list( set(list(res['query'].unique()) + list(res['target'].unique())))
 pos = { protid : i for i,protid in enumerate(ids)}
 kernels = ['fident', 'alntmscore', 'lddt']

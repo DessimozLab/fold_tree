@@ -25,8 +25,6 @@ foldseekpath = config["foldseek_path"]
 if foldseekpath == 'provided':
 	foldseekpath = rootdir + "foldseek/foldseek"
 
-
-
 # remote homologues search parameters
 seed_folders = glob_wildcards("{seed_folders}/seed_structures/").seed_folders
 seed_structures = glob_wildcards("{seed_folders}/seed_structures/{seed_structures}.pdb").seed_structures
@@ -219,7 +217,9 @@ rule foldseek2distmat:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/allvall_{alntype}.final.csv"
+		"{folder}/allvall_{alntype}.csv"
+	params:
+		fmt = 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,qaln,taln,cigar,alntmscore'
 	output:
 		"{folder}/fident_{alntype}_raw_fastmemat.txt",
 		"{folder}/alntmscore_{alntype}_raw_fastmemat.txt",

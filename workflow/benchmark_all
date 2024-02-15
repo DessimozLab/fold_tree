@@ -1,4 +1,3 @@
-#once snakemake is installed use the following command to test the struct tree
 import snakemake.utils
 snakemake.utils.min_version("7.8.0")
 snake_dir = workflow.basedir
@@ -21,30 +20,21 @@ mattypes = ['fident', 'alntmscore', 'lddt' ]
 alntypes = ['0', '1']
 exp = ['raw', 'exp']
 aligners = [ 'clustalo' , 'muscle' ]
-
 print( len(folders) , 'families to benchmark' )
 
-
 rule all:
-	input:
-    	#get all treescore and rf distance files for all alntypes
-        #control dist tree w alns pipeline
-		expand("{folder}/{alntype}_xaln_tree.PP.nwk.rooted.final", folder = folders , alntype = ['3di','AA']),
-		expand("{folder}/{alntype}_xaln_tree.PP.nwk.rooted.final.treescore", folder = folders , alntype = ['3di','AA'] ),
-
-        #ML pipeline
+    input:
+        expand('{folder}/alnfident_dist_{restype}_{alntype}.json', folder = folders, alntype = alntype, restype = ['AA', '3di']),
+        expand("{folder}/{alntype}_xaln_tree.PP.nwk.rooted.final", folder = folders , alntype = ['3di','AA']),
+        expand("{folder}/{alntype}_xaln_tree.PP.nwk.rooted.final.treescore", folder = folders , alntype = ['3di','AA'] ),
         expand("{folder}/templateX{alntype}.nx.treefile.rooted.final", folder = folders , alntype = alntype),
-		expand("{folder}/templateX{alntype}.nx.treefile.rooted.final.treescore", folder = folders , alntype = alntype),
-		expand('{folder}/alnfident_dist_{restype}_{alntype}.json', folder = folders, alntype = alntype, restype = ['AA', '3di']),
-
-        #original benchmark
+        expand("{folder}/templateX{alntype}.nx.treefile.rooted.final.treescore", folder = folders , alntype = alntype),
+        expand('{folder}/alnfident_dist_{restype}_{alntype}.json', folder = folders, alntype = alntype, restype = ['AA', '3di']),
         expand( "{folder}/{mattype}_{alntype}_{exp}_treescores_struct_tree.json" , folder = folders , mattype = mattypes , alntype = alntypes , exp=exp ),
-		expand( "{folder}/treescores_sequences.{aligner}.json" , folder = folders , aligner = aligners) ,
-		expand( "{folder}/treescores_sequences_iq.{aligner}.json" , folder = folders , aligner = aligners) ,
-		expand( "{folder}/plddt.json" , folder = folders ) ,
-		expand("{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk.rooted", folder = folders, mattype = mattypes, alntype = alntypes, exp = exp),
-
-
+        expand( "{folder}/treescores_sequences.{aligner}.json" , folder = folders , aligner = aligners) ,
+        expand( "{folder}/treescores_sequences_iq.{aligner}.json" , folder = folders , aligner = aligners) ,
+        expand( "{folder}/plddt.json" , folder = folders ) ,
+        expand("{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk.rooted", folder = folders, mattype = mattypes, alntype = alntypes, exp = exp),
 
 module benchmarking:
     # here, plain paths, URLs and the special markers for code hosting providers (see below) are possible.
