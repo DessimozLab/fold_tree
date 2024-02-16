@@ -1,0 +1,103 @@
+#once snakemake is installed use the following command to test the struct tree
+import snakemake.utils
+snakemake.utils.min_version("7.8.0")
+snake_dir = workflow.basedir
+rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
+print('fident x aln running in ' , rootdir)
+
+configfile: rootdir+ "workflow/config/config_vars.yaml"
+
+# remote homologues search parameters
+if 'folder' in config:
+	folders = [config['folder']]
+else:
+	folders = glob_wildcards("{folders}/alnAA_3di.fasta").folders
+
+alntype = ['3di','AA']
+
+rule all:
+	input:
+	#get all treescore and rf distance files for all alntypes
+		expand("{folder}/{alntype}_xaln_tree.PP.nwk.rooted.final", folder = folders , alntype = alntype),
+		expand("{folder}/{alntype}_xaln_tree.PP.nwk.rooted.final.treescore", folder = folders , alntype = alntype),
+
+rule treescore:
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/sequence_dataset.csv",
+		"{folder}/{alntype}_xaln_tree.PP.nwk.rooted",
+	output:
+		"{folder}/{alntype}_xaln_tree.PP.nwk.rooted.final.treescore",
+	params:
+		custom_structs=config["custom_structs"]
+	log:
+		"{folder}/logs/treescore_{alntype}.log"
+	script:
+		'../src/calctreescores.py'
+
+rule mad_root_post:
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/{alntype}_xaln_tree.PP.nwk.rooted"
+	output:
+		"{folder}/{alntype}_xaln_tree.PP.nwk.rooted.final"
+	log:
+		"{folder}/logs/{alntype}_xaln_struct_madroot_post.log"
+	script:
+		'../src/process_madroot.py'
+	
+rule mad_root_struct:
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/{alntype}_xaln_tree.PP.nwk"
+	output:
+		"{folder}/{alntype}_xaln_tree.PP.nwk.rooted"
+	log:
+		"{folder}/logs/{alntype}_xaln_madroot.log"
+	shell:
+		rootdir+'madroot/mad {wildcards.folder}/{wildcards.alntype}_xaln_tree.PP.nwk'
+
+rule postprocess:
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/{alntype}_xaln_tree.nwk",
+	output:
+		"{folder}/{alntype}_xaln_tree.PP.nwk",
+	log:
+		"{folder}/logs/{alntype}_xaln_struct_postprocess.log",
+	script:
+		'../src/postprocess.py'
+
+rule quicktree:
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/{alntype}_xaln_fastmemat.txt",
+	output:
+		"{folder}/{alntype}_xaln_tree.nwk",
+	log:
+		"{folder}/logs/{alntype}_xaln_quicktree.log"
+	shell:
+		'quicktree -i m {wildcards.folder}/{wildcards.alntype}_xaln_fastmemat.txt > {wildcards.folder}/{wildcards.alntype}_xaln_tree.nwk '
+
+rule aln2distmat:
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/alnAA_{alntype}.fasta",
+	output:
+		"{folder}/{alntype}_xaln_fastmemat.txt",
+	log:
+		"{folder}/logs/{alntype}_aln2distmat.log"
+	script:
+		"../src/aln2distmat.py"
