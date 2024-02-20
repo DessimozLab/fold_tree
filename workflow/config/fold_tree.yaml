@@ -23,6 +23,7 @@ dependencies:
   - biopython
   - pycairo
   - numpy
+  - nextflow
   - pip:
     - tqdm
     - wget

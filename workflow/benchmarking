@@ -12,7 +12,7 @@ folders = glob_wildcards("{folders}/identifiers.txt").folders
 mattypes = ['fident', 'alntmscore', 'lddt']
 alntypes = ['0', '1']
 exp = ['raw', 'exp']
-aligners = [ 'clustalo' , 'muscle' ]
+aligners = [ 'clustalo' , 'muscle' , '3dcoffee']
 
 foldseekpath = rootdir + 'foldseek/foldseek '
 print( len(folders) , 'families to benchmark' )
@@ -283,6 +283,67 @@ rule muscle:
 	threads: 1
 	wrapper:
 		"v2.3.2/bio/muscle"
+
+rule 3dcoffee_preprocess:
+    resources:
+		mem_mb=get_mem_mb
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/sequences.fst",
+	output:
+		"{folder}/3dcoffee/samplesheet.csv",
+		"{folder}/3dcoffee/toolsheet.csv",
+	params:
+		extra="",
+	log:
+		"{folder}/logs/3dcoffee_preprocess.log",
+	script:
+	    'src/preprocess_3dcoffee.py'
+
+rule 3dcoffee_nxtflw:
+	resources:
+		mem_mb=get_mem_mb
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/3dcoffee/samplesheet.csv",
+		"{folder}/3dcoffee/toolsheet.csv",
+	output:
+		"{folder}/3dcoffee/outdir/alignment/tcoffee3d/test_null-args-null_3DCOFFEE-args-method_TMalign_pair.aln",
+	params:
+		pipeline=f"nf-core/multiplesequencealign",
+		profile='singularity',
+		r='dev',  # this might fail because it's not a pipeline param (--r) but a nextflow param (-r)
+		tools='{folder}/3dcoffee/toolsheet.csv',
+		input='{folder}/3dcoffee/samplesheet.csv',
+		outdir='{folder}/outdir/',
+		skip_eval='',
+		skip_stats='',
+	log:
+		"{folder}/logs/3dcoffee.log",
+	handover: True
+	wrapper:
+        "v2.6.0-35-g755343f/utils/nextflow"
+
+rule 3dcoffee_postprocess:
+	resources:
+		mem_mb=get_mem_mb
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/3dcoffee/outdir/alignment/tcoffee3d/test_null-args-null_3DCOFFEE-args-method_TMalign_pair.aln",
+	output:
+		"{folder}/sequences.aln.3dcoffee.fst",
+	params:
+		extra="",
+	log:
+		"{folder}/logs/3dcoffee_postprocess.log",
+	script:
+	    'src/postprocess_3dcoffee.py'
 
 rule dl_ids_sequences:
 	conda: 
