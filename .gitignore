@@ -9,6 +9,7 @@ logs/**
 **/*.pyc
 **/*.npy
 **/*.csv
+zenodo/**/**
 examples/**
 testdata/**
 !testdata/identifiers.txt

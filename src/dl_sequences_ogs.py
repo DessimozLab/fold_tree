@@ -16,8 +16,6 @@ if custom_structs == True:
 		outfile.write('')
 
 
-
-
 else:
 	with open(snakemake.input[0]) as infile:
 		ids = [ i.strip() for i in infile if len(i.strip())>0 ]
