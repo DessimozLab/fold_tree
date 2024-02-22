@@ -43,3 +43,17 @@ rule tdcoffee_shell:
 	handover: True
 	shell:
          "t_coffee -seq {wildcards.folder}/sequences.fst -method TMalign_pair -output=fasta_aln -template_file {wildcards.folder}/tcoffee_templates.txt -outfile {output}"
+
+rule induced_pairs:
+	conda:
+		"foldtree"
+	input:
+		"{folder}/sequences.fst",
+		"{folder}/tcoffee_templates.txt",
+	output:
+		"{folder}/alnAA_3dcoffee.fasta",
+	log:
+		"{folder}/logs/3dcoffee.log",
+	handover: True
+	shell:
+         "cp {wildcards.folder}/sequences.aln.3dcoffee.fst {output}"
