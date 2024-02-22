@@ -41,28 +41,6 @@ rule all:
 		#expand("{seed_folder}/foldseek_searches/foldseek_search_{seed}.tsv", seed = seed_structures, seed_folder = seed_folders),
 		#expand("{seed_folder}/{seed}_prob_{prob}_qcov_{qcov}_scov_{scov}_eval_{eval}_uniref90_homologs_structs/identifiers.txt", seed = seed_structures, seed_folder = seed_folders, prob = config['prob_threshold'], qcov = config['qcov_threshold'], scov = config['scov_threshold'], eval = config['evalue_threshold'])
 
-
-"""
-rule calc_RF:
-	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
-	input:
-		"{folder}/fident_0_{exp}_struct_tree.PP.nwk.rooted" , 
-		"{folder}/alntmscore_0_{exp}_struct_tree.PP.nwk.rooted" , 
-		"{folder}/lddt_0_{exp}_struct_tree.PP.nwk.rooted" , 
-		"{folder}/fident_1_{exp}_struct_tree.PP.nwk.rooted" , 
-		"{folder}/alntmscore_1_{exp}_struct_tree.PP.nwk.rooted" , 
-		"{folder}/lddt_1_{exp}_struct_tree.PP.nwk.rooted" ,
-		"{folder}/sequences.aln.fst.nwk.rooted",
-	output:
-		"{folder}/RFdistances_{exp}_.json" 
-	log:
-		"{folder}/logs/RFdist_{exp}_.log" 
-	script:
-		"../src/calcRF.py"
-"""
-
 rule calc_tax_score:
 	conda:
 		#"config/fold_tree.yaml"
@@ -293,67 +271,6 @@ rule muscle:
 	threads: 1
 	wrapper:
 		"v2.3.2/bio/muscle"
-
-rule 3dcoffee_preprocess:
-    resources:
-		mem_mb=get_mem_mb
-	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
-	input:
-		"{folder}/sequences.fst",
-	output:
-		"{folder}/3dcoffee/samplesheet.csv",
-		"{folder}/3dcoffee/toolsheet.csv",
-	params:
-		extra="",
-	log:
-		"{folder}/logs/3dcoffee_preprocess.log",
-	script:
-	    'src/preprocess_3dcoffee.py'
-
-rule 3dcoffee_nxtflw:
-	resources:
-		mem_mb=get_mem_mb
-	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
-	input:
-		"{folder}/3dcoffee/samplesheet.csv",
-		"{folder}/3dcoffee/toolsheet.csv",
-	output:
-		"{folder}/3dcoffee/outdir/alignment/tcoffee3d/test_null-args-null_3DCOFFEE-args-method_TMalign_pair.aln",
-	params:
-		pipeline=f"nf-core/multiplesequencealign",
-		profile='singularity',
-		r='dev',  # this might fail because it's not a pipeline param (--r) but a nextflow param (-r)
-		tools='{folder}/3dcoffee/toolsheet.csv',
-		input='{folder}/3dcoffee/samplesheet.csv',
-		outdir='{folder}/outdir/',
-		skip_eval='',
-		skip_stats='',
-	log:
-		"{folder}/logs/3dcoffee.log",
-	handover: True
-	wrapper:
-        "v2.6.0-35-g755343f/utils/nextflow"
-
-rule 3dcoffee_postprocess:
-	resources:
-		mem_mb=get_mem_mb
-	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
-	input:
-		"{folder}/3dcoffee/outdir/alignment/tcoffee3d/test_null-args-null_3DCOFFEE-args-method_TMalign_pair.aln",
-	output:
-		"{folder}/sequences.aln.3dcoffee.fst",
-	params:
-		extra="",
-	log:
-		"{folder}/logs/3dcoffee_postprocess.log",
-	script:
-	    'src/postprocess_3dcoffee.py'
 
 rule dl_ids_sequences:
 	conda: 

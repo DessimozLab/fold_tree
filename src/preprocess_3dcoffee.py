@@ -2,14 +2,19 @@
 # create samplesheet.csv and toolsheet.csv in folder 3dcoffee
 # pdb folder too! No! they are in {wildcards.folder}/structs/
 import os
+from Bio import SeqIO
+import glob
 
-toolsheet_str = """tree,args_tree,aligner,args_aligner
-,,3DCOFFEE,"""
-samplesheet_str = """id,fasta,reference,structures
-test,{0},{0},{1}""".format(snakemake.input[0], snakemake.wildcards.folder)  # check how to use wildcards in script
+folder = snakemake.wildcards.folder
+structfolder = folder + '/structs/' 
+print('structfolder: ', structfolder)
 
-# write files
-with open(snakemake.output[0]) as samplefile:
-    samplefile.write(samplesheet_str)
-with open(snakemake.output[1]) as toolfile:
-    toolfile.write(toolsheet_str)
+pdbs = glob.glob(structfolder + '*.pdb')
+
+#find absolute path of pdbs
+pdbs = [os.path.abspath(pdb) for pdb in pdbs]
+
+with open( snakemake.output[0], 'w') as outfile:
+    for pdb in pdbs:
+        pdbid = os.path.basename(pdb).split('.')[0].split('/')[-1]
+        outfile.write('>'+pdbid + ' _P_ ' + pdb + '\n')

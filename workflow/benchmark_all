@@ -19,7 +19,7 @@ alntype = ['3di','AA', 'foldtree']
 mattypes = ['fident', 'alntmscore', 'lddt' ]
 alntypes = ['0', '1']
 exp = ['raw', 'exp']
-aligners = [ 'clustalo' , 'muscle' ]
+aligners = [ 'clustalo' , 'muscle' , '3dcoffee' ]
 print( len(folders) , 'families to benchmark' )
 
 rule all:
@@ -58,4 +58,11 @@ module ML3ditree:
     config: config
 
 use rule * from ML3ditree as ML_*
+
+module tcoffee:
+    # here, plain paths, URLs and the special markers for code hosting providers (see below) are possible.
+    snakefile: "tcoffee"
+    config: config
+
+use rule * from tcoffee as TC_*
 
