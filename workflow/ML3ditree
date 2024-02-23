@@ -208,7 +208,7 @@ rule mafft_textaln:
 		submat=rootdir+config["mafft_submat3di"]
 	shell:
 		'mafft --textmatrix {params.submat} {input} > {output}'
-	
+
 rule mafft_seq:
 	#use a normal sequence alignment tool to align the AA sequences
 	conda:

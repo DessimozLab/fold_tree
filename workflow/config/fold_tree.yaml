@@ -18,7 +18,6 @@ dependencies:
   - python=3.10
   - fasttree=2.1.11
   - clustalo=1.2.4
-  - foldseek
   - iqtree
   - pandas
   - scipy
