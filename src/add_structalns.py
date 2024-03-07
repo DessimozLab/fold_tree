@@ -36,10 +36,12 @@ alndf['AAt']= alndf['target'].map(mapperAA)
 res = alndf.apply(structalns.calc_fident_crossaln , axis = 1)
 alndf = pd.concat([alndf,res] , axis = 1)
 
-
-
-
 with open(snakemake.output[0] , 'w') as out:
+    for seq in alndf['query'].unique():
+        out.write('>'+seq.replace('.pdb', '' )+'\n')
+        out.write(mapperAA[seq.replace('.pdb', '')]+'\n')
+
+with open(snakemake.output[1] , 'w') as out:
     for seq in alndf['query'].unique():
         out.write('>'+seq.replace('.pdb', '' )+'\n')
         out.write(mapper3di[seq.replace('.pdb', '')]+'\n')
@@ -84,7 +86,7 @@ assert len(tre.get_tip_labels()) == aacount
 assert len(tre.get_tip_labels()) == count3di
 
 
-for fasta,data in {snakemake.output[1]:finalaln, snakemake.output[2]:finalaln3di}.items():
+for fasta,data in {snakemake.output[2]:finalaln, snakemake.output[3]:finalaln3di}.items():
     with open(fasta , 'w') as fastout:
         with open( data ) as fastin:
             fastout.write( fastin.read())

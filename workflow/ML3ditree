@@ -234,6 +234,7 @@ rule scrape_alns:
 		"{folder}/outdb",
 		"{folder}/outdb_ss"
 	output:
+		"{folder}/sequences.fst",
 		"{folder}/seq3di.fasta",
 		"{folder}/alnAA_foldtree.fasta",
 		"{folder}/aln3di_foldtree.fasta",
@@ -266,52 +267,6 @@ rule out_xalndf:
 	script:
 		"../src/output_xalndf.py"
 
-"""
-rule quicktree:
-	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
-	input:
-		"{folder}/foldtree_fastmemat.txt"
-	output:
-		"{folder}/struct_tree.nwk"
-	log:
-		"{folder}/logs/quicktree.log"
-	shell:
-		'quicktree -i m {wildcards.folder}/foldtree_fastmemat.txt > {wildcards.folder}/struct_tree.nwk '
-
-rule foldseek2distmat:
-	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
-	input:
-		"{folder}/allvall_1.csv"
-	output:
-		"{folder}/foldtree_fastmemat.txt",
-		"{folder}/alntmscore_fastmemat.txt",
-		"{folder}/lddt_fastmemat.txt",
-	params:
-		fmt='query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,qaln,taln,cigar,alntmscore'
-	log:
-		"{folder}/logs/foldseek2distmat.log"
-	script:
-		"../src/foldseekres2distmat_simple.py"
-
-rule foldseek_allvall_1:
-	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
-	input:
-		"{folder}/finalset.csv"
-	output:
-		"{folder}/allvall_1.csv"
-	log:
-		"{folder}/logs/foldseekallvall.log"
-	shell:
-		foldseekpath + " easy-search {wildcards.folder}/structs/ {wildcards.folder}/structs/ {wildcards.folder}/allvall_1.csv {wildcards.folder}/tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,qaln,taln,cigar,alntmscore' --exhaustive-search --alignment-type 2 -e inf --threads " + str(config['foldseek_cores']) 
-"""
-
-
 rule foldseek_createdb:
 	conda:
 		#"config/fold_tree.yaml"
@@ -325,55 +280,3 @@ rule foldseek_createdb:
 		"{folder}/logs/foldseekallvall.log"
 	shell:
 		foldseekpath + " createdb {wildcards.folder}/structs/ {wildcards.folder}/outdb"
-
-
-"""
-rule dl_ids_sequences:
-	conda: 
-		#"config/fold_tree.yaml"
-		"foldtree"
-	input:
-		ids="{folder}/identifiers.txt",
-	output:
-		"{folder}/sequence_dataset.csv",
-	log:
-		"{folder}/logs/dlsequences.log"
-	params:
-		cath=config["cath"],
-		custom_structs=config["custom_structs"]
-	script:
-		"../src/dl_sequences.py"
-
-rule plddt:
-	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
-	input:
-		"{folder}/finalset.csv",
-	output:
-		"{folder}/plddt.json",
-	log:
-		"{folder}/logs/plddt.log"
-	script:
-		'../src/grabplddt.py'
-
-rule dl_ids_structs:
-	input:
-		"{folder}/sequence_dataset.csv",
-	output:
-		"{folder}/sequences.fst",
-		"{folder}/finalset.csv",
-	conda: 
-		#"config/fold_tree.yaml"
-		"foldtree",
-	log:
-		"{folder}/logs/dlstructs.log",
-	params:
-		filtervar=config["filter"],
-		cath=config["cath"],
-		filtervar_min=config["filter_min"],
-		filtervar_avg=config["filter_avg"],
-		custom_structs=config["custom_structs"],
-	script:
-		"../src/dl_structs.py"
-"""

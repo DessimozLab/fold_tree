@@ -87,6 +87,6 @@ else:
 	
 	assert len(finalset) == len(resdf['query'].unique()) , 'finalset and resdf do not have the same length'
 
-	with open(snakemake.output[0] , 'w') as outfile:
-		outfile.write(''.join(['>'+i+'\n'+finalset[i]+'\n' for i in finalset]))
-	resdf.to_csv(snakemake.output[1])
+	#with open(snakemake.output[0] , 'w') as outfile:
+	#	outfile.write(''.join(['>'+i+'\n'+finalset[i]+'\n' for i in finalset]))
+	resdf.to_csv(snakemake.output[0])

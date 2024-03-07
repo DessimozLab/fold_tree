@@ -9,6 +9,8 @@ rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
 print('benchmarking running in ', rootdir)
 
 
+
+
 configfile: rootdir+ "workflow/config/config_vars.yaml"
 
 if 'folder' in config:
@@ -25,9 +27,19 @@ foldseekpath = config["foldseek_path"]
 if foldseekpath == 'provided':
 	foldseekpath = rootdir + "foldseek/foldseek"
 
+
+
+
 # remote homologues search parameters
 seed_folders = glob_wildcards("{seed_folders}/seed_structures/").seed_folders
-seed_structures = glob_wildcards("{seed_folders}/seed_structures/{seed_structures}.pdb").seed_structures
+
+module ML3ditree:
+    # here, plain paths, URLs and the special markers for code hosting providers (see below) are possible.
+    snakefile: "ML3ditree"
+    config: config
+
+use rule * from ML3ditree as ML_*
+
 
 rule all:
 	input:
@@ -252,7 +264,7 @@ rule clustalo:
 	output:
 		"{folder}/sequences.aln.clustalo.fst",
 	params:
-		extra="",
+		extra=" --force ",
 	log:
 		"{folder}/logs/clustalo.log",
 	threads: 1
@@ -301,11 +313,12 @@ rule plddt:
 	script:
 		'../src/grabplddt.py'
 
+
 rule dl_ids_structs:
 	input:
 		"{folder}/sequence_dataset.csv",
 	output:
-		"{folder}/sequences.fst",
+		#"{folder}/sequences.fst",
 		"{folder}/finalset.csv",
 	conda: 
 		#"config/fold_tree.yaml"
@@ -315,36 +328,8 @@ rule dl_ids_structs:
 	params:
 		filtervar=config["filter"],
 		cath=config["cath"],
-
 		filtervar_min=config["filter_min"],
 		filtervar_avg=config["filter_avg"],
 		custom_structs=config["custom_structs"],
 	script:
 		"../src/dl_structs.py"
-
-rule foldseek_search:
-	input: 
-		"{seed_folder}/seed_structures/{seed}.pdb"
-	output: 
-		"{seed_folder}/foldseek_searches/foldseek_search_{seed}.tsv"
-	log: 
-		"{seed_folder}/logs/foldseek_search_{seed}.log"
-	script: 
-		"../src/foldseek_remote_search.py"
-
-"""
-rule retrieve_uniref90_homologs:
-	input:
-		#"{seed_folder}/foldseek_searches/foldseek_search_{seed}.tsv"
-		expand("{seed_folder}/foldseek_searches/foldseek_search_{seed}.tsv", seed = seed_structures, seed_folder = seed_folders)
-	output:
-		#"{seed_folder}/{seed}_prob_{prob_threshold}_qcov_{qcov_threshold}_scov_{scov_threshold}_eval_{evalue_threshold}_uniref90_homologs_structs"
-		expand("{seed_folder}/{seed}_prob_{prob}_qcov_{qcov}_scov_{scov}_eval_{eval}_uniref90_homologs_structs/identifiers.txt", seed = seed_structures, 
-		seed_folder = seed_folders, prob = config['prob_threshold'], qcov = config['qcov_threshold'], scov = config['scov_threshold'], 
-		eval = config['evalue_threshold'] )
-	log:
-		{seed_folder}/logs/uniref90_homologs_{seed}_prob_{prob}_qcov_{qcov}_scov_{scov}_eval_{eval}.log"
-	script: 
-		"../src/retrieve_uniref90_homologs.py"
-
-"""
