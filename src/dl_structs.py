@@ -18,6 +18,12 @@ infolder = ''.join( [i + '/' for i in infolder])
 structfolder = infolder+'structs/'
 rejectedfolder = infolder+'rejected/'
 
+#remove tmp folder
+
+try:
+	shutil.rmtree(infolder+'tmp/')
+except:
+	pass
 
 custom_structs = snakemake.params.custom_structs
 
@@ -40,6 +46,8 @@ else:
 		os.mkdir(rejectedfolder)
 	except:
 		print(rejectedfolder , 'already exists ')
+
+
 
 	#with open(snakemake.input[0]) as infile:
 	#	ids = [ i.strip() for i in infile if len(i.strip())>0 ]

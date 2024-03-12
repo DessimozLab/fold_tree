@@ -12,10 +12,17 @@ foldseekpath = config["foldseek_path"]
 if foldseekpath == 'provided':
 	foldseekpath = rootdir + "foldseek/foldseek"
 
+
+
 if 'folder' in config:
-	folders = [config['folder']]
+	if type(config['folder']) == str:
+		folders = [config['folder']]
+	else:
+		folders = config['folder']
 else:
 	folders = glob_wildcards("{folders}/fident_1_raw_struct_tree.PP.nwk.rooted").folders
+	config['folder']  = folders
+
 
 if config["iqtree_redo"] == True:
 	redo = " -redo"

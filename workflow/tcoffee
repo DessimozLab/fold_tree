@@ -6,7 +6,18 @@ rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
 
 print('tcoffee benchmark running in ' , rootdir)
 
-folders = glob_wildcards("{folders}/sequences.fst").folders
+if 'folder' in config:
+	if type(config['folder']) == str:
+		folders = [config['folder']]
+	else:
+		folders = config['folder']
+else:
+	folders = glob_wildcards("{folders}/sequences.fst").folders
+	config['folder']  = folders
+
+
+
+
 mattypes = ['fident', 'alntmscore', 'lddt']
 alntypes = ['0', '1']
 exp = ['raw', 'exp']
@@ -22,13 +33,13 @@ rule tdcoffee_preprocess:
 	input:
 		"{folder}/sequences.fst",
 	output:
-	    "{folder}/tcoffee_templates.txt",
+		"{folder}/tcoffee_templates.txt",
 	params:
 		extra="",
 	log:
 		"{folder}/logs/3dcoffee_preprocess.log",
 	script:
-	    '../src/preprocess_3dcoffee.py'
+		'../src/preprocess_3dcoffee.py'
 
 rule tdcoffee_shell:
 	conda:
@@ -42,7 +53,7 @@ rule tdcoffee_shell:
 		"{folder}/logs/3dcoffee.log",
 	handover: True
 	shell:
-         "t_coffee -seq {wildcards.folder}/sequences.fst -method TMalign_pair -output=fasta_aln -template_file {wildcards.folder}/tcoffee_templates.txt -outfile {output}"
+		 "t_coffee -seq {wildcards.folder}/sequences.fst -method TMalign_pair -output=fasta_aln -template_file {wildcards.folder}/tcoffee_templates.txt -outfile {output} -n_core=1"
 
 rule induced_pairs:
 	conda:
@@ -56,4 +67,4 @@ rule induced_pairs:
 		"{folder}/logs/3dcoffee.log",
 	handover: True
 	shell:
-         "cp {wildcards.folder}/sequences.aln.3dcoffee.fst {output}"
+		 "cp {wildcards.folder}/sequences.aln.3dcoffee.fst {output}"

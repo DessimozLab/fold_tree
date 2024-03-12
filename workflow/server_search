@@ -1,0 +1,39 @@
+import snakemake.utils
+snakemake.utils.min_version("7.8.0")
+snake_dir = workflow.basedir
+rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
+print('search remote running in ', rootdir)
+
+configfile: rootdir+ "workflow/config/config_vars.yaml"
+
+if 'folder' in config:
+	folders = [config['folder']]
+else:
+	folders = glob_wildcards("{folders}/seed_structures/{seed_structures}.pdb").folders
+
+seed_structures = glob_wildcards("{seed_folders}/seed_structures/{seed_structures}.pdb").seed_structures
+
+rule retrieve_uniref90_homologs:
+	input:
+		#"{seed_folder}/foldseek_searches/foldseek_search_{seed}.tsv"
+		expand("{seed_folder}/foldseek_searches/foldseek_search_{seed}.tsv", seed = seed_structures, seed_folder = seed_folders)
+	output:
+		#"{seed_folder}/{seed}_prob_{prob_threshold}_qcov_{qcov_threshold}_scov_{scov_threshold}_eval_{evalue_threshold}_uniref90_homologs_structs"
+		expand("{seed_folder}/{seed}_prob_{prob}_qcov_{qcov}_scov_{scov}_eval_{eval}_uniref90_homologs_structs/identifiers.txt", seed = seed_structures, 
+		seed_folder = seed_folders, prob = config['prob_threshold'], qcov = config['qcov_threshold'], scov = config['scov_threshold'], 
+		eval = config['evalue_threshold'] )
+	log:
+		"{seed_folder}/logs/uniref90_homologs_{seed}_prob_{prob}_qcov_{qcov}_scov_{scov}_eval_{eval}.log"
+	script: 
+		"../src/retrieve_uniref90_homologs.py"
+
+rule foldseek_search:
+	input: 
+		"{seed_folder}/seed_structures/{seed}.pdb"
+	output: 
+		"{seed_folder}/foldseek_searches/foldseek_search_{seed}.tsv"
+	log: 
+		"{seed_folder}/logs/foldseek_search_{seed}.log"
+	script: 
+		"../src/foldseek_remote_search.py"
+

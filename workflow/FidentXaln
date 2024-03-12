@@ -7,13 +7,20 @@ print('fident x aln running in ' , rootdir)
 
 configfile: rootdir+ "workflow/config/config_vars.yaml"
 
-# remote homologues search parameters
+
 if 'folder' in config:
-	folders = [config['folder']]
+	if type(config['folder']) == str:
+		folders = [config['folder']]
+	else:
+		folders = config['folder']
+
 else:
 	folders = glob_wildcards("{folders}/alnAA_3di.fasta").folders
+	config['folder']  = folders
 
-alntype = ['3di','AA']
+
+
+alntype = ['3di','AA' , '3dcoffee']
 
 rule all:
 	input:

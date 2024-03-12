@@ -13,10 +13,16 @@ print('benchmarking running in ', rootdir)
 
 configfile: rootdir+ "workflow/config/config_vars.yaml"
 
+
+
 if 'folder' in config:
-	folders = [config['folder']]
+	if type(config['folder']) == str:
+		folders = [config['folder']]
+	else:
+		folders = config['folder']
 else:
 	folders = glob_wildcards("{folders}/identifiers.txt").folders
+	config['folder']  = folders
 
 mattypes = ['fident', 'alntmscore', 'lddt' ]
 alntypes = ['0', '1']
@@ -27,16 +33,10 @@ foldseekpath = config["foldseek_path"]
 if foldseekpath == 'provided':
 	foldseekpath = rootdir + "foldseek/foldseek"
 
-
-
-
-# remote homologues search parameters
-seed_folders = glob_wildcards("{seed_folders}/seed_structures/").seed_folders
-
 module ML3ditree:
-    # here, plain paths, URLs and the special markers for code hosting providers (see below) are possible.
-    snakefile: "ML3ditree"
-    config: config
+	# here, plain paths, URLs and the special markers for code hosting providers (see below) are possible.
+	snakefile: "ML3ditree"
+	config: config
 
 use rule * from ML3ditree as ML_*
 
