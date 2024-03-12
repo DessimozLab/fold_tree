@@ -59,8 +59,8 @@ rule induced_pairs:
 	conda:
 		"foldtree"
 	input:
-		"{folder}/sequences.fst",
 		"{folder}/tcoffee_templates.txt",
+		"{folder}/sequences.aln.3dcoffee.fst",
 	output:
 		"{folder}/alnAA_3dcoffee.fasta",
 	log:
