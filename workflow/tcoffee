@@ -15,9 +15,6 @@ else:
 	folders = glob_wildcards("{folders}/sequences.fst").folders
 	config['folder']  = folders
 
-
-
-
 mattypes = ['fident', 'alntmscore', 'lddt']
 alntypes = ['0', '1']
 exp = ['raw', 'exp']
@@ -51,7 +48,6 @@ rule tdcoffee_shell:
 		"{folder}/sequences.aln.3dcoffee.fst",
 	log:
 		"{folder}/logs/3dcoffee.log",
-	handover: True
 	shell:
 		 "t_coffee -seq {wildcards.folder}/sequences.fst -method TMalign_pair -output=fasta_aln -template_file {wildcards.folder}/tcoffee_templates.txt -outfile {output} -n_core=1"
 
@@ -65,6 +61,5 @@ rule induced_pairs:
 		"{folder}/alnAA_3dcoffee.fasta",
 	log:
 		"{folder}/logs/3dcoffee.log",
-	handover: True
 	shell:
 		 "cp {wildcards.folder}/sequences.aln.3dcoffee.fst {output}"
