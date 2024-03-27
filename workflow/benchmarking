@@ -297,6 +297,8 @@ rule dl_ids_sequences:
 	params:
 		cath=config["cath"],
 		custom_structs=config["custom_structs"],
+		clean_folder=config["clean"],
+
 	script:
 		"../src/dl_sequences.py"
 	
@@ -331,6 +333,6 @@ rule dl_ids_structs:
 		filtervar_min=config["filter_min"],
 		filtervar_avg=config["filter_avg"],
 		custom_structs=config["custom_structs"],
-		clean=config["clean"],
+		clean_folder=config["clean"],
 	script:
 		"../src/dl_structs.py"
