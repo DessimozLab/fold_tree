@@ -6,7 +6,7 @@ channels:
   - nodefaults
 dependencies:
   - foldseek
-  - tcoffee
+  - t-coffee
   - snakedeploy
   - snakefmt
   - snakemake>=5.15.0
