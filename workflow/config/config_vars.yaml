@@ -35,3 +35,6 @@ evalue_threshold : "1e-05"
 #normally this is set to the default location of the 3di submat file
 submat3di: 3diphy/3DI_substmat/3di_substmat.txt
 mafft_submat3di: mafftmat/3diHEXmat.txt
+
+#clean all the previous results before running
+clean: False

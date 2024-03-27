@@ -331,5 +331,6 @@ rule dl_ids_structs:
 		filtervar_min=config["filter_min"],
 		filtervar_avg=config["filter_avg"],
 		custom_structs=config["custom_structs"],
+		clean = config["clean"],
 	script:
 		"../src/dl_structs.py"

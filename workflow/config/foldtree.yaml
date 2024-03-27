@@ -1,4 +1,4 @@
-name: fold_tree
+name: foldtree
 
 channels:
   - bioconda

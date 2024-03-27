@@ -1,4 +1,6 @@
 import AFDB_tools
+import os
+import shutil	
 
 custom_structs = snakemake.params.custom_structs
 
@@ -16,3 +18,16 @@ else:
 
 	resdf = AFDB_tools.grab_entries(ids, verbose = True)
 	resdf.to_csv(snakemake.output[0])
+
+if snakemake.params.clean == True:
+	basedir = snakemake.params.basedir
+	#move all structs from rejected to structs
+	for i in ids:
+		shutil.move(basedir + 'rejected/*.pdb', basedir + 'structs/*.pdb')
+	#delete the tmp dir
+	shutil.rmtree(basedir + 'tmp')
+	#delete all files except identifiers.txt in basedir
+	for file in os.listdir(basedir):
+		if file != 'identifiers.txt':
+			os.remove(basedir + file)
+	
