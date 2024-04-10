@@ -35,8 +35,6 @@ alntype = ['3di','AA', 'foldtree']
 print( 'custom submat' , rootdir+config["mafft_submat3di"])
 
 
-print(folders[0:100] , '...')
-
 
 def get_mem_mb(wildcards, attempt):
 	return attempt * 20000
@@ -65,6 +63,8 @@ rule calcfident_distributions:
 		'{folder}/logs/alnfident_dist{restype}_{alntype}.log'
 	script:
 		'../src/calcfident_distributions.py'
+
+
 
 rule treescore:
 	conda:
@@ -146,6 +146,7 @@ rule postprocess:
 		"{folder}/logs/struct_postprocess.log"
 	script:
 		'../src/postprocess.py'
+
 
 rule iqtreex:
 	resources:

@@ -103,7 +103,7 @@ if __name__ == '__main__':
 
 
     
-    datapaths = { '../../CATH_data/' : 'superfam' ,  '../../CAT_data/':'CAT'  }
+    datapaths = { '../../CATH_data_mk2/' : 'superfam' }#,  '../../CAT_data/':'CAT'  }
 
     #iterate over all superfamilies and create a tree for each
     for datapath,category in datapaths.items():
@@ -114,7 +114,6 @@ if __name__ == '__main__':
             subfolders = glob.glob(datapath+'*/')
             for sub in subfolders:
                 shutil.rmtree(sub)
-        
         
         for fam in tqdm.tqdm(siftsdf[category].unique()):
             if not os.path.exists(datapath+fam):

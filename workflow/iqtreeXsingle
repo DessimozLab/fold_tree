@@ -1,0 +1,101 @@
+
+#once snakemake is installed use the following command to test the struct tree
+import snakemake.utils
+snakemake.utils.min_version("7.8.0")
+snake_dir = workflow.basedir
+rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
+print('ml_3dixAA single iqtree running in ' , rootdir)
+
+configfile: rootdir+ "workflow/config/config_vars.yaml"
+# remote homologues search parameters
+
+if 'folder' in config:
+	if type(config['folder']) == str:
+		folders = [config['folder']]
+	else:
+		folders = config['folder']
+else:
+	folders = glob_wildcards("{folders}/fident_1_raw_struct_tree.PP.nwk.rooted").folders
+	config['folder']  = folders
+
+
+if config["iqtree_redo"] == True:
+	redo = " -redo"
+else:
+	redo = ""
+
+
+
+def get_mem_mb(wildcards, attempt):
+	return attempt * 20000
+
+def get_time(wildcards, attempt):
+	return min(attempt,3) * 60
+
+rule all:
+	input:
+	#get all treescore and rf distance files for all alntypes
+		expand("{folder}/alnAA_3di.fasta.treefile.rooted.final", folder = folders ),
+		expand("{folder}/alnAA_3di.fasta.treefile.rooted.final.treescore", folder = folders ),
+
+rule treescore:
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/sequence_dataset.csv",
+		"{folder}/alnAA_3di.fasta.treefile.rooted.final",
+	output:
+		"{folder}/alnAA_3di.fasta.treefile.rooted.final.treescore",
+	params:
+		custom_structs=config["custom_structs"]
+	log:
+		"{folder}/logs/treescore_AA3di_single.log"
+	script:
+		'../src/calctreescores.py'
+
+rule mad_root_postML:
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/alnAA_3di.fasta.treefile.rooted"
+	output:
+		"{folder}/alnAA_3di.fasta.treefile.rooted.final"
+	log:
+		"{folder}/logs/structML_madroot_post_AA3di_single.log"
+	script:
+		'../src/process_madroot.py'
+	
+rule mad_root_structML:
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/alnAA_3di.fasta.treefile"
+	output:
+		"{folder}/alnAA_3di.fasta.treefile.rooted"
+	log:
+		"{folder}/logs/structML_madroot_AA3di_single.log"
+	shell:
+		rootdir+'madroot/mad {wildcards.folder}/alnAA_3di.fasta.treefile'
+
+
+
+
+rule iqtree3di:
+	resources:
+		mem_mb=get_mem_mb,
+		time=get_time
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/alnAA_3di.fasta",
+	output:
+		"{folder}/alnAA_3di.fasta.treefile"
+	log:
+		"{folder}/logs/3diAA_iqtree_3disingle.log"
+	shell:
+		'iqtree  -s {wildcards.folder}/alnAA_3di.fasta -m LG+I+G  -seed 42 -nt 1 ' + redo
+

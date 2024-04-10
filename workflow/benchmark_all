@@ -46,7 +46,9 @@ rule all:
 		expand( "{folder}/plddt.json" , folder = folders ) ,
 		expand("{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk.rooted", folder = folders, mattype = mattypes, alntype = alntypes, exp = exp),
 
-
+		expand("{folder}/alnAA_3di.fasta.treefile.rooted.final", folder = folders ),
+		expand("{folder}/alnAA_3di.fasta.treefile.rooted.final.treescore", folder = folders ),
+		
 
 module benchmarking:
 	# here, plain paths, URLs and the special markers for code hosting providers (see below) are possible.
@@ -70,4 +72,12 @@ module tcoffee:
 	config: config
 
 use rule * from tcoffee as TC_*
+
+
+module iqtreeXsingle:
+	# here, plain paths, URLs and the special markers for code hosting providers (see below) are possible.
+	snakefile: "iqtreeXsingle"
+	config: config
+
+use rule * from iqtreeXsingle as IX_*
 
