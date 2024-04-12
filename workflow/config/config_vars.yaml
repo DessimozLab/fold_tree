@@ -38,3 +38,4 @@ mafft_submat3di: mafftmat/3diHEXmat.txt
 
 #clean all the previous results before running
 clean_folder: False
+fam_limit: 200
