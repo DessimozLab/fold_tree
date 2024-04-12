@@ -103,7 +103,7 @@ if __name__ == '__main__':
 
 
     
-    datapaths = { '../../CATH_data_mk2/' : 'superfam' }#,  '../../CAT_data/':'CAT'  }
+    datapaths = { '../../CATH_data_mk2/' : 'superfam' ,  '../../CAT_data_mk2/':'CAT'  }
 
     #iterate over all superfamilies and create a tree for each
     for datapath,category in datapaths.items():
