@@ -97,5 +97,5 @@ rule iqtree3di:
 	log:
 		"{folder}/logs/3diAA_iqtree_3disingle.log"
 	shell:
-		'iqtree  -s {wildcards.folder}/alnAA_3di.fasta -m LG+I+G  -seed 42 -nt 1 ' + redo
+		'iqtree  -s {wildcards.folder}/alnAA_3di.fasta -m LG+I+G  -seed 42 -nt 1 -n 50 ' + redo
 

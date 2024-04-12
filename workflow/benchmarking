@@ -198,7 +198,7 @@ rule iqtree:
 	params:
 		extra="",
 	shell:
-		'iqtree -s {wildcards.folder}/sequences.aln.{wildcards.aligner}.fst  -redo -m LG+I+G -seed 42 -nt 1 '
+		'iqtree -s {wildcards.folder}/sequences.aln.{wildcards.aligner}.fst  -redo -m LG+I+G -seed 42 -nt 1 -n 50 '
 
 rule foldseek2distmat:
 	resources:
