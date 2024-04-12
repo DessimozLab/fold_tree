@@ -26,7 +26,7 @@ import os
 
 
 if __name__ == '__main__':
-    nprots = 250
+    nprots = 50
     fams = 2000
     clear = False
     total = 0
@@ -62,7 +62,6 @@ if __name__ == '__main__':
 
     
     def dlchain(pdb_id , chainID , savepath , unid , verbose = False):
-
         if  os.path.isfile(savepath) == False:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
@@ -135,13 +134,9 @@ if __name__ == '__main__':
                     protdict = {p:protdict[p] for p in prots }
                     chaindict = dict(zip( sub['SP_PRIMARY'] , sub.CHAIN ))
 
-
-
                     if not os.path.exists(datapath+fam+'/structs/'):
                         os.mkdir(datapath+fam+'/structs/')
 
-                   
-                    
                     with ProcessPool() as pool:
                         futures = [ pool.schedule( dlchain,  ( protdict[unid], chaindict[unid] , datapath+fam+'/structs/'+unid.upper()+'.pdb' , unid.upper() , False ) , timeout = 60) for unid in prots  ] 
                         for future in tqdm.tqdm(futures, total=len(prots)):
@@ -158,7 +153,6 @@ if __name__ == '__main__':
                         pool.close()
                         pool.join()
                         
-                 
                     with open(datapath+fam+'/identifiers.txt', 'w') as f:
                         f.write('\n'.join( prots ))
                  
