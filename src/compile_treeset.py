@@ -10,7 +10,7 @@ import plotly.figure_factory as ff
 from scipy.stats import wilcoxon
 import numpy as np
 
-def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , verbose = False):
+def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , exclude = ['clustalo', '3dcoffee'] , verbose = False):
 
     """
     this function compiles the treescores for all the trees in a folder
@@ -35,8 +35,12 @@ def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , verbose = F
                 nstructs = len(glob.glob(folder+'structs/*.pdb'))
                 treescores = glob.glob(folder + '*_treescores_struct_tree.json' ) + list(glob.glob(folder+'treescores_sequences*.json')) + list(glob.glob( folder+'treescores_sequences_iq*.json'))
                 treescores += glob.glob(folder + '*.treescore' )
+
+                treescores = [ t for t in treescores if all([ e not in t for e in exclude]) ]
+
                 if len(treescores)>0 and os.path.isfile(folder + 'sequences.fst'):                        
                     fastas = glob.glob(folder+ '*.fst') + glob.glob(folder + '*.fasta')
+                    fastas = [ f for f in fastas if all([ e not in f for e in exclude]) ]
                     seqcount = {}
                     for fasta in fastas:
                         with open(fasta) as fstin:

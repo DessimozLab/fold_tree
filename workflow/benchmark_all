@@ -31,8 +31,6 @@ exp = ['raw', 'exp']
 aligners = [  'muscle' ] #['clustalo', '3dcoffee' ]
 print( len(folders) , 'families to benchmark' )
 
-
-
 rule all:
 	input:
 		expand('{folder}/alnfident_dist_{restype}_{alntype}.json', folder = folders, alntype = alntype, restype = ['AA', '3di']),
