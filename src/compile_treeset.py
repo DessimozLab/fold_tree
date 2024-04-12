@@ -28,7 +28,7 @@ def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , verbose = F
     print(rootfolder)
     res = {}
     folders = set(glob.glob(rootfolder + '*/' ))-set([rootfolder+'logs/'])
-    print(len(folders) , folders[0:100] ,  '...')
+    print(len(folders) , list(folders)[0:100] ,  '...')
     if len(folders)>0:
         with tqdm.tqdm(total=len(folders)) as pbar:
             for i,folder in enumerate(folders):

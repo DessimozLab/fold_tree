@@ -37,4 +37,4 @@ submat3di: 3diphy/3DI_substmat/3di_substmat.txt
 mafft_submat3di: mafftmat/3diHEXmat.txt
 
 #clean all the previous results before running
-clean: False
+clean_folder: False

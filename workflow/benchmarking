@@ -272,6 +272,9 @@ rule clustalo:
 		"v1.20.0/bio/clustalo"
 
 rule muscle:
+	conda: 
+		#"config/fold_tree.yaml"
+		"foldtree"
 	resources:
 		mem_mb=get_mem_mb
 	input:
@@ -297,8 +300,7 @@ rule dl_ids_sequences:
 	params:
 		cath=config["cath"],
 		custom_structs=config["custom_structs"],
-		clean_folder=config["clean"],
-
+		clean_folder=config["clean_folder"],
 	script:
 		"../src/dl_sequences.py"
 	
@@ -333,6 +335,6 @@ rule dl_ids_structs:
 		filtervar_min=config["filter_min"],
 		filtervar_avg=config["filter_avg"],
 		custom_structs=config["custom_structs"],
-		clean_folder=config["clean"],
+		clean_folder=config["clean_folder"],
 	script:
 		"../src/dl_structs.py"

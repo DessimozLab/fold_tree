@@ -3,12 +3,9 @@ import os
 import shutil	
 
 custom_structs = snakemake.params.custom_structs
-
-
 print('custom_structs: ', custom_structs)
 
 clean = snakemake.params.clean_folder
-
 print( 'clean: ', clean	)
 
 basedir = snakemake.input[0].split('/')[:-1]
@@ -16,9 +13,14 @@ basedir = ''.join( [i + '/' for i in basedir])
 
 if  clean == True:
 	#move all structs from rejected to structs
-	ids = os.listdir(basedir + 'rejected/')
-	for i in ids:
-		shutil.move(basedir + 'rejected/'+i, basedir + 'structs/' +i)
+	if os.path.exists(basedir + 'structs/') == False:
+		os.mkdir(basedir + 'structs/')
+	if os.path.exists(basedir + 'rejected/') == False:
+		os.mkdir(basedir + 'rejected/')
+	else:
+		ids = os.listdir(basedir + 'rejected/')
+		for i in ids:
+			shutil.move(basedir + 'rejected/'+i, basedir + 'structs/' +i)
 	#delete all files except identifiers.txt in basedir
 	for file in os.listdir(basedir):
 		if file != 'identifiers.txt' and os.path.isfile(basedir + file):
