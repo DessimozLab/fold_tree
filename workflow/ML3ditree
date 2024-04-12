@@ -166,7 +166,7 @@ rule iqtreex:
 	log:
 		"{folder}/logs/3diAA_iqtree_{alntype}.log"
 	shell:
-		'iqtree -p {wildcards.folder}/templateX{wildcards.alntype}.nx -seed 42 -nt 1 ' + redo
+		'iqtree -p {wildcards.folder}/templateX{wildcards.alntype}.nx -seed 42 -nt 1 -n 50 ' + redo
 
 
 rule iqtree_template:
