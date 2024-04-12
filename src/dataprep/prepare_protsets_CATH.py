@@ -68,7 +68,6 @@ if __name__ == '__main__':
                 pdbl = PDB.PDBList(verbose = verbose )
                 pdb_file = pdbl.retrieve_pdb_file(pdb_id , file_format = 'pdb')
                 structure = PDB.PDBParser().get_structure(pdb_id, pdb_file)
-                
                 if len(structure)>1:
                     for model in structure:
                             for chain in model:
@@ -77,11 +76,7 @@ if __name__ == '__main__':
                                     break
                 else:
                     chain_A = structure[0][chainID]
-                
                 if chain_A:
-                    
-                    
-
                     io = PDB.PDBIO()
                     io.set_structure(chain_A)
                     io.save(savepath)
@@ -118,25 +113,33 @@ if __name__ == '__main__':
             if not os.path.exists(datapath+fam):
                 os.mkdir(datapath+fam)
             
+
+
             if not os.path.exists(datapath+fam+ datapath+fam+'/sequences.fst'):
                 #create a tree for each superfam
                 sub = siftsdf[siftsdf[category] == fam]
+                
+                
                 prots = list( set(sub['SP_PRIMARY'].unique()) )
                 #output the uniport ids to a file
                 if len(prots)> 10:
                     print(fam)
-                    random.shuffle(prots)
-                    prots = prots[:nprots]
-                    lengths.append(len(prots))
-                    total+=1
+                    if not os.path.exists(datapath+fam + 'identifiers.txt'):
+                        random.shuffle(prots)
+                        prots = prots[:nprots]
+                        with open(datapath+fam + 'identifiers.txt', 'w') as f:
+                            f.write('\n'.join( prots ))
+                    else:
+                        with open(datapath+fam + 'identifiers.txt') as f:
+                            prots = [ i.strip() for i in f if len(i.strip())>0 ]
                     
+                    total+=1
                     protdict = dict(zip( sub['SP_PRIMARY'] , sub.PDB ))
                     protdict = {p:protdict[p] for p in prots }
                     chaindict = dict(zip( sub['SP_PRIMARY'] , sub.CHAIN ))
 
                     if not os.path.exists(datapath+fam+'/structs/'):
                         os.mkdir(datapath+fam+'/structs/')
-
                     with ProcessPool() as pool:
                         futures = [ pool.schedule( dlchain,  ( protdict[unid], chaindict[unid] , datapath+fam+'/structs/'+unid.upper()+'.pdb' , unid.upper() , False ) , timeout = 60) for unid in prots  ] 
                         for future in tqdm.tqdm(futures, total=len(prots)):
