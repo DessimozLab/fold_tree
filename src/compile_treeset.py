@@ -24,7 +24,7 @@ def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , verbose = F
         resdf: dataframe with the treescores
         refclols: list of the columns in the dataframe
 
-    """    
+    """
     print(rootfolder)
     res = {}
     folders = set(glob.glob(rootfolder + '*/' ))-set([rootfolder+'logs/'])
