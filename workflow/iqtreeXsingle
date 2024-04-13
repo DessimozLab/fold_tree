@@ -93,7 +93,8 @@ rule iqtree3di:
 	input:
 		"{folder}/alnAA_3di.fasta",
 	output:
-		"{folder}/alnAA_3di.fasta.treefile"
+	
+		"{folder}/alnAA_3di.fasta.ckp.gz"
 	log:
 		"{folder}/logs/3diAA_iqtree_3disingle.log"
 	shell:

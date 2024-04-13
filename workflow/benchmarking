@@ -192,7 +192,7 @@ rule iqtree:
 	input:
 		alignment="{folder}/sequences.aln.{aligner}.fst"
 	output:
-		tree="{folder}/sequences.aln.{aligner}.fst.treefile"
+		tree="{folder}/sequences.aln.{aligner}.fst.ckp.gz"
 	log:
 		"{folder}/logs/iqtree.{aligner}.log"
 	params:
