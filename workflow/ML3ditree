@@ -161,12 +161,13 @@ rule iqtreex:
 		"{folder}/templateX{alntype}.nx"
 	output:
 		"{folder}/templateX{alntype}.nx.ckp.gz"
+		"{folder}/templateX{alntype}.nx.treefile"	
 	params:
 		cores=config["iqtree_cores"],
 	log:
 		"{folder}/logs/3diAA_iqtree_{alntype}.log"
 	shell:
-		'iqtree -p {wildcards.folder}/templateX{wildcards.alntype}.nx -seed 42 -nt 1 -n 50 ' + redo
+		'iqtree -p {wildcards.folder}/templateX{wildcards.alntype}.nx -seed 42 -nt AUTO -n 50 ' + redo
 
 
 rule iqtree_template:

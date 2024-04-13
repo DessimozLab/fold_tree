@@ -192,13 +192,14 @@ rule iqtree:
 	input:
 		alignment="{folder}/sequences.aln.{aligner}.fst"
 	output:
-		tree="{folder}/sequences.aln.{aligner}.fst.ckp.gz"
+		"{folder}/sequences.aln.{aligner}.fst.ckp.gz",
+		"{folder}/sequences.aln.{aligner}.fst.treefile",
 	log:
 		"{folder}/logs/iqtree.{aligner}.log"
 	params:
 		extra="",
 	shell:
-		'iqtree -s {wildcards.folder}/sequences.aln.{wildcards.aligner}.fst  -redo -m LG+I+G -seed 42 -nt 1 -n 50 '
+		'iqtree -s {wildcards.folder}/sequences.aln.{wildcards.aligner}.fst  -redo -m LG+I+G -seed 42 -nt AUTO -n 50 '
 
 rule foldseek2distmat:
 	resources:

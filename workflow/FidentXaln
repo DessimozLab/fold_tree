@@ -22,11 +22,13 @@ else:
 
 alntype = ['3di','AA' , '3dcoffee']
 
+
 rule all:
 	input:
 	#get all treescore and rf distance files for all alntypes
 		expand("{folder}/{alntype}_xaln_tree.PP.nwk.rooted.final", folder = folders , alntype = alntype),
 		expand("{folder}/{alntype}_xaln_tree.PP.nwk.rooted.final.treescore", folder = folders , alntype = alntype),
+
 
 rule treescore:
 	conda:
