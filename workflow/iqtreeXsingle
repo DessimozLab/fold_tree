@@ -87,6 +87,7 @@ rule iqtree3di:
 		"foldtree"
 	input:
 		"{folder}/alnAA_3di.fasta",
+		"{folder}/sequence_dataset.csv"
 	output:
 		"{folder}/alnAA_3di.fasta.ckp.gz",
 		"{folder}/alnAA_3di.fasta.treefile"
