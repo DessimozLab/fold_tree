@@ -160,7 +160,7 @@ rule iqtreex:
 		"{folder}/aln3di_{alntype}.fasta",
 		"{folder}/templateX{alntype}.nx"
 	output:
-		"{folder}/templateX{alntype}.nx.ckp.gz"
+		"{folder}/templateX{alntype}.nx.ckp.gz",
 		"{folder}/templateX{alntype}.nx.treefile"	
 	params:
 		cores=config["iqtree_cores"],
