@@ -9,14 +9,15 @@ print('ml_3dixAA single iqtree running in ' , rootdir)
 configfile: rootdir+ "workflow/config/config_vars.yaml"
 # remote homologues search parameters
 
-if 'folder' in config:
+if 'folder' in config and config['folder'] != None:
 	if type(config['folder']) == str:
 		folders = [config['folder']]
 	else:
 		folders = config['folder']
 else:
-	folders = glob_wildcards("{folders}/fident_1_raw_struct_tree.PP.nwk.rooted").folders
+	folders = glob_wildcards("{folders}/alnAA_3di.fasta").folders
 	config['folder']  = folders
+	print(folders[:20] , '...')
 
 
 if config["iqtree_redo"] == True:
@@ -32,7 +33,6 @@ def get_time(wildcards, attempt):
 
 rule all:
 	input:
-	#get all treescore and rf distance files for all alntypes
 		expand("{folder}/alnAA_3di.fasta.treefile.rooted.final", folder = folders ),
 		expand("{folder}/alnAA_3di.fasta.treefile.rooted.final.treescore", folder = folders ),
 

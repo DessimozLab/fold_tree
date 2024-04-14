@@ -49,6 +49,7 @@ rule all:
 		expand( "{folder}/plddt.json" , folder = folders ) ,
 		
 		expand("{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk.rooted", folder = folders, mattype = mattypes, alntype = alntypes, exp = exp),
+		
 		expand("{folder}/alnAA_3di.fasta.treefile.rooted.final", folder = folders ),
 		expand("{folder}/alnAA_3di.fasta.treefile.rooted.final.treescore", folder = folders ),
 		
