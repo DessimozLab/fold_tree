@@ -43,6 +43,7 @@ rule all:
 		expand("{folder}/templateX{alntype}.nx.treefile.rooted.final.treescore", folder = folders , alntype = alntype),
 		
 		expand('{folder}/alnfident_dist_{restype}_{alntype}.json', folder = folders, alntype = alntype, restype = ['AA', '3di']),
+
 		expand( "{folder}/{mattype}_{alntype}_{exp}_treescores_struct_tree.json" , folder = folders , mattype = mattypes , alntype = alntypes , exp=exp ),
 		#expand( "{folder}/treescores_sequences.{aligner}.json" , folder = folders , aligner = aligners) ,
 		expand( "{folder}/treescores_sequences_iq.{aligner}.json" , folder = folders , aligner = aligners) ,
@@ -84,4 +85,12 @@ module iqtreeXsingle:
 	config: config
 
 use rule * from iqtreeXsingle as IX_*
+
+
+module ML3ditree:
+	# here, plain paths, URLs and the special markers for code hosting providers (see below) are possible.
+	snakefile: "ML3ditree"
+	config: config
+	
+use rule * from ML3ditree as ML3_*
 

@@ -19,7 +19,6 @@ else:
 	config['folder']  = folders
 	print(folders[:20] , '...')
 
-
 if config["iqtree_redo"] == True:
 	redo = " -redo"
 else:
