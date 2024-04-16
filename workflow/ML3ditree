@@ -12,15 +12,13 @@ foldseekpath = config["foldseek_path"]
 if foldseekpath == 'provided':
 	foldseekpath = rootdir + "foldseek/foldseek"
 
-
-
 if 'folder' in config:
 	if type(config['folder']) == str:
 		folders = [config['folder']]
 	else:
 		folders = config['folder']
 else:
-	folders = glob_wildcards("{folders}/fident_1_raw_struct_tree.PP.nwk.rooted").folders
+	folders = glob_wildcards("{folders}/finalset.csv").folders
 	config['folder']  = folders
 
 
@@ -29,8 +27,7 @@ if config["iqtree_redo"] == True:
 else:
 	redo = ""
 
-
-alntype = ['3di','AA', 'foldtree']
+alntype = ['3di','AA', ]#'foldtree']
 
 print( 'custom submat' , rootdir+config["mafft_submat3di"])
 
@@ -41,8 +38,6 @@ def get_mem_mb(wildcards, attempt):
 
 def get_time(wildcards, attempt):
 	return min(attempt,3) * 60
-
-
 
 rule all:
 	input:

@@ -35,6 +35,11 @@ rule all:
 		expand("{folder}/alnAA_3di.fasta.treefile.rooted.final", folder = folders ),
 		expand("{folder}/alnAA_3di.fasta.treefile.rooted.final.treescore", folder = folders ),
 
+
+
+
+
+
 rule treescore:
 	conda:
 		#"config/fold_tree.yaml"
