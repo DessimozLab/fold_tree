@@ -31,8 +31,6 @@ alntype = ['3di','AA', ]#'foldtree']
 
 print( 'custom submat' , rootdir+config["mafft_submat3di"])
 
-
-
 def get_mem_mb(wildcards, attempt):
 	return attempt * 20000
 

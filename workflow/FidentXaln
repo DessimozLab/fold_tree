@@ -18,10 +18,7 @@ else:
 	folders = glob_wildcards("{folders}/alnAA_3di.fasta").folders
 	config['folder']  = folders
 
-
-
-alntype = ['3di','AA' , '3dcoffee']
-
+alntype = ['3di','AA' ]#, '3dcoffee']
 
 rule all:
 	input:
@@ -29,7 +26,6 @@ rule all:
 		expand("{folder}/{alntype}_xaln_tree.PP.nwk.rooted.final", folder = folders , alntype = alntype),
 		expand("{folder}/{alntype}_xaln_tree.PP.nwk.rooted.final.treescore", folder = folders , alntype = alntype),
 		
-
 rule treescore:
 	conda:
 		#"config/fold_tree.yaml"
