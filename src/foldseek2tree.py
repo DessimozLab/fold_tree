@@ -180,7 +180,7 @@ def postprocess(t, outree, delta=0 ):
 	with open(t) as treein:
 		treestr = ' '.join( [ i.strip() for i in treein ] )
 
-	tre = toytree.tree(treestr , format = 0 )
+	tre = toytree.tree(treestr )
 	print(tre)
 
 	for n in tre.treenode.traverse():
