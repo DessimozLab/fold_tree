@@ -58,7 +58,6 @@ alnfolder = infolder+'alnscratch/'
 if not os.path.exists(alnfolder):
     os.mkdir(infolder+'alnscratch/')
 
-
 finalaln, finalaln3di = structalns.traverse_tree_merge_mafft( tre.treenode , structalns.get_leafset(tre.treenode) , alndf , infolder+'alnscratch/' , submat = snakemake.params.submat , verbose = True ) 
 
 print('finalaln',finalaln)

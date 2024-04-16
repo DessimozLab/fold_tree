@@ -29,7 +29,7 @@ dependencies:
     - wget
     - numpy
     - statsmodels
-    - toytree
+    - toytree=2.0.1
     - toyplot
     - requests
     
