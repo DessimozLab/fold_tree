@@ -9,6 +9,7 @@ dependencies:
   - t-coffee
   - snakedeploy
   - snakefmt
+  - toytree=2.0.1
   - snakemake>=5.15.0
   - pip
   - iqtree
@@ -29,7 +30,6 @@ dependencies:
     - wget
     - numpy
     - statsmodels
-    - toytree=2.0.1
     - toyplot
     - requests
     

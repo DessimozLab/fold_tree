@@ -11,7 +11,6 @@ import random
 import itertools
 import numpy as np
 
-
 def remove_seeds( alnfile):
     """
     this function removes seeds from an alignment

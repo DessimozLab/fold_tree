@@ -11,7 +11,7 @@ scores = {}
 stats = {}
 
 for t in snakemake.input[1:]:
-    tree = toytree.tree(t , format = 0)
+    tree = toytree.tree(t )
     lineages = treescore.make_lineages(uniprot_df)
     tree = treescore.label_leaves( tree , lineages)
     #tree = treescore.labelwRED(tree.treenode)
