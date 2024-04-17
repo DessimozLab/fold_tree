@@ -44,12 +44,13 @@ rule all:
 		expand("{folder}/templateX{alntype}.nx.treefile.rooted.final.treescore", folder = folders , alntype = alntype),
 		expand( '{folder}/alnfident_dist_{restype}_{alntype}.json', folder = folders, alntype = alntype, restype = ['AA', '3di']),
 
+
 rule calcfident_distributions:
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		expand("{folder}/aln{restype}_{alntype}.fasta", folder = folders, alntype = alntype, restype = ['AA', '3di']),
+		"{folder}/aln{restype}_{alntype}.fasta"
 	output:
 		'{folder}/alnfident_dist_{restype}_{alntype}.json',
 	log:
@@ -223,6 +224,24 @@ rule mafft_seq:
 	shell:
 		'mafft {input} > {output}'
 
+rule treemerge:
+	#merge the 3di and AA alignemnts using tree logic
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/allvall_1.csv",
+		"{folder}/fident_1_raw_struct_tree.PP.nwk.rooted",
+		"{folder}/sequences.fst",
+		"{folder}/seq3di.fasta",
+	output:
+		"{folder}/alnAA_foldtree.fasta",
+		"{folder}/aln3di_foldtree.fasta",
+	log:
+		"{folder}/logs/treemerge.log"
+	script:
+		"../src/treemerge.py"
+
 rule scrape_alns:
 	#use 3di and AA from foldseek
 	#scrape the 3di alphabet and use alignment logic to calculate new fident
@@ -232,14 +251,11 @@ rule scrape_alns:
 		"foldtree"
 	input:
 		"{folder}/allvall_1.csv",
-		"{folder}/fident_1_raw_struct_tree.PP.nwk.rooted",
 		"{folder}/outdb",
 		"{folder}/outdb_ss"
 	output:
 		"{folder}/sequences.fst",
 		"{folder}/seq3di.fasta",
-		#"{folder}/alnAA_foldtree.fasta",
-		#"{folder}/aln3di_foldtree.fasta",
 	params:
 		dbname="outdb",
 		submat=rootdir+config["mafft_submat3di"]
