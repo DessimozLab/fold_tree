@@ -54,9 +54,14 @@ for i,n in enumerate(tre.treenode.traverse()):
     if len(n.name) == 0:
         n.name = 'internal_'+str(i)
 
+
+"""
 alnfolder = infolder+'alnscratch/'
 if not os.path.exists(alnfolder):
     os.mkdir(infolder+'alnscratch/')
+
+
+
 
 finalaln, finalaln3di = structalns.traverse_tree_merge_mafft( tre.treenode , structalns.get_leafset(tre.treenode) , alndf , infolder+'alnscratch/' , submat = snakemake.params.submat , verbose = True ) 
 
@@ -90,3 +95,4 @@ for fasta,data in {snakemake.output[2]:finalaln, snakemake.output[3]:finalaln3di
 for f in glob.glob(infolder+'alnscratch/*inter*'):
     os.remove(f)
 
+"""

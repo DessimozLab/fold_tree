@@ -238,8 +238,8 @@ rule scrape_alns:
 	output:
 		"{folder}/sequences.fst",
 		"{folder}/seq3di.fasta",
-		"{folder}/alnAA_foldtree.fasta",
-		"{folder}/aln3di_foldtree.fasta",
+		#"{folder}/alnAA_foldtree.fasta",
+		#"{folder}/aln3di_foldtree.fasta",
 	params:
 		dbname="outdb",
 		submat=rootdir+config["mafft_submat3di"]
