@@ -227,6 +227,24 @@ rule foldseek2distmat:
 	script:
 		"../src/foldseekres2distmat.py"
 
+
+rule foldseek2stats:
+	resources:
+		mem_mb=get_mem_mb
+	conda:
+		#"config/fold_tree.yaml"
+		"foldtree"
+	input:
+		"{folder}/allvall_{alntype}.csv"
+	params:
+		fmt = 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,qaln,taln,cigar,alntmscore'
+	output:
+		"{folder}/alnfident_dist_{alntype}_raw_.json",
+	log:
+		"{folder}/logs/{alntype}_foldseek_fident_stats.log"
+	script:
+		"../src/calcfident_foldtree_stats.py"
+
 rule foldseek_allvall_0:	
 	resources:
 		mem_mb=get_mem_mb

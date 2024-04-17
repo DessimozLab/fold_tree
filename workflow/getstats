@@ -35,7 +35,7 @@ print( len(folders) , 'families to benchmark' )
 rule all:
 	input:
 		expand('{folder}/alnfident_dist_{restype}_{alntype}.json', folder = folders, alntype = alntype, restype = ['AA', '3di']),
-        
+		expand( '{folder}/alnfident_dist_{alntype}_raw_.json' , folder = folders, alntype = alntypes)
 
 module benchmarking:
 	# here, plain paths, URLs and the special markers for code hosting providers (see below) are possible.
