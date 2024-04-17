@@ -8,5 +8,3 @@ for folder in "${folders[@]}"; do
   $program "$folder" --unlock
   $program "$folder" 
 done
-
-
