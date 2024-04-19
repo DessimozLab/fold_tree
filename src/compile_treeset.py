@@ -28,7 +28,7 @@ def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , exclude = [
     print(rootfolder)
     res = {}
     folders = set(glob.glob(rootfolder + '*/' ))-set([rootfolder+'logs/'])
-    print(len(folders) , list(folders)[0:100] ,  '...')
+    print(len(folders) , 'result fams to compile...')
     if len(folders)>0:
         with tqdm.tqdm(total=len(folders)) as pbar:
             for i,folder in enumerate(folders):
