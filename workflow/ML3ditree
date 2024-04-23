@@ -141,11 +141,11 @@ rule postprocess:
 	script:
 		'../src/postprocess.py'
 
-
 rule iqtreex:
+	threads: 20 
 	resources:
 		mem_mb=get_mem_mb,
-		time=get_time
+		time=get_time,
 	conda:
 		#"config/fold_tree.yaml"
 		"foldtree"
