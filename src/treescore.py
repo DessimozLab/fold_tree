@@ -145,32 +145,18 @@ def node_degree_inv(node , leaf_lineages = None):
 	#get the max degree of all the nodes
 	max_degree = max([n.degree for n in node.get_leaves()])
 	if node.is_root() == True:
-		node.add_feature( 'inv_degree' ,  (max_degree - 0) / max_degree)
+		node.add_feature( 'inv_degree' , len(node.lineage) *(max_degree - 0) / max_degree)
 		for i,c in enumerate(node.get_children()):
 			node_degree(c , leaf_lineages = leaf_lineages)
 	else:
-		node.add_feature( 'inv_degree' ,  ( max_degree - node.degree) / max_degree )
+		node.add_feature( 'inv_degree' ,  len(node.lineage)*( max_degree - node.degree) / max_degree )
 		for i,c in enumerate(node.get_children()):
 			node_degree(c ,  leaf_lineages = leaf_lineages)
-	return node
-
-def node_degree_score(node , leaf_lineages = None):
-	#get multiply the inv degree by the lineage lenght for each node
-	if node.is_root() == True:
-		node.add_feature( 'degree_score' ,  node.inv_degree * len(node.lineage))
-		for i,c in enumerate(node.get_children()):
-			node_degree_score(c , leaf_lineages = leaf_lineages)
-	else:
-		node.add_feature( 'degree_score' ,  node.inv_degree * len(node.lineage))
-		for i,c in enumerate(node.get_children()):
-			node_degree_score(c ,  leaf_lineages = leaf_lineages)
-	#return the sum of the degree scores for all nodes
 	return sum([n.degree_score for n in node.traverse()])
 
 def degree_score(node):
 	node = node_degree(node)
-	node = node_degree_inv(node)
-	return node_degree_score(node)
+	return node_degree_inv(node)
 
 
 #taxonomy overlap score
