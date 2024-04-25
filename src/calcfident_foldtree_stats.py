@@ -20,6 +20,9 @@ k = ['fident']
 res[k] = res[k].astype(float)
 #change nan to 0
 res = res.fillna(0)
+#exclude self alignments
+res = res[res['query'] != res['target']]
+
 #output a the alignment stats in json
 alnstats[snakemake.input[0]] = describe(list(res['fident'].values))
 print(snakemake.input[0], describe(list(res['fident'].values)))

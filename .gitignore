@@ -20,10 +20,15 @@ testdata/**
 foldseek/bin/foldseek
 foldseek/README.md
 OMA_data/**
+OMA_mk3/**
 CATH_data/**
 CAT_data/**
 CATH_data/**
 SCOP_data/**
+OMA_data/**
+CATH_data_mk2/**
+CAT_mk3/**
+CATH_mk3/**
 OMA_data_unfiltered/**
 CATH_data_unfiltered/**
 CAT_data_unfiltered/**

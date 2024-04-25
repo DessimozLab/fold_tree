@@ -20,10 +20,11 @@ for t in snakemake.input[1:]:
     #calc descriptive stats on normalized branch lens to see if trees are balanced  
     lengths = np.array([node.dist for node in tree.treenode.traverse()])
     lengths /= np.sum(lengths)
-
     #calc the root first taxscore
     treescore.getTaxOverlap_root(tree.treenode)
     root_score = treescore.sum_rootscore(tree.treenode)
+    degree_score = treescore.degree_score(tree.treenode)
+
     #measure the distances of leaves to root
     distances = np.array([ node.get_distance(tree.treenode) for node in tree.treenode.get_leaves() ])
     distances_norm = distances / np.mean(distances)

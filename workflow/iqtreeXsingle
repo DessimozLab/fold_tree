@@ -79,6 +79,7 @@ rule mad_root_structML:
 		rootdir+'madroot/mad {wildcards.folder}/alnAA_3di.fasta.treefile'
 
 rule iqtree3di:
+	threads: 10
 	resources:
 		mem_mb=get_mem_mb,
 		time=get_time

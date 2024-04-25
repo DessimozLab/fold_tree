@@ -129,6 +129,48 @@ def getTaxOverlap(node , treelen  = None , scorefun = frac_score):
 		#only in the case of a leaf with no label
 	return nset
 
+def node_degree(node , leaf_lineages = None):
+	""" add a degree feature to the node object with is the distance to the root"""
+	if node.is_root() == True:
+		node.add_feature( 'degree' ,  0 )
+		for i,c in enumerate(node.get_children()):
+			node_degree(c , leaf_lineages = leaf_lineages)
+	else:
+		node.add_feature( 'degree' ,  node.up.degree + 1 )
+		for i,c in enumerate(node.get_children()):
+			node_degree(c ,  leaf_lineages = leaf_lineages)
+	
+def node_degree_inv(node , leaf_lineages = None):
+	#get the max degree of all the nodes
+	max_degree = max([n.degree for n in node.get_leaves()])
+	if node.is_root() == True:
+		node.add_feature( 'inv_degree' ,  (max_degree - 0) / max_degree)
+		for i,c in enumerate(node.get_children()):
+			node_degree(c , leaf_lineages = leaf_lineages)
+	else:
+		node.add_feature( 'inv_degree' ,  ( max_degree - node.degree) / max_degree )
+		for i,c in enumerate(node.get_children()):
+			node_degree(c ,  leaf_lineages = leaf_lineages)
+
+def node_degree_score(node , leaf_lineages = None):
+	#get multiply the inv degree by the lineage lenght for each node
+	if node.is_root() == True:
+		node.add_feature( 'degree_score' ,  node.inv_degree * len(node.lineage))
+		for i,c in enumerate(node.get_children()):
+			node_degree_score(c , leaf_lineages = leaf_lineages)
+	else:
+		node.add_feature( 'degree_score' ,  node.inv_degree * len(node.lineage))
+		for i,c in enumerate(node.get_children()):
+			node_degree_score(c ,  leaf_lineages = leaf_lineages)
+	#return the sum of the degree scores for all nodes
+	return sum([n.degree_score for n in node.traverse()])
+
+def degree_score(node):
+	node_degree(node)
+	node_degree_inv(node)
+	return node_degree_score(node)
+
+
 #taxonomy overlap score
 def getTaxOverlap_root(node , leaf_lineages = None):
 	
@@ -137,7 +179,7 @@ def getTaxOverlap_root(node , leaf_lineages = None):
     
 	start with the total set of all clades from leaves
 	use the sets from the leaf to root approach and accumlate score as the total number 
-	of shared elements or frac of shared elements
+	of shared elements
 
     The function adds the following features to the node object:
     - 'root_score': the taxonomy overlap score.
@@ -162,6 +204,8 @@ def getTaxOverlap_root(node , leaf_lineages = None):
 			getTaxOverlap_root(c , leaf_lineages = leaf_lineages)
 	else:
 		if node.lineage:
+			if node.is_leaf():
+				total = node.up.root_score
 			total = node.up.root_score + len(node.lineage)
 		else:
 			total = node.up.root_score
@@ -169,6 +213,55 @@ def getTaxOverlap_root(node , leaf_lineages = None):
 		for i,c in enumerate(node.get_children()):
 			getTaxOverlap_root(c ,  leaf_lineages = leaf_lineages)
 
+def sum_rootscore(node):
+	return sum([n.root_score for n in node.get_leaves()])
+
+
+
+
+
+
+#taxonomy overlap score
+def getTaxOverlap_root(node , leaf_lineages = None):
+	
+	"""
+    Calculate the taxonomy overlap score from the root down for the given node in a phylogenetic tree.
+    
+	start with the total set of all clades from leaves
+	use the sets from the leaf to root approach and accumlate score as the total number 
+	of shared elements
+
+    The function adds the following features to the node object:
+    - 'root_score': the taxonomy overlap score.
+
+    Parameters:
+    node (Toytree.): The node in a phylogenetic tree.
+    
+    Returns:
+    set: The set of taxonomic labels shared by all the leaf nodes descended from the node, or `None` if
+    the node has no children with taxonomic labels.
+    """
+	if node.is_root() == True:
+		leaf_lineages = [ n.lineage for n in node.get_leaves()]
+		leaf_lineages = [ l for l in leaf_lineages if l ]
+		leaf_lineages = [ item for sublist in leaf_lineages for item in sublist ]
+		leaf_lineages = set(leaf_lineages)
+		if node.lineage:
+			node.add_feature( 'root_score' ,  len(node.lineage) )
+		else:
+			node.add_feature( 'root_score' ,  0 )
+		for i,c in enumerate(node.get_children()):
+			getTaxOverlap_root(c , leaf_lineages = leaf_lineages)
+	else:
+		if node.lineage:
+			if node.is_leaf():
+				total = node.up.root_score
+			total = node.up.root_score + len(node.lineage)
+		else:
+			total = node.up.root_score
+		node.add_feature( 'root_score' ,  total )
+		for i,c in enumerate(node.get_children()):
+			getTaxOverlap_root(c ,  leaf_lineages = leaf_lineages)
 
 def sum_rootscore(node):
 	return sum([n.root_score for n in node.get_leaves()])

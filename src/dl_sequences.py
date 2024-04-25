@@ -13,6 +13,8 @@ basedir = ''.join( [i + '/' for i in basedir])
 
 if  clean == True:
 	#move all structs from rejected to structs
+	pass
+	"""
 	if os.path.exists(basedir + 'structs/') == False:
 		os.mkdir(basedir + 'structs/')
 	if os.path.exists(basedir + 'rejected/') == False:
@@ -25,7 +27,7 @@ if  clean == True:
 	for file in os.listdir(basedir):
 		if file != 'identifiers.txt' and os.path.isfile(basedir + file):
 			os.remove(basedir + file)
-	
+	"""
 
 if custom_structs == True and snakemake.params.cath == False:
 	print('custom structures, skipping download of sequences')

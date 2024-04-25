@@ -35,7 +35,6 @@ def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , exclude = [
                 nstructs = len(glob.glob(folder+'structs/*.pdb'))
                 treescores = glob.glob(folder + '*_treescores_struct_tree.json' ) + list(glob.glob(folder+'treescores_sequences*.json')) + list(glob.glob( folder+'treescores_sequences_iq*.json'))
                 treescores += glob.glob(folder + '*.treescore' )
-
                 treescores = [ t for t in treescores if all([ e not in t for e in exclude]) ]
 
                 if len(treescores)>0 and os.path.isfile(folder + 'sequences.fst'):                        
@@ -46,8 +45,7 @@ def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , exclude = [
                         with open(fasta) as fstin:
                             nseqs = fstin.read().count('>')
                             seqcount[fasta] = nseqs
-                    pbar.set_description('processed: %d' % (1 + i))
-                    pbar.update(1)
+                    
                     checkfastas = True
                     for k in seqcount:
                         if seqcount[k] != nstructs:
@@ -61,12 +59,18 @@ def compile_folder_resdict(rootfolder , scorefunc = 'score_x_frac' , exclude = [
                             if os.path.isfile(score):
                                 with open(score) as taxin:
                                     tax_res = json.load(taxin)
+                                    
                                 tax_res= {s.split('/')[-1]:tax_res[s] for s in tax_res}
                                 if folder not in res:
                                     res[folder] = { s:tax_res[s][scorefunc] for s in tax_res if  scorefunc  in tax_res[s]}
                                 else:
                                     res[folder].update({ s:tax_res[s][scorefunc] for s in tax_res if scorefunc in tax_res[s]})
+
                         res[folder].update({ 'nseqs':   nseqs})
+                
+                pbar.update(1)
+                pbar.set_description('processed: %d' % (1 + i))
+                    
             return res
                             
 def compile_folder(rootfolder , scorefunc = 'score_x_frac' , verbose = False):

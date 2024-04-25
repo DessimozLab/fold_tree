@@ -188,6 +188,7 @@ rule fasttree:
 		"v1.20.0/bio/fasttree"
 
 rule iqtree:
+	threads: 8
 	resources:
 		mem_mb=get_mem_mb
 	conda:

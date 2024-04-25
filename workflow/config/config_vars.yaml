@@ -1,7 +1,7 @@
 #Plddt filetering parameters for models
 filter: True
-filter_min: 0
-filter_avg: 40
+filter_min: 10
+filter_avg: 50
 
 
 #Path to the foldseek executable is set to the local folder with a precompiled version of foldseek
@@ -38,4 +38,4 @@ mafft_submat3di: mafftmat/3diHEXmat.txt
 
 #clean all the previous results before running
 clean_folder: False
-fam_limit: 200
+fam_limit: 500

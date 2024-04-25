@@ -26,7 +26,6 @@ except:
 	pass
 
 custom_structs = snakemake.params.custom_structs
-
 if custom_structs == True:
 	print('custom structures, skipping download of structures')
 	found = glob.glob(structfolder+'*.pdb')
@@ -44,8 +43,6 @@ else:
 	except:
 		print(rejectedfolder , 'already exists ')
 
-
-
 	#with open(snakemake.input[0]) as infile:
 	#	ids = [ i.strip() for i in infile if len(i.strip())>0 ]
 	seqdf = pd.read_csv(snakemake.input[0])
@@ -55,11 +52,10 @@ else:
 	found = glob.glob(structfolder+'*.pdb') + glob.glob(rejectedfolder+'*.pdb')
 	found = { i.split('/')[-1].replace('.pdb',''):i for i in found}
 	missing_structs = set(ids)-set(found.keys())
+	
 	filtervar = snakemake.params.filtervar
-
 	filtervar_min = snakemake.params.filtervar_min
 	filtervar_avg = snakemake.params.filtervar_avg
-
 
 	#get plddt from afdb structures and remove those with avg plddt < 0.4
 	if filtervar == True:
@@ -77,20 +73,17 @@ else:
 			missing_structs.add(i)
 			del found[i]
 	
-	
+	#remove sequences that do not have a structure
 	missing_sequences = set(ids)-set(seqdf['query'].unique())
 	print('missing in afdb:',missing_structs)
 	print( 'missing in sequences:',missing_sequences)
 	finalset = set(ids)-set(missing_sequences)
 	finalset = set(finalset)-set(missing_structs)
-
 	resdf = seqdf[seqdf['query'].isin(finalset)]
-	#fasta = AFDB_tools.res2fasta(resdf)
-
 	found = glob.glob(structfolder+'*.pdb') + glob.glob(rejectedfolder+'*.pdb')
-	finalset = { f.replace('.pdb', '' ).split('/')[-1] : AFDB_tools.get_amino_acid_sequence(f) for f in found if f.replace('.pdb', '' ).split('/')[-1] in finalset }
-	
+	finalset = { f.replace('.pdb', '' ).split('/')[-1] : AFDB_tools.get_amino_acid_sequence(f) for f in found if f.replace('.pdb', '' ).split('/')[-1] in finalset }	
 	assert len(finalset) == len(resdf['query'].unique()) , 'finalset and resdf do not have the same length'
+	assert len(glob.glob(structfolder+'*.pdb')) == len(resdf['query'].unique()) , 'struct set and resdf do not have the same length'
 
 	#with open(snakemake.output[0] , 'w') as outfile:
 	#	outfile.write(''.join(['>'+i+'\n'+finalset[i]+'\n' for i in finalset]))
