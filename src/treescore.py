@@ -139,6 +139,7 @@ def node_degree(node , leaf_lineages = None):
 		node.add_feature( 'degree' ,  node.up.degree + 1 )
 		for i,c in enumerate(node.get_children()):
 			node_degree(c ,  leaf_lineages = leaf_lineages)
+	return node
 	
 def node_degree_inv(node , leaf_lineages = None):
 	#get the max degree of all the nodes
@@ -151,6 +152,7 @@ def node_degree_inv(node , leaf_lineages = None):
 		node.add_feature( 'inv_degree' ,  ( max_degree - node.degree) / max_degree )
 		for i,c in enumerate(node.get_children()):
 			node_degree(c ,  leaf_lineages = leaf_lineages)
+	return node
 
 def node_degree_score(node , leaf_lineages = None):
 	#get multiply the inv degree by the lineage lenght for each node
@@ -166,8 +168,8 @@ def node_degree_score(node , leaf_lineages = None):
 	return sum([n.degree_score for n in node.traverse()])
 
 def degree_score(node):
-	node_degree(node)
-	node_degree_inv(node)
+	node = node_degree(node)
+	node = node_degree_inv(node)
 	return node_degree_score(node)
 
 
