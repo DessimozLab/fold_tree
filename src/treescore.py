@@ -161,9 +161,19 @@ def degree_score(node):
 	print( 'degree score' , dgscore	)
 	return dgscore 
 
-#taxonomy overlap score with all nodes
+#get weighted score
 def lineage_score(node):
-	score = sum([len(n.lineage) for n in node.traverse() if n.is_leaf()	== False])
+	clades = {}
+	for c in node.traverse():
+		if c.is_leaf() == False:
+			for l in c.lineage:
+				if l in clades:
+					clades[l] += 1
+				else:
+					clades[l] = 1
+	#add the weighted score
+	print('clades' , clades)
+	score = sum([ sum ( [ clades[l]  for l in n.lineage] )  for n in node.traverse() if n.is_leaf()	== False])
 	print('lineage score' , score)
 	return score
 
@@ -237,7 +247,7 @@ def getTaxOverlap_root(node , leaf_lineages = None):
     set: The set of taxonomic labels shared by all the leaf nodes descended from the node, or `None` if
     the node has no children with taxonomic labels.
     """
-	
+
 	if node.is_root() == True:
 		leaf_lineages = [ n.lineage for n in node.get_leaves()]
 		leaf_lineages = [ l for l in leaf_lineages if l ]
