@@ -195,7 +195,7 @@ rule iqtree:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		alignment="{folder}/sequences.aln.{aligner}.fst"
+		ancient("{folder}/sequences.aln.{aligner}.fst")
 	output:
 		"{folder}/sequences.aln.{aligner}.fst.treefile",
 	log:
@@ -252,7 +252,7 @@ rule foldseek_allvall_0:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/finalset.csv"
+		ancient("{folder}/finalset.csv")
 	output:
 		"{folder}/allvall_0.csv"
 	log:
@@ -301,7 +301,7 @@ rule muscle:
 	resources:
 		mem_mb=get_mem_mb
 	input:
-		fasta ="{folder}/sequences.fst",
+		fasta =ancient("{folder}/sequences.fst"),
 	output:
 		alignment="{folder}/sequences.aln.muscle.fst",
 	log:
@@ -332,7 +332,7 @@ rule plddt:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/finalset.csv",
+		ancient("{folder}/finalset.csv"),
 	output:
 		"{folder}/plddt.json",
 	log:
@@ -343,7 +343,7 @@ rule plddt:
 
 rule dl_ids_structs:
 	input:
-		"{folder}/sequence_dataset.csv",
+		ancient("{folder}/sequence_dataset.csv"),
 	output:
 		#"{folder}/sequences.fst",
 		"{folder}/finalset.csv",

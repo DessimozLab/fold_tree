@@ -87,8 +87,8 @@ rule iqtree3di:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/alnAA_3di.fasta",
-		"{folder}/sequence_dataset.csv"
+		ancient("{folder}/alnAA_3di.fasta"),
+		ancient("{folder}/sequence_dataset.csv")
 	output:
 		"{folder}/alnAA_3di.fasta.treefile"
 	log:
