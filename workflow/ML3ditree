@@ -150,9 +150,9 @@ rule iqtreex:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/alnAA_{alntype}.fasta",
-		"{folder}/aln3di_{alntype}.fasta",
-		"{folder}/templateX{alntype}.nx"
+		anecient("{folder}/alnAA_{alntype}.fasta"),
+		ancient("{folder}/aln3di_{alntype}.fasta"),
+		ancient("{folder}/templateX{alntype}.nx")
 	output:
 		"{folder}/templateX{alntype}.nx.ckp.gz",
 		"{folder}/templateX{alntype}.nx.treefile"	
@@ -204,7 +204,7 @@ rule mafft_textaln:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/seq3di.fasta",
+		ancient("{folder}/seq3di.fasta"),
 	output:
 		"{folder}/aln3di_3di.fasta",
 	params:
@@ -218,7 +218,7 @@ rule mafft_seq:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/sequences.fst",
+		ancient("{folder}/sequences.fst"),
 	output:
 		"{folder}/alnAA_AA.fasta",
 	shell:
