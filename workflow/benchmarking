@@ -131,7 +131,7 @@ rule mad_root_iq:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/sequences.aln.{aligner}.fst.treefile"
+		ancient("{folder}/sequences.aln.{aligner}.fst.treefile")
 	output:
 		"{folder}/sequences.aln.{aligner}.fst.treefile.rooted"
 	log:
@@ -197,7 +197,6 @@ rule iqtree:
 	input:
 		alignment="{folder}/sequences.aln.{aligner}.fst"
 	output:
-		"{folder}/sequences.aln.{aligner}.fst.ckp.gz",
 		"{folder}/sequences.aln.{aligner}.fst.treefile",
 	log:
 		"{folder}/logs/iqtree.{aligner}.log"

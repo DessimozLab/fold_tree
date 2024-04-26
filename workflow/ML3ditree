@@ -94,7 +94,7 @@ rule mad_root_structML:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/templateX{alntype}.nx.treefile"
+		ancient("{folder}/templateX{alntype}.nx.treefile")
 	output:
 		"{folder}/templateX{alntype}.nx.treefile.rooted"
 	log:

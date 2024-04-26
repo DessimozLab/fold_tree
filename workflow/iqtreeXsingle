@@ -70,7 +70,7 @@ rule mad_root_structML:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/alnAA_3di.fasta.treefile"
+		ancient("{folder}/alnAA_3di.fasta.treefile")
 	output:
 		"{folder}/alnAA_3di.fasta.treefile.rooted"
 	log:
@@ -90,7 +90,6 @@ rule iqtree3di:
 		"{folder}/alnAA_3di.fasta",
 		"{folder}/sequence_dataset.csv"
 	output:
-		"{folder}/alnAA_3di.fasta.ckp.gz",
 		"{folder}/alnAA_3di.fasta.treefile"
 	log:
 		"{folder}/logs/3diAA_iqtree_3disingle.log"
