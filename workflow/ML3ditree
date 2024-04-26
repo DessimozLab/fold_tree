@@ -120,7 +120,7 @@ rule mad_root_struct:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/struct_tree.PP.nwk"
+		ancient("{folder}/struct_tree.PP.nwk")
 	output:
 		"{folder}/struct_tree.PP.nwk.rooted"
 	log:
@@ -150,7 +150,7 @@ rule iqtreex:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		anecient("{folder}/alnAA_{alntype}.fasta"),
+		ancient("{folder}/alnAA_{alntype}.fasta"),
 		ancient("{folder}/aln3di_{alntype}.fasta"),
 		ancient("{folder}/templateX{alntype}.nx")
 	output:
@@ -290,7 +290,7 @@ rule foldseek_createdb:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/finalset.csv"
+		ancient("{folder}/finalset.csv")
 	output:
 		"{folder}/outdb",
 		"{folder}/outdb_ss"

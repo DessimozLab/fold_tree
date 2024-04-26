@@ -105,7 +105,7 @@ rule mad_root_struct:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk"
+		ancient("{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk")
 	output:
 		"{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk.rooted"
 	log:
@@ -118,7 +118,7 @@ rule mad_root_seq:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/sequences.aln.{aligner}.fst.nwk"
+		ancient("{folder}/sequences.aln.{aligner}.fst.nwk")
 	output:
 		"{folder}/sequences.aln.{aligner}.fst.nwk.rooted"
 	log:
@@ -162,7 +162,7 @@ rule quicktree:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/{mattype}_{alntype}_{exp}_fastmemat.txt"
+		ancient("{folder}/{mattype}_{alntype}_{exp}_fastmemat.txt")
 	output:
 		"{folder}/{mattype}_{alntype}_{exp}_struct_tree.nwk"
 	log:
@@ -177,7 +177,7 @@ rule fasttree:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		alignment="{folder}/sequences.aln.{aligner}.fst"
+		alignment=ancient("{folder}/sequences.aln.{aligner}.fst")
 	output:
 		tree="{folder}/sequences.aln.{aligner}.fst.nwk"
 	log:
@@ -267,7 +267,7 @@ rule foldseek_allvall_1:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/finalset.csv"
+		ancient("{folder}/finalset.csv")
 	output:
 		"{folder}/allvall_1.csv"
 	log:
@@ -283,7 +283,7 @@ rule clustalo:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/sequences.fst",
+		ancient("{folder}/sequences.fst"),
 	output:
 		"{folder}/sequences.aln.clustalo.fst",
 	params:
