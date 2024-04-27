@@ -178,7 +178,7 @@ def lineage_score(node):
 					clades[l] = 1	
 	#add the weighted score
 	print('clades' , clades)
-	score = sum([ sum ( [ clades[l]  for l in n.lineage] )  for n in node.traverse() if n.is_leaf()	== False])
+	score = sum([ sum ( [ clades[l]  for l in n.lineage] )  for n in node.traverse() if n.is_leaf()	== False and n.lineage ])
 	print('lineage score' , score)
 	return score
 
