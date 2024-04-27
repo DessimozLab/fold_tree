@@ -170,7 +170,7 @@ def degree_score(node):
 def lineage_score(node):
 	clades = {}
 	for c in node.traverse():
-		if c.is_leaf():
+		if c.is_leaf() and c.lineage:
 			for l in c.lineage:
 				if l in clades:
 					clades[l] += 1
