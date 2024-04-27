@@ -169,8 +169,8 @@ rule iqtree_template:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/alnAA_{alntype}.fasta",
-		"{folder}/aln3di_{alntype}.fasta",
+		ancient("{folder}/alnAA_{alntype}.fasta"),
+		ancient("{folder}/aln3di_{alntype}.fasta"),
 	output:
 		"{folder}/templateX{alntype}.nx",
 	params:
@@ -188,8 +188,8 @@ rule cross_alns:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/alnAA_AA.fasta",
-		"{folder}/aln3di_3di.fasta",
+		ancient("{folder}/alnAA_AA.fasta"),
+		ancient("{folder}/aln3di_3di.fasta"),
 	output:
 		"{folder}/alnAA_3di.fasta",
 		"{folder}/aln3di_AA.fasta",
@@ -250,9 +250,9 @@ rule scrape_alns:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/allvall_1.csv",
-		"{folder}/outdb",
-		"{folder}/outdb_ss"
+		ancient("{folder}/allvall_1.csv"),
+		ancient("{folder}/outdb"),
+		ancient("{folder}/outdb_ss)"
 	output:
 		"{folder}/sequences.fst",
 		"{folder}/seq3di.fasta",
@@ -272,9 +272,9 @@ rule out_xalndf:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		"{folder}/allvall_1.csv",
-		"{folder}/outdb",
-		"{folder}/outdb_ss"
+		ancient("{folder}/allvall_1.csv"),
+		ancient("{folder}/outdb"),
+		ancient("{folder}/outdb_ss")
 	output:
 		"{folder}/allvall_1_xaln.csv",
 	params:

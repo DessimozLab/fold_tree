@@ -161,6 +161,8 @@ def degree_score(node):
 	print( 'degree score' , dgscore	)
 	return dgscore 
 
+
+
 #get weighted score
 def lineage_score(node):
 	clades = {}
@@ -170,8 +172,7 @@ def lineage_score(node):
 				if l in clades:
 					clades[l] += 1
 				else:
-					clades[l] = 1
-					
+					clades[l] = 1	
 	#add the weighted score
 	print('clades' , clades)
 	score = sum([ sum ( [ clades[l]  for l in n.lineage] )  for n in node.traverse() if n.is_leaf()	== False])
