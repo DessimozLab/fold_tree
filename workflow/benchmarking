@@ -40,7 +40,6 @@ module ML3ditree:
 
 use rule * from ML3ditree as ML_*
 
-
 rule all:
 	input:
 	#get all treescore and rf distance files for all alntypes
