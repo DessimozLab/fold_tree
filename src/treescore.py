@@ -150,7 +150,10 @@ def node_degree_inv(node , max_degree = 0):
 		for i,c in enumerate(node.get_children()):
 			node_degree_inv(c  , max_degree= max_degree)
 	else:
-		node.add_feature( 'inv_degree' ,  len(node.lineage)* ( max_degree - node.degree) / max_degree )
+		if node.lineage:
+			node.add_feature( 'inv_degree' ,  len(node.lineage)* ( max_degree - node.degree) / max_degree )
+		else:
+			node.add_feature( 'inv_degree' ,  len(node.lineage)* ( max_degree - node.degree) / max_degree )
 		for i,c in enumerate(node.get_children()):
 			node_degree_inv(c , max_degree= max_degree)
 	return sum([n.inv_degree for n in node.traverse() if n.is_leaf() == False ])
