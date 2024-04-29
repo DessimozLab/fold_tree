@@ -203,6 +203,62 @@ def lineage_score_woutredundant(node):
 	print('lineage score' , score)
 	return score
 
+#get weighted score
+def lineage_score_woutredundant_IC(node):
+	clades = {}
+	for c in node.traverse():
+		if c.is_leaf() and c.lineage:
+			for l in c.lineage:
+				if l in clades:
+					clades[l] += 1
+				else:
+					clades[l] = 1
+	#zero the entries that are in all leaves
+	nleaves = len([n for n in node.get_leaves() if n.lineage])
+	for k,v in clades.items():
+		if v == len([n for n in node.get_leaves() if n.lineage]):
+			clades[k] = 0
+		else:
+			#weigh by IC
+			p = v/nleaves
+			clades[k] = p * np.log2(p)
+	#add the weighted score
+	print('clades' , clades)
+	score = sum([ sum ( [ clades[l]  for l in n.lineage] )  for n in node.traverse() if n.is_leaf()	== False and n.lineage ] )
+	print('lineage score' , score)
+	return score
+
+def lineage_score_tax_degree(node,uniprot_df):
+	clades = {}
+	for c in node.traverse():
+		if c.is_leaf() and c.lineage:
+			for l in c.lineage:
+				if l in clades:
+					clades[l] += 1
+				else:
+					clades[l] = 1	
+	#zero the entries that are in all leaves
+	for k,v in clades.items():
+		if v == len([n for n in node.get_leaves() if n.lineage]):
+			clades[k] = 0
+	taxa_degree = {}
+	for lineage in list(uniprot_df['Taxonomic lineage (Ids)'] ):
+		for i,tax in enumerate(lineage.split(',')):
+			if tax in taxa_degree:
+				taxa_degree[tax] = i
+			elif taxa_degree[tax] > i:
+				taxa_degree[tax] = i
+	#get the max degree of all the taxa
+	max_degree = max([taxa_degree[tax] for tax in taxa_degree])
+	for tax in taxa_degree:
+		taxa_degree[tax] = max_degree - taxa_degree[tax] + 1
+
+	#add the weighted score
+	print('clades' , clades)
+	score = sum([ sum ( [ clades[l]*taxa_degree[l]  for l in n.lineage] )  for n in node.traverse() if n.is_leaf()	== False and n.lineage ] )
+	print('lineage score' , score)
+	return score
+
 
 #taxonomy overlap score
 def getTaxOverlap_root(node , clades = None):

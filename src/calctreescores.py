@@ -33,8 +33,6 @@ for t in snakemake.input[1:]:
     tree3 = copy.deepcopy(tree)
     degree_score2 = treescore.degree_score(tree3.treenode , exp = 2 )
 
-
-
     tree4 = copy.deepcopy(tree)
     treescore.getTaxOverlap_root(tree4.treenode)
     root_score , root_score_nr = treescore.sum_rootscore(tree4.treenode)
@@ -42,13 +40,16 @@ for t in snakemake.input[1:]:
     lineage_score = treescore.lineage_score(tree.treenode)
     lineage_score_woutredundant = treescore.lineage_score_woutredundant(tree.treenode)
 
+    taxdegree_score = treescore.lineage_score_tax_degree(tree.treenode,uniprot_df)
+
     #measure the distances of leaves to root
     distances = np.array([ node.get_distance(tree.treenode) for node in tree.treenode.get_leaves() ])
     distances_norm = distances / np.mean(distances)
     scores[t] = {'score': taxscore, 'stats': describe(lengths) , 'ultrametricity':  describe(distances), 
                  'ultrametricity_norm':  describe(distances_norm) , 'root_score': root_score  , 
                  'degree_score': degree_score1, 'lineage_score': lineage_score , 'lineage_score_woutredundant': lineage_score_woutredundant ,
-                'degree_score1': degree_score1 , 'degree_score15': degree_score15 , 'degree_score2': degree_score2 , 'root_score_nr': root_score_nr}
+                'degree_score1': degree_score1 , 'degree_score15': degree_score15 , 'degree_score2': degree_score2 , 'root_score_nr': root_score_nr
+                , 'taxdegree_score': taxdegree_score }
 
 print(scores)
 

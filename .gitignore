@@ -46,3 +46,4 @@ src/dataprep/**
 !src/dataprep/*.py
 !src/dataprep/*.sh
 
+notebooks/**.pkl
