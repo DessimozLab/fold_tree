@@ -246,7 +246,9 @@ def lineage_score_tax_degree(node,uniprot_df):
 		for i,tax in enumerate(lineage.split(',')):
 			if tax in taxa_degree:
 				taxa_degree[tax] = i
-			elif taxa_degree[tax] > i:
+			elif tax in taxa_degree and taxa_degree[tax] > i:
+				taxa_degree[tax] = i
+			else:
 				taxa_degree[tax] = i
 	#get the max degree of all the taxa
 	max_degree = max([taxa_degree[tax] for tax in taxa_degree])
