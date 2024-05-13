@@ -31,6 +31,7 @@ exp = ['raw', 'exp']
 aligners = [  'muscle' ] #['clustalo', '3dcoffee' ]
 print( len(folders) , 'families to benchmark' )
 
+
 rule all:
 	input:
 		expand("{folder}/alnAA_3di.fasta.treefile.rooted.final", folder = folders ),

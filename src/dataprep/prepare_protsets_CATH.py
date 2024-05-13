@@ -112,14 +112,9 @@ if __name__ == '__main__':
         for fam in tqdm.tqdm(siftsdf[category].unique()):
             if not os.path.exists(datapath+fam):
                 os.mkdir(datapath+fam)
-            
-
-
             if not os.path.exists(datapath+fam+ datapath+fam+'/sequences.fst'):
                 #create a tree for each superfam
                 sub = siftsdf[siftsdf[category] == fam]
-                
-                
                 prots = list( set(sub['SP_PRIMARY'].unique()) )
                 #output the uniport ids to a file
                 if len(prots)> 10:

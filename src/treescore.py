@@ -255,6 +255,8 @@ def lineage_score_tax_degree(node,uniprot_df):
 	for tax in taxa_degree:
 		taxa_degree[tax] = max_degree - taxa_degree[tax] + 1
 
+	print('taxa degree' , taxa_degree)
+	
 	#add the weighted score
 	print('clades' , clades)
 	score = sum([ sum ( [ clades[l]*taxa_degree[l]  for l in n.lineage] )  for n in node.traverse() if n.is_leaf()	== False and n.lineage ] )

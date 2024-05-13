@@ -6,6 +6,8 @@
 #SBATCH --time=24:00:00
 #SBATCH --job-name=python
 source /work/FAC/FBM/DBC/cdessim2/default/dmoi/miniconda3/etc/profile.d/conda.sh 
+source /work/FAC/FBM/DBC/cdessim2/default/dmoi/miniconda3/etc/profile.d/mamba.sh
+
 #conda init bash
-conda activate ML2
-python prepare_protsets_CATH.py
+mamba activate torch
+python cath_prepa.py
