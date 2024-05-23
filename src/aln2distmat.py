@@ -6,7 +6,7 @@ import pandas as pd
 import glob
 from Bio import SeqIO
 import structalns
-from foldseek2tree import distmat_to_txt
+from foldseek2tree import distmat_to_txt , Tajima_dist
 import numpy as np
 
 #take a fasta as input and transform the msa into a distance matrix
@@ -27,5 +27,8 @@ for i in range(len(seqs)):
         if i < j:
             distmat[i,j] = 1-structalns.Fident(seqs[i], seqs[j])
 distmat = distmat + distmat.T
+#apply tajima's correction
+distmat = Tajima_dist(distmat , bfactor=.93 )
+
 #output the distmat
 distmat_to_txt( seqnames, distmat, snakemake.output[0] )

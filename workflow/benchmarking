@@ -104,7 +104,7 @@ rule mad_root_struct:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		ancient("{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk")
+		"{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk"
 	output:
 		"{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk.rooted"
 	log:
@@ -161,7 +161,7 @@ rule quicktree:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		ancient("{folder}/{mattype}_{alntype}_{exp}_fastmemat.txt")
+		"{folder}/{mattype}_{alntype}_{exp}_fastmemat.txt"
 	output:
 		"{folder}/{mattype}_{alntype}_{exp}_struct_tree.nwk"
 	log:
@@ -251,7 +251,7 @@ rule foldseek_allvall_0:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		ancient("{folder}/finalset.csv")
+		"{folder}/finalset.csv"
 	output:
 		"{folder}/allvall_0.csv"
 	log:
@@ -266,7 +266,7 @@ rule foldseek_allvall_1:
 		#"config/fold_tree.yaml"
 		"foldtree"
 	input:
-		ancient("{folder}/finalset.csv")
+		"{folder}/finalset.csv"
 	output:
 		"{folder}/allvall_1.csv"
 	log:
@@ -342,7 +342,7 @@ rule plddt:
 
 rule dl_ids_structs:
 	input:
-		ancient("{folder}/sequence_dataset.csv"),
+		"{folder}/sequence_dataset.csv",
 	output:
 		#"{folder}/sequences.fst",
 		"{folder}/finalset.csv",
