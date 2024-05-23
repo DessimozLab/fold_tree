@@ -146,12 +146,15 @@ def node_degree_inv(node , max_degree = 0 , exp = 1.5):
 	if node.is_root() == True:
 		max_degree = max([n.degree for n in node.get_leaves()])
 		print('max degree' , max_degree)
-		node.add_feature( 'inv_degree' , len(node.lineage) * 1 )
+		if node.lineage:
+			node.add_feature( 'inv_degree' , len(node.lineage) * 1 )
+		else:
+			node.add_feature( 'inv_degree' , 0 )
+			
 		for i,c in enumerate(node.get_children()):
 			node_degree_inv(c  , max_degree= max_degree , exp= exp)
 	else:
 		if node.lineage:
-
 			node.add_feature( 'inv_degree' ,  len(node.lineage)* (( max_degree - node.degree) / max_degree) **exp )
 		else:
 			node.add_feature( 'inv_degree' ,  0 )

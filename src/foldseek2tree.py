@@ -39,6 +39,13 @@ def Tajima_dist( kn_ratio,bfactor=19/20, iter = 100 ):
 	np.fill_diagonal(taj, 0)
 	return taj
 
+def simple_logdist( kn_ratio,bfactor=19/20, iter = 100 ):
+	d = -bfactor* np.log(1- ( kn_ratio / kn_ratio ) )
+	#set diagonal to 0
+	np.fill_diagonal(d, 0)
+	return d
+
+
 
 def runargs(args):
 	'''run a command line command

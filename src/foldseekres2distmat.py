@@ -50,7 +50,9 @@ for i,k in enumerate(matrices):
 
 for i,k in enumerate(matrices):
     if k == 'fident':
-        bfactor=19/20
+        #bfactor=19/20
+        bfactor=.93
+
     else:
         bfactor=1
     tajima =  foldseek2tree.Tajima_dist(matrices[k] + 10 **-5 , bfactor=bfactor )
