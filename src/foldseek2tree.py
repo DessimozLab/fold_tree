@@ -40,7 +40,7 @@ def Tajima_dist( kn_ratio,bfactor=19/20, iter = 100 ):
 	return taj
 
 def simple_logdist( kn_ratio,bfactor=19/20, iter = 100 ):
-	d = -bfactor* np.log(1- ( kn_ratio / kn_ratio ) )
+	d = -bfactor* np.log(1- ( kn_ratio / bfactor ) )
 	#set diagonal to 0
 	np.fill_diagonal(d, 0)
 	return d
@@ -255,9 +255,15 @@ def structblob2tree(input_folder, outfolder, overwrite = False, fastmepath = 'fa
 	for i,k in enumerate(matrices):
 		matrices[k] /= 2
 		matrices[k] = 1-matrices[k]
-		print(matrices[k], np.amax(matrices[k]), np.amin(matrices[k]) )
-		np.save( outfolder + k + '_distmat.npy' , matrices[k])
-		distmat_txt = distmat_to_txt( ids , matrices[k] , outfolder + k + '_distmat.txt' )
+
+		if k == 'fident':
+			distmat = Tajima_dist( matrices[k] , bfactor = .93 , iter = 100 )
+		else:
+			distmat = Tajima_dist( matrices[k] )
+		print(distmat,  np.amax(distmat), np.amin(distmat) )
+
+		np.save( outfolder + k + '_distmat.npy' , distmat)
+		distmat_txt = distmat_to_txt( ids , distmat , outfolder + k + '_distmat.txt' )
 		out_tree = runFastme(  fastmepath = fastmepath , clusterfile = distmat_txt )
 		out_tree = postprocess(out_tree, outfolder + 'structblob_tree.nwk' , delta = delta)
 		trees[k] = out_tree
