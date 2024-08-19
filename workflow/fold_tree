@@ -84,6 +84,8 @@ rule foldseek2distmat:
 		"{folder}/foldtree_fastmemat.txt",
 		"{folder}/alntmscore_fastmemat.txt",
 		"{folder}/lddt_fastmemat.txt",
+	params:
+		fmt = None,
 	log:
 		"{folder}/logs/foldseek2distmat.log"
 	script:
@@ -113,7 +115,9 @@ rule dl_ids_sequences:
 	log:
 		"{folder}/logs/dlsequences.log"
 	params:
-		custom_structs=config["custom_structs"]
+		cath=config["cath"],
+		custom_structs=config["custom_structs"],
+		clean_folder=config["clean_folder"],
 	script:
 		"../src/dl_sequences.py"
 
@@ -134,7 +138,7 @@ rule dl_ids_structs:
 	input:
 		"{folder}/sequence_dataset.csv",
 	output:
-		"{folder}/sequences.fst",
+		#"{folder}/sequences.fst",
 		"{folder}/finalset.csv",
 	conda: 
 		#"config/fold_tree.yaml"
@@ -143,8 +147,10 @@ rule dl_ids_structs:
 		"{folder}/logs/dlstructs.log",
 	params:
 		filtervar=config["filter"],
+		cath=config["cath"],
 		filtervar_min=config["filter_min"],
 		filtervar_avg=config["filter_avg"],
 		custom_structs=config["custom_structs"],
+		clean_folder=config["clean_folder"],
 	script:
 		"../src/dl_structs.py"
