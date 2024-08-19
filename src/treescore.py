@@ -341,42 +341,6 @@ def sum_rootscore(node):
 
 	return rootscore , rootscore_nr
 
-#taxonomy overlap score
-
-"""
-def getTaxOverlap_root(node , leaf_lineages = None):
-
-
-	if node.is_root() == True:
-		leaf_lineages = [ n.lineage for n in node.get_leaves()]
-		leaf_lineages = [ l for l in leaf_lineages if l ]
-		leaf_lineages = [ item for sublist in leaf_lineages for item in sublist ]
-		leaf_lineages = set(leaf_lineages)
-		if node.lineage:
-			node.add_feature( 'root_score' ,  len(node.lineage) )
-		else:
-			node.add_feature( 'root_score' ,  0 )
-		for i,c in enumerate(node.get_children()):
-			getTaxOverlap_root(c , leaf_lineages = leaf_lineages)
-	else:
-		if node.lineage:
-			if node.is_leaf():
-				total = node.up.root_score
-			total = node.up.root_score + len(node.lineage)
-		else:
-			total = node.up.root_score
-		node.add_feature( 'root_score' ,  total )
-		for i,c in enumerate(node.get_children()):
-			getTaxOverlap_root(c ,  leaf_lineages = leaf_lineages)
-
-			
-
-
-def sum_rootscore(node):
-	return sum([n.root_score for n in node.get_leaves()])
-"""
-
-
 def make_lineages(uniprot_df):
 	return dict(zip(uniprot_df['query'] 
 		, uniprot_df['Taxonomic lineage (Ids)'].map( lambda x :  set( x.split(',') ) ) ) )
@@ -398,12 +362,22 @@ def label_leaves( tree , leaf_lineages):
     >>> label_leaves(tree, leaf_lineages)
     toytree.tree.TreeNode
     """
+	species_count = {}
 	#takes a pandas dataframe with lineage info from uniprot
 	for n in tree.treenode.iter_leaves():
 		if n.name in leaf_lineages:
 			n.add_feature( 'lineage' ,   leaf_lineages[n.name] )
+			if leaf_lineages[n.name] in species_count:
+				species_count[leaf_lineages[n.name]] += 1
+			else:
+				species_count[leaf_lineages[n.name]] = 1
+			spcount = species_count[leaf_lineages[n.name]]
+			#pad so that it is a 3 digit number
+			spcount = str(spcount).zfill(3)
+			n.add_feature( 'sp_num' ,   leaf_lineages[n.name].split(',')[-1] + '_' + spcount) )
 		else:
 			n.add_feature( 'lineage' ,   None )
+			n.add_feature( 'sp_num' ,   None )
 	return tree
 
 def compute_sum_dist_to_desc_leaves(node, sum_d = 0, n_leaves = 0, n_internal_nodes = 0):
@@ -459,3 +433,5 @@ def labelwRED(tree):
     compute_sum_dist_to_desc_leaves(tree)
     compute_red_score(tree)
     return tree
+
+

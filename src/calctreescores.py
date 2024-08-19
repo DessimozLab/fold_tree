@@ -6,6 +6,7 @@ import numpy as np
 from scipy.stats import describe
 import copy
 
+
 #calc the taxscore 
 uniprot_df = pd.read_csv(snakemake.input[0])
 scores = {}
@@ -41,6 +42,18 @@ for t in snakemake.input[1:]:
     lineage_score_woutredundant = treescore.lineage_score_woutredundant(tree.treenode)
 
     taxdegree_score = treescore.lineage_score_tax_degree(tree.treenode,uniprot_df)
+
+    
+
+    #label the leaves with species and number
+    for l in tree.treenode.get_leaves():
+        if l.sp_num:
+            l.name = l.sp_num
+    #calc number of losses and duplications
+    events = tree.treenode.get_my_evol_events()
+    dups = t.search_nodes(evoltype="D")
+    losses = t.search_nodes(evoltype="L")
+    
 
     #measure the distances of leaves to root
     distances = np.array([ node.get_distance(tree.treenode) for node in tree.treenode.get_leaves() ])

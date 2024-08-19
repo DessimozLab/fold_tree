@@ -10,3 +10,6 @@
 [submodule "3diphy"]
 	path = 3diphy
 	url = git@github.com:nmatzke/3diphy.git
+[submodule "A-pro"]
+	path = A-pro
+	url = git@github.com:chaoszhang/A-pro.git
