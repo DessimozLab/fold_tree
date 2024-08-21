@@ -1,0 +1,59 @@
+
+import snakemake.utils
+snakemake.utils.min_version("7.8.0")
+snake_dir = workflow.basedir
+rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
+print(' benchmark all running in ' , rootdir)
+configfile: rootdir+ "workflow/config/config_vars.yaml"
+# remote homologues search parameters
+
+foldseekpath = config["foldseek_path"]
+if foldseekpath == 'provided':
+	foldseekpath = rootdir + "foldseek/foldseek"
+
+if 'folder' in config:
+	if type(config['folder']) == str:
+		folders = [config['folder']]
+	else:
+		folders = config['folder']
+else:
+	folders = glob_wildcards("{folders}/identifiers.txt").folders
+	config['folder']  = folders
+
+if config['fam_limit'] > 0:
+	folders = folders[:config['fam_limit']]
+	config['folder']  = folders
+
+
+alntype = ['3di','AA']#, 'foldtree']
+mattypes = ['fident', 'alntmscore', 'lddt' ]
+alntypes = ['0', '1']
+exp = ['raw', 'exp']
+aligners = [  'muscle' ] #['clustalo', '3dcoffee' ]
+print( len(folders) , 'families to benchmark' )
+
+rule prepare_astral_pro:
+    input:
+        table="{folder}/finalset.csv",
+    output:
+        outdir+"/reco/gene_species.map"
+    conda: "foldtree"
+    script:
+        '../src/prepare_astral_pro.py'
+
+rule support_astral_pro:
+    input:
+        sptree=config['species_tree'],
+        genemap=rules.prepare_astral_pro.output,
+        trees=rules.get_unrooted_trees.output.trees,
+    output: 
+        gt=outdir+"/reco/{seed}_{mode}_{alphabet}_{model}_apro_input.nwk",
+        st=outdir+"/reco/{seed}_{mode}_{alphabet}_{model}_apro_support.nwk"
+    log: outdir+"/log/apro/{seed}_{mode}_{alphabet}_{model}_apro.log"
+    params: config['root']
+    conda: "../envs/sp_tree.yaml"
+    shell:'''
+awk '$2=="{wildcards.mode}" && $3=="{wildcards.alphabet}" && $4=="{wildcards.model}"' {input.trees} | \
+cut -f5 > {output.gt}
+astral-pro -c {input.sptree} -a {input.genemap} -u 2 -i {output.gt} -o {output.st} -C --root {params} 2> {log}
+'''

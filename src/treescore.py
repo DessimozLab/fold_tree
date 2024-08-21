@@ -164,7 +164,6 @@ def node_degree_inv(node , max_degree = 0 , exp = 1.5):
 
 def degree_score(node , exp):
 	node = node_degree(node)
-	print(node)
 	dgscore = node_degree_inv(node , exp )
 	print( 'degree score' , dgscore	 , 'exp' , exp)
 	return dgscore 
@@ -345,7 +344,11 @@ def make_lineages(uniprot_df):
 	return dict(zip(uniprot_df['query'] 
 		, uniprot_df['Taxonomic lineage (Ids)'].map( lambda x :  set( x.split(',') ) ) ) )
 
-def label_leaves( tree , leaf_lineages):
+def get_species(uniprot_df):
+	return dict(zip(uniprot_df['query'] 
+		, uniprot_df['Taxonomic lineage (Ids)'].map( lambda x :   x.split(',')[-1].split('(' )[0].strip() ) ) )
+
+def label_leaves( tree , leaf_lineages , species_map):
 	"""
     Adds lineage information to the leaves of a tree.
     
@@ -367,14 +370,14 @@ def label_leaves( tree , leaf_lineages):
 	for n in tree.treenode.iter_leaves():
 		if n.name in leaf_lineages:
 			n.add_feature( 'lineage' ,   leaf_lineages[n.name] )
-			if leaf_lineages[n.name] in species_count:
-				species_count[leaf_lineages[n.name]] += 1
+			if species_map[n.name] in species_count:
+				species_count[species_map[n.name]] += 1
 			else:
-				species_count[leaf_lineages[n.name]] = 1
-			spcount = species_count[leaf_lineages[n.name]]
+				species_count[species_map[n.name]] = 1
+			spcount = species_count[species_map[n.name]]
 			#pad so that it is a 3 digit number
 			spcount = str(spcount).zfill(3)
-			n.add_feature( 'sp_num' ,   leaf_lineages[n.name].split(',')[-1] + '_' + spcount) )
+			n.add_feature( 'sp_num' ,   species_map[n.name]+ '_' + spcount)
 		else:
 			n.add_feature( 'lineage' ,   None )
 			n.add_feature( 'sp_num' ,   None )

@@ -15,6 +15,7 @@ stats = {}
 for t in snakemake.input[1:]:
     tree = toytree.tree(t )
     lineages = treescore.make_lineages(uniprot_df)
+    species = treescore.get_species(tree.treenode)
     tree = treescore.label_leaves( tree , lineages)
     #tree = treescore.labelwRED(tree.treenode)
     overlap = treescore.getTaxOverlap(tree.treenode)
@@ -43,17 +44,29 @@ for t in snakemake.input[1:]:
 
     taxdegree_score = treescore.lineage_score_tax_degree(tree.treenode,uniprot_df)
 
-    
 
+    species_set = set()
     #label the leaves with species and number
     for l in tree.treenode.get_leaves():
         if l.sp_num:
             l.name = l.sp_num
+            species_set.add(l.sp_num)
+    
+    tree = ete3.Tree(tree.treenode)
     #calc number of losses and duplications
     events = tree.treenode.get_my_evol_events()
-    dups = t.search_nodes(evoltype="D")
-    losses = t.search_nodes(evoltype="L")
+    dups = tree.search_nodes(evoltype="D")
+    losses = tree.search_nodes(evoltype="L")
+
+    #use species tree based algorithm to calculate loss and duplication events
+    sptree = tree = ncbi.get_topology(species_set)
+
+    #output the species tree
+    sptree.write(outfile=snakemake.output[1], format=1)
     
+    recon_tree, events = genetree.reconcile(sptree)
+    dups_recon = recon_tree.search_nodes(evoltype="D")
+    losses_recon = recon_tree.search_nodes(evoltype="L")
 
     #measure the distances of leaves to root
     distances = np.array([ node.get_distance(tree.treenode) for node in tree.treenode.get_leaves() ])
