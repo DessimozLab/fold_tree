@@ -1,5 +1,91 @@
 import toytree
 import toyplot
+import re
+from scipy.stats import describe
+import pandas as pd
+from ete3 import NCBITaxa
+####### Astral functions ########
+
+ncbi = NCBITaxa()
+
+def parse_astral(string , index = 0):
+	"""
+
+	q1,q2,q3: these three values show quartet support (as defined in the description of -t 1) for the main topology, the first alternative, and the second alternative, respectively.
+	f1, f2, f3: these three values show the total number of quartet trees in all the gene trees that support the main topology, the first alternative, and the second alternative, respectively.
+	pp1, pp2, pp3: these three show the local posterior probabilities (as defined in the description of -t 4) for the main topology, the first alternative, and the second alternative, respectively.
+
+	"""
+	#'[pp1=0.284784;pp2=0.426968;pp3=0.288248;f1=0.000000;f2=0.263158;f3=0.008772;q1=0.000000;q2=0.967742;q3=0.032258]'
+	string = string.replace('[','').replace(']','')
+	string = string.split(';')
+	string = {s.split('=')[0]:float(s.split('=')[1]) for s in string}
+	#to dataframe
+	string = pd.DataFrame(string , index = [index])
+	return string
+
+def retastral_support( astral_file):
+	with open(astral_file , 'r') as f:
+		nstring = f.read()
+	#find all quoted strings with single quotes
+	quoted = re.findall(r"'(.*?)'", nstring)
+	dfs = [ parse_astral(q,i) for i,q in enumerate(quoted)]
+	dfs = pd.concat(dfs)
+	#make sure pp1 does not contain nan
+	return dfs
+
+def verify_map(mapping, tree):
+	t = ete3.Tree(tree)
+	for l in t.get_leaves():
+		if l.name not in mapping.keys():
+			print('missing', l.name)
+			return False
+	return True 
+
+def return_astral_score(astrolout, logfile):
+	#get dup loss and speciation events from astral logfile
+	with open(logfile , 'r') as f:
+		for l in f:
+			if '#Duploss' in l:
+				duploss = int(l.split(' ')[-1])
+	astraldf = retastral_support(astrolout)
+	#count nans 
+	nancount = astraldf['pp1'].isna().sum()
+	#get summary stats
+	astral_stas = describe(astraldf['pp1'].dropna())
+	return astraldf, { 'mean': astral_stas.mean , 'std': astral_stas.variance ,'skewness':astral_stas.skewness, 'nancount': nancount , 'duploss': duploss }
+
+
+def run_astral( phylo , st,  mapping, output ,root  ,outfmt = '2', astralpath = '/work/FAC/FBM/DBC/cdessim2/default/dmoi/software/ASTER-Linux/bin/astral-pro3' ):
+	logfile = output+'.log'
+	cmd = astralpath + ' -c {st} -a {mapping} -u {outfmt} -i {phylo} -o {output} -C -T -E --root {root} 2>{logfile}'.format(phylo = phylo , st=st, mapping = mapping , output = output , root=root, logfile = logfile , outfmt = outfmt)
+	print(cmd)
+	subprocess.run(cmd , shell = True)
+	return output , logfile
+
+def prepare_astral_input(uniprot_df , speciestreeout, mapperout):
+	finalset = pd.read_csv(uniprot_df)
+	finalset['species'] = finalset['Taxonomic lineage (Ids)'].map(lambda x: x.split(',')[-1].split('(')[0].strip())
+	finalset['species'] = finalset['species'].map(lambda x: x.split('_')[0])
+	mapper = dict(zip(finalset['Entry'], finalset['species']))
+	with open(mapperout , 'w') as f:
+		for k,v in mapper.items():
+			f.write('{}\t{}\n'.format(k,int(v)))
+	
+	#get ncbi tree of species set
+	species_set = list(finalset.species.unique())
+	species_set = [int(s) for s in species_set]
+	st = ncbi.get_topology(species_set, intermediate_nodes=False)
+	st.name = 'root'
+	#write with internal node names
+
+	st.write(outfile=speciestreeout , format= 1 )
+	return mapper , uniprot_df.replace('.csv','_speciesmap.txt' )  , uniprot_df.replace('.csv','_ncbi_tree.nwk' ) 
+
+
+
+######## TCS functions ########
+
 
 #taxonomy overlap score
 
@@ -66,27 +152,27 @@ def frac_score( v ):
 def getTaxOverlap(node , treelen  = None , scorefun = frac_score):
 	
 	"""
-    Calculate the taxonomy overlap score for the given node in a phylogenetic tree.
-    
-    The taxonomy overlap score is defined as the number of taxonomic labels shared by all the leaf nodes
-    descended from the given node, plus the sum of the scores of all its children. If a leaf node has no
-    taxonomic label, it is not counted towards the score. The function also calculates the size of the
-    largest loss in lineage length, defined as the difference between the length of the set of taxonomic
-    labels shared by all the leaf nodes and the length of the longest set of taxonomic labels among the
-    children of the node.
-    
-    The function adds the following features to the node object:
-    - 'score': the taxonomy overlap score.
-    - 'size': the largest loss in lineage length.
-    - 'lineage': the set of taxonomic labels shared by all the leaf nodes descended from the node.
-    
-    Parameters:
-    node (Toytree.): The node in a phylogenetic tree.
-    
-    Returns:
-    set: The set of taxonomic labels shared by all the leaf nodes descended from the node, or `None` if
-    the node has no children with taxonomic labels.
-    """
+	Calculate the taxonomy overlap score for the given node in a phylogenetic tree.
+	
+	The taxonomy overlap score is defined as the number of taxonomic labels shared by all the leaf nodes
+	descended from the given node, plus the sum of the scores of all its children. If a leaf node has no
+	taxonomic label, it is not counted towards the score. The function also calculates the size of the
+	largest loss in lineage length, defined as the difference between the length of the set of taxonomic
+	labels shared by all the leaf nodes and the length of the longest set of taxonomic labels among the
+	children of the node.
+	
+	The function adds the following features to the node object:
+	- 'score': the taxonomy overlap score.
+	- 'size': the largest loss in lineage length.
+	- 'lineage': the set of taxonomic labels shared by all the leaf nodes descended from the node.
+	
+	Parameters:
+	node (Toytree.): The node in a phylogenetic tree.
+	
+	Returns:
+	set: The set of taxonomic labels shared by all the leaf nodes descended from the node, or `None` if
+	the node has no children with taxonomic labels.
+	"""
 
 	if node.is_leaf() == True:
 		node.add_feature( 'score' ,  0 )
@@ -270,22 +356,22 @@ def lineage_score_tax_degree(node,uniprot_df):
 def getTaxOverlap_root(node , clades = None):
 	
 	"""
-    Calculate the taxonomy overlap score from the root down for the given node in a phylogenetic tree.
-    
+	Calculate the taxonomy overlap score from the root down for the given node in a phylogenetic tree.
+	
 	start with the total set of all clades from leaves
 	use the sets from the leaf to root approach and accumlate score as the total number 
 	of shared elements
 
-    The function adds the following features to the node object:
-    - 'root_score': the taxonomy overlap score.
+	The function adds the following features to the node object:
+	- 'root_score': the taxonomy overlap score.
 
-    Parameters:
-    node (Toytree.): The node in a phylogenetic tree.
-    
-    Returns:
-    set: The set of taxonomic labels shared by all the leaf nodes descended from the node, or `None` if
-    the node has no children with taxonomic labels.
-    """
+	Parameters:
+	node (Toytree.): The node in a phylogenetic tree.
+	
+	Returns:
+	set: The set of taxonomic labels shared by all the leaf nodes descended from the node, or `None` if
+	the node has no children with taxonomic labels.
+	"""
 	if node.is_root() == True:
 		clades = {}
 
@@ -350,21 +436,21 @@ def get_species(uniprot_df):
 
 def label_leaves( tree , leaf_lineages , species_map):
 	"""
-    Adds lineage information to the leaves of a tree.
-    
-    Parameters:
-    tree (toytree.tree.TreeNode): A tree object from the toytree package.
-    leaf_lineages (dict): A dictionary mapping leaf names to lineage information.
-    
-    Returns:
-    toytree.tree.TreeNode: The input tree object with the added lineage information.
-    
-    Examples:
-    >>> tree = toytree.tree('''((a, b), c);''')
-    >>> leaf_lineages = {'a': 'Eukaryota', 'b': 'Eukaryota'}
-    >>> label_leaves(tree, leaf_lineages)
-    toytree.tree.TreeNode
-    """
+	Adds lineage information to the leaves of a tree.
+	
+	Parameters:
+	tree (toytree.tree.TreeNode): A tree object from the toytree package.
+	leaf_lineages (dict): A dictionary mapping leaf names to lineage information.
+	
+	Returns:
+	toytree.tree.TreeNode: The input tree object with the added lineage information.
+	
+	Examples:
+	>>> tree = toytree.tree('''((a, b), c);''')
+	>>> leaf_lineages = {'a': 'Eukaryota', 'b': 'Eukaryota'}
+	>>> label_leaves(tree, leaf_lineages)
+	toytree.tree.TreeNode
+	"""
 	species_count = {}
 	#takes a pandas dataframe with lineage info from uniprot
 	for n in tree.treenode.iter_leaves():
@@ -384,57 +470,57 @@ def label_leaves( tree , leaf_lineages , species_map):
 	return tree
 
 def compute_sum_dist_to_desc_leaves(node, sum_d = 0, n_leaves = 0, n_internal_nodes = 0):
-    """
-    Compute the sum of distances to the descendant leaves and the number of descendant leaves for each node.
-    
+	"""
+	Compute the sum of distances to the descendant leaves and the number of descendant leaves for each node.
+	
 	"""
 
-    n_internal_nodes = 0
-    if node.is_leaf():
-        n_leaves = 1
-        sum_d = node.get_distance(node.up)
-        node.n_desc_leaves = 0
-        node.sum_dist_to_desc_leaves = 0
-        node.n_internal_nodes = 0
-    else:
-        n_leaves = 0
-        sum_d = 0
-        for child in node.children:
-            res = compute_sum_dist_to_desc_leaves(child, sum_d, n_leaves, n_internal_nodes)
-            sum_d += res[0] 
-            n_leaves += res[1]
-            n_internal_nodes += res[2]
-        n_internal_nodes += 1
-        node.sum_dist_to_desc_leaves = sum_d
-        node.n_desc_leaves = n_leaves
-        node.n_internal_nodes = n_internal_nodes
-        if node.up:
-            sum_d += node.get_distance(node.up) * n_leaves
-    if node.up:
-        return sum_d, n_leaves, n_internal_nodes
-    
+	n_internal_nodes = 0
+	if node.is_leaf():
+		n_leaves = 1
+		sum_d = node.get_distance(node.up)
+		node.n_desc_leaves = 0
+		node.sum_dist_to_desc_leaves = 0
+		node.n_internal_nodes = 0
+	else:
+		n_leaves = 0
+		sum_d = 0
+		for child in node.children:
+			res = compute_sum_dist_to_desc_leaves(child, sum_d, n_leaves, n_internal_nodes)
+			sum_d += res[0] 
+			n_leaves += res[1]
+			n_internal_nodes += res[2]
+		n_internal_nodes += 1
+		node.sum_dist_to_desc_leaves = sum_d
+		node.n_desc_leaves = n_leaves
+		node.n_internal_nodes = n_internal_nodes
+		if node.up:
+			sum_d += node.get_distance(node.up) * n_leaves
+	if node.up:
+		return sum_d, n_leaves, n_internal_nodes
+	
 def compute_red_score(node, red = 0, level_from_root = 0):
-    """
-    Compute the RED score for each node.
-    
-    """
-    if node.is_leaf():
-        red = 1
-    elif not node.up:
-        red = 0
-    else:
-        p = red
-        d = node.get_distance(node.up)
-        u = (node.sum_dist_to_desc_leaves + (d * node.n_desc_leaves)) / node.n_desc_leaves
-        red = p + (d/u) * (1-p)
-    node.level = level_from_root
-    node.red = red
-    for child in node.children:
-        compute_red_score(child, red, level_from_root + 1)
-        
+	"""
+	Compute the RED score for each node.
+	
+	"""
+	if node.is_leaf():
+		red = 1
+	elif not node.up:
+		red = 0
+	else:
+		p = red
+		d = node.get_distance(node.up)
+		u = (node.sum_dist_to_desc_leaves + (d * node.n_desc_leaves)) / node.n_desc_leaves
+		red = p + (d/u) * (1-p)
+	node.level = level_from_root
+	node.red = red
+	for child in node.children:
+		compute_red_score(child, red, level_from_root + 1)
+		
 def labelwRED(tree):
-    compute_sum_dist_to_desc_leaves(tree)
-    compute_red_score(tree)
-    return tree
+	compute_sum_dist_to_desc_leaves(tree)
+	compute_red_score(tree)
+	return tree
 
 

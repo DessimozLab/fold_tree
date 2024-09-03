@@ -9,6 +9,7 @@ filter_avg: 50
 #use 'foldseek' to use the latest one installed by conda in the pipeline
 #use 'provided' to use the one provided in the repository
 
+astral_path: /work/FAC/FBM/DBC/cdessim2/default/dmoi/software/ASTER-Linux/bin/astral-pro
 foldseek_path: foldseek
 foldseek_cores: 1
 
@@ -38,4 +39,4 @@ mafft_submat3di: mafftmat/3diHEXmat.txt
 
 #clean all the previous results before running
 clean_folder: False
-fam_limit: 500
+fam_limit: 10000

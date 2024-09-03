@@ -3,13 +3,10 @@ import snakemake.utils
 snakemake.utils.min_version("7.8.0")
 snake_dir = workflow.basedir
 rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
-print(' benchmark all running in ' , rootdir)
+print(' astral benchmark running in ' , rootdir)
 configfile: rootdir+ "workflow/config/config_vars.yaml"
-# remote homologues search parameters
 
-foldseekpath = config["foldseek_path"]
-if foldseekpath == 'provided':
-	foldseekpath = rootdir + "foldseek/foldseek"
+
 
 if 'folder' in config:
 	if type(config['folder']) == str:
@@ -17,43 +14,67 @@ if 'folder' in config:
 	else:
 		folders = config['folder']
 else:
-	folders = glob_wildcards("{folders}/identifiers.txt").folders
+	folders = glob_wildcards("{folders}/finalset.csv").folders
 	config['folder']  = folders
 
+print( folders[0:10])
 if config['fam_limit'] > 0:
 	folders = folders[:config['fam_limit']]
 	config['folder']  = folders
 
-
-alntype = ['3di','AA']#, 'foldtree']
-mattypes = ['fident', 'alntmscore', 'lddt' ]
-alntypes = ['0', '1']
-exp = ['raw', 'exp']
-aligners = [  'muscle' ] #['clustalo', '3dcoffee' ]
+alntype = ['AA']#, 'foldtree']
+mattypes = ['fident' ]
+alntypes = ['1']
+exp = [ 'exp']
+aligners = [  'muscle' ]
+outfmt = ['json', 'csv']
 print( len(folders) , 'families to benchmark' )
 
-rule prepare_astral_pro:
-    input:
-        table="{folder}/finalset.csv",
-    output:
-        outdir+"/reco/gene_species.map"
-    conda: "foldtree"
-    script:
-        '../src/prepare_astral_pro.py'
+
+module benchmarking:
+	# here, plain paths, URLs and the special markers for code hosting providers (see below) are possible.
+	snakefile: "benchmarking"
+	config: config
+
+use rule * from benchmarking as BM_*
+
+
+
+rule all:
+	input:
+		expand("{folder}/sequences.aln.{aligner}.fst.treefile.rooted.treescore_astral_support.{fmt}" , folder = folders , aligner = aligners , fmt = outfmt ),
+		expand("{folder}/templateX{alntype}.nx.treefile.rooted.final.treescore_astral_support.{fmt}", folder = folders , alntype = alntype , fmt = outfmt ),
+		expand("{folder}/{mattype}_{alntype}_{exp}_struct_tree.PP.nwk.rooted.treescore_astral_support.{fmt}" , folder = folders , mattype = mattypes , alntype = alntypes , exp=exp , fmt = outfmt ),
+
+#should add a node to the species tree to root it
+rule prepare_species_tree:
+	input:
+		finalset="{folder}/finalset.csv",
+	output:
+		map = "{folder}/gene_species.map",
+		species_tree = "{folder}/species_tree.nwk"
+	conda: "foldtree"
+	script:
+		'../src/prepare_astral_pro.py'
 
 rule support_astral_pro:
-    input:
-        sptree=config['species_tree'],
-        genemap=rules.prepare_astral_pro.output,
-        trees=rules.get_unrooted_trees.output.trees,
-    output: 
-        gt=outdir+"/reco/{seed}_{mode}_{alphabet}_{model}_apro_input.nwk",
-        st=outdir+"/reco/{seed}_{mode}_{alphabet}_{model}_apro_support.nwk"
-    log: outdir+"/log/apro/{seed}_{mode}_{alphabet}_{model}_apro.log"
-    params: config['root']
-    conda: "../envs/sp_tree.yaml"
-    shell:'''
-awk '$2=="{wildcards.mode}" && $3=="{wildcards.alphabet}" && $4=="{wildcards.model}"' {input.trees} | \
-cut -f5 > {output.gt}
-astral-pro -c {input.sptree} -a {input.genemap} -u 2 -i {output.gt} -o {output.st} -C --root {params} 2> {log}
-'''
+	input:
+		sptree= rules.prepare_species_tree.output.species_tree,
+		genemap= rules.prepare_species_tree.output.map,
+		gt="{folder}/{treetype}"
+	output: 
+		st="{folder}/{treetype}_astral_support.tre",
+		logout="{folder}/log/apro/{treetype}_astral_support.log",
+	log: "{folder}/log/apro/{treetype}_apro.log"
+	conda: "foldtree"
+	shell: config['astral_path'] +' -c {input.sptree} -a {input.genemap} -u 2 -i {input.gt} -o {output.st} -C --root root 2> {output.logout} ' 
+
+rule read_astral:
+	input:
+		st = rules.support_astral_pro.output.st,
+		logout = rules.support_astral_pro.output.logout        
+	output:
+		csv="{folder}/{treetype}.treescore_astral_support.csv",
+		json="{folder}/{treetype}.treescore_astral_support.json"
+	script:
+		'../src/read_astral.py'
