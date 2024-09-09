@@ -30,16 +30,14 @@ aligners = [  'muscle' ]
 outfmt = ['json', 'csv']
 print( len(folders) , 'families to benchmark' )
 
-
+"""
 module benchmarking:
 	# here, plain paths, URLs and the special markers for code hosting providers (see below) are possible.
 	snakefile: "benchmarking"
 	config: config
 
-use rule * from benchmarking as BM_*
-
-
-
+	use rule * from benchmarking as BM_*
+"""
 rule all:
 	input:
 		expand("{folder}/sequences.aln.{aligner}.fst.treefile.rooted.treescore_astral_support.{fmt}" , folder = folders , aligner = aligners , fmt = outfmt ),
@@ -78,3 +76,11 @@ rule read_astral:
 		json="{folder}/{treetype}.treescore_astral_support.json"
 	script:
 		'../src/read_astral.py'
+
+
+module benchmarking:
+	# here, plain paths, URLs and the special markers for code hosting providers (see below) are possible.
+	snakefile: "benchmarking"
+	config: config
+
+use rule * from benchmarking as BM_*

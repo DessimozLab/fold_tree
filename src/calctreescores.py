@@ -5,7 +5,9 @@ import toytree
 import numpy as np
 from scipy.stats import describe
 import copy
+from ete3 import PhyloTree, NCBITaxa
 
+ncbi = NCBITaxa()
 
 def retspecies_tree(species_set):
     #get ncbi tree of species set
@@ -14,8 +16,7 @@ def retspecies_tree(species_set):
     species_set = ncbi.get_topology(species_set, intermediate_nodes=True)
     return species_set
 
-
-def calc_scores(t , uniprot_csv , species_tree):
+def calc_scores(t , uniprot_csv ):
     uniprot_df = pd.read_csv(uniprot_csv)
     tree = toytree.tree(t)
     lineages = treescore.make_lineages(uniprot_df)
@@ -41,9 +42,10 @@ def calc_scores(t , uniprot_csv , species_tree):
             l.name = l.sp_num
             species_set.add(l.sp_num.split('_')[0])
 
+    species_tree = retspecies_tree(species_set)
 
     #change to phylo tree
-    ncbitree = PhyloTree(species_tree  , sp_naming_function=None)
+    ncbitree = PhyloTree(species_tree.write()  , sp_naming_function=None)
 
     ncbitree.write(outfile=uniprot_csv.replace('.csv','_ncbi_tree.nwk' ) , format=1)
     etetree = PhyloTree(tree.write() , sp_naming_function=None)
@@ -60,10 +62,6 @@ def calc_scores(t , uniprot_csv , species_tree):
     print('losses:', len(recon_losses))
     print('speciations:', len(recon_speciations))
 
-    rfs = rf2species(etetree , ot_samples = 10)
-    print('RFs:', rfs)
-
-
     print( 'algo 2' )
     events = etetree.get_descendant_evol_events()
     dups = etetree.search_nodes(evoltype="D")
@@ -73,8 +71,6 @@ def calc_scores(t , uniprot_csv , species_tree):
     print('losses:', len(losses))
     print('speciations:', len(speciations))
 
-
-
     scores = {}
     #measure the distances of leaves to root
     distances = np.array([ node.get_distance(tree.treenode) for node in tree.treenode.get_leaves() ])
@@ -82,7 +78,7 @@ def calc_scores(t , uniprot_csv , species_tree):
     scores[t] = {'score': taxscore, 'stats': describe(lengths) , 'ultrametricity':  describe(distances), 
                     'ultrametricity_norm':  describe(distances_norm) , 'root_score': root_score , 'root_score_nr': root_score_nr  , 
                     'SO_speciations': len(recon_speciations) , 'SO_dups': len(recon_dups) , 'SO_losses': len(recon_losses) ,
-                    'RECON_speciations':speciations ,'RECON_dups': len(dups) , 'RECON_losses': len(losses)  }
+                    'RECON_speciations':len(speciations) ,'RECON_dups': len(dups) , 'RECON_losses': len(losses)  }
     return scores
 
 #calc the taxscore 
