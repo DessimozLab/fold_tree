@@ -76,7 +76,7 @@ def structblob2tree(input_folder, outfolder, overwrite = False,
         print(matrices[k], np.amax(matrices[k]), np.amin(matrices[k]) )
         if correction:
             if kernel == 'fident':
-                factor = 19/20
+                factor = .93
             else:
                 factor = 1
             matrices[k] = Tajima_dist(matrices[k], factor = factor)

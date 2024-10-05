@@ -32,6 +32,8 @@ if custom_structs == True:
 	finalset = { f.replace('.pdb', '' ).split('/')[-1] : AFDB_tools.get_amino_acid_sequence(f) for f in found }
 	with open(snakemake.output[0] , 'w') as outfile:
 		outfile.write(''.join(['>'+i+'\n'+finalset[i]+'\n' for i in finalset]))
+
+	
 else:
 	try:
 		os.mkdir(structfolder)

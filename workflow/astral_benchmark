@@ -47,7 +47,7 @@ rule all:
 #should add a node to the species tree to root it
 rule prepare_species_tree:
 	input:
-		finalset="{folder}/finalset.csv",
+		finalset="{folder}/sequence_dataset.csv",
 	output:
 		map = "{folder}/gene_species.map",
 		species_tree = "{folder}/species_tree.nwk"
@@ -55,11 +55,24 @@ rule prepare_species_tree:
 	script:
 		'../src/prepare_astral_pro.py'
 
+rule prepare_prune_tree:
+	input:
+		gt="{folder}/{treetype}",
+		mapping = rules.prepare_species_tree.output.map ,
+		st = rules.prepare_species_tree.output.species_tree
+	output:
+		st= "{folder}/{treetype}.species_tree.pruned.nwk",
+		mapping= "{folder}/{treetype}.gene_species.pruned.map",
+		gt="{folder}/{treetype}.pruned.nwk",
+	conda: "foldtree"
+	script:
+		'../src/prepare_astral_pro_prune.py'
+
 rule support_astral_pro:
 	input:
-		sptree= rules.prepare_species_tree.output.species_tree,
-		genemap= rules.prepare_species_tree.output.map,
-		gt="{folder}/{treetype}"
+		sptree= rules.prepare_prune_tree.output.st,
+		genemap= rules.prepare_prune_tree.output.mapping,
+		gt=rules.prepare_prune_tree.output.gt,
 	output: 
 		st="{folder}/{treetype}_astral_support.tre",
 		logout="{folder}/log/apro/{treetype}_astral_support.log",
@@ -76,7 +89,6 @@ rule read_astral:
 		json="{folder}/{treetype}.treescore_astral_support.json"
 	script:
 		'../src/read_astral.py'
-
 
 module benchmarking:
 	# here, plain paths, URLs and the special markers for code hosting providers (see below) are possible.

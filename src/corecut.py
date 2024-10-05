@@ -61,31 +61,28 @@ def extract_core(resdf , outfile,  hitthresh = .8 ,minthresh = .6, corefolder = 
 			pbar.set_description('processed: %d' % (1 + i))
 			pbar.update(1)
 	#make core struct folder
-	try:
-		os.mkdir(folder+corefolder)
-	except:
-		print(corefolder , 'folder already present')
-	try:
-		os.mkdir(folder+cterfolder)
-	except:
-		print(cterfolder , 'folder already present')
-	try:
-		os.mkdir(folder+nterfolder)
-	except:
-		print(nterfolder , 'folder already present')
-	
+	os.makedirs(folder+corefolder , exist_ok = True)
+	os.makedirs(folder+cterfolder , exist_ok = True)
+	os.makedirs(folder+nterfolder , exist_ok = True)
 	#parse each struct and output core to folder 
 	parser = Bio.PDB.PDBParser()
 	with tqdm.tqdm(total=len(hits)) as pbar:
 		for i,q in enumerate(hits):
-			struct = parser.get_structure(q.split('.')[0], folder+structfolder+q )
+			if not q.endswith('.pdb'):
+				qfile = q + '.pdb'
+			else:
+				qfile = q
+			if '/' in q:
+				qfile = qfile.split('/')[-1]
+
+			struct = parser.get_structure(q.split('.')[0], folder+structfolder+qfile )
 
 			#zero based indexing...
-			struct_core = Bio.PDB.Dice.extract( struct ,'A' , hits[q]['min']+1 , hits[q]['max']+1 ,folder+corefolder+q  )
+			struct_core = Bio.PDB.Dice.extract( struct ,'A' , hits[q]['min']+1 , hits[q]['max']+1 ,folder+corefolder+qfile  )
 			
 			struct_core = Bio.PDB.Dice.extract( struct ,'A' , 0, hits[q]['min']+1  ,folder+nterfolder+q  )
 			#select from max to end
-			struct_core = Bio.PDB.Dice.extract( struct ,'A' , hits[q]['max']+1 , len(struct[0]['A'])  ,folder+cterfolder+q  )
+			struct_core = Bio.PDB.Dice.extract( struct ,'A' , hits[q]['max']+1 , len(struct[0]['A'])  ,folder+cterfolder+qfile  )
 
 			hits[q]['len'] = [ len(chain) for model in struct for chain in model ][0]
 

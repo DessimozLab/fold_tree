@@ -29,7 +29,9 @@ def retastral_support( astral_file):
 		nstring = f.read()
 	#find all quoted strings with single quotes
 	quoted = re.findall(r"'(.*?)'", nstring)
-	dfs = [ parse_astral(q,i) for i,q in enumerate(quoted)]
+	dfs = [ parse_astral(q,i) for i,q in enumerate(quoted) ]
+	if len(dfs) == 0:
+		return pd.DataFrame()
 	dfs = pd.concat(dfs)
 	#make sure pp1 does not contain nan
 	return dfs
@@ -50,7 +52,10 @@ def return_astral_score(astrolout, logfile):
 				duploss = int(l.split(' ')[-1])
 	astraldf = retastral_support(astrolout)
 	#count nans 
-	nancount = astraldf['pp1'].isna().sum()
+	try:
+		nancount = astraldf['pp1'].isna().sum()
+	except:
+		nancount = 0
 	#get summary stats
 	astral_stas = describe(astraldf['pp1'].dropna())
 	return astraldf, { 'mean': astral_stas.mean , 'std': astral_stas.variance ,'skewness':astral_stas.skewness, 'nancount': nancount , 'duploss': duploss }
@@ -68,17 +73,24 @@ def prepare_astral_input(uniprot_df , speciestreeout, mapperout):
 	finalset['species'] = finalset['Taxonomic lineage (Ids)'].map(lambda x: x.split(',')[-1].split('(')[0].strip())
 	finalset['species'] = finalset['species'].map(lambda x: x.split('_')[0])
 	mapper = dict(zip(finalset['Entry'], finalset['species']))
-	with open(mapperout , 'w') as f:
-		for k,v in mapper.items():
-			f.write('{}\t{}\n'.format(k,int(v)))
 	
-	#get ncbi tree of species set
 	species_set = list(finalset.species.unique())
 	species_set = [int(s) for s in species_set]
 	st = ncbi.get_topology(species_set, intermediate_nodes=False)
 	st.name = 'root'
-	#write with internal node names
 
+	#reduce mapping to species set  
+	leaves = set(st.get_leaf_names())
+	inters = set(mapper.values()).intersection(leaves)
+	mapper = {k:v for k,v in mapper.items() if v in inters}
+	#prune species tree 
+	st.prune( inters , preserve_branch_length = True)
+
+	with open(mapperout , 'w') as f:
+		for k,v in mapper.items():
+			f.write('{}\t{}\n'.format(k,int(v)))
+	#get ncbi tree of species set
+	#write with internal node names
 	st.write(outfile=speciestreeout , format= 1 )
 	return mapper , uniprot_df.replace('.csv','_speciesmap.txt' )  , uniprot_df.replace('.csv','_ncbi_tree.nwk' ) 
 
