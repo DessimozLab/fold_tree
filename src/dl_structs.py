@@ -26,15 +26,31 @@ except:
 	pass
 
 custom_structs = snakemake.params.custom_structs
-if custom_structs == True:
+if custom_structs == True and snakemake.params.cath == False:
 	print('custom structures, skipping download of structures')
 	found = glob.glob(structfolder+'*.pdb')
 	finalset = { f.replace('.pdb', '' ).split('/')[-1] : AFDB_tools.get_amino_acid_sequence(f) for f in found }
 	with open(snakemake.output[0] , 'w') as outfile:
 		outfile.write(''.join(['>'+i+'\n'+finalset[i]+'\n' for i in finalset]))
 
-	
+if custom_structs == True and snakemake.params.cath == True:
+	print('custom cath structures, skipping download of structures')
+	found = glob.glob(structfolder+'*.pdb')
+	finalset = { f.replace('.pdb', '' ).split('/')[-1] : AFDB_tools.get_amino_acid_sequence(f) for f in found }
+	seqdf = pd.read_csv(snakemake.input[0])
+	ids = list(seqdf['query'].unique())
+	missing_structs = set(ids)-set(finalset.keys())
+	print('missing in cath:',missing_structs)
+	missing_sequences = set(ids)-set(seqdf['query'].unique())
+	print( 'missing in sequences:',missing_sequences)
+	finalset = set(ids)-set(missing_sequences)
+	finalset = set(finalset)-set(missing_structs)
+	resdf = seqdf[seqdf['query'].isin(finalset)]
+	assert len(finalset) == len(resdf['query'].unique()) , 'finalset and resdf do not have the same length'
+	#assert len(glob.glob(structfolder+'*.pdb')) == len(resdf['query'].unique()) , 'struct set and resdf do not have the same length'
+	resdf.to_csv(snakemake.output[0])
 else:
+	#oma data
 	try:
 		os.mkdir(structfolder)
 	except:
@@ -54,7 +70,7 @@ else:
 	found = glob.glob(structfolder+'*.pdb') + glob.glob(rejectedfolder+'*.pdb')
 	found = { i.split('/')[-1].replace('.pdb',''):i for i in found}
 	missing_structs = set(ids)-set(found.keys())
-	
+
 	filtervar = snakemake.params.filtervar
 	filtervar_min = snakemake.params.filtervar_min
 	filtervar_avg = snakemake.params.filtervar_avg
@@ -86,7 +102,6 @@ else:
 	finalset = { f.replace('.pdb', '' ).split('/')[-1] : AFDB_tools.get_amino_acid_sequence(f) for f in found if f.replace('.pdb', '' ).split('/')[-1] in finalset }	
 	assert len(finalset) == len(resdf['query'].unique()) , 'finalset and resdf do not have the same length'
 	assert len(glob.glob(structfolder+'*.pdb')) == len(resdf['query'].unique()) , 'struct set and resdf do not have the same length'
-
 	#with open(snakemake.output[0] , 'w') as outfile:
 	#	outfile.write(''.join(['>'+i+'\n'+finalset[i]+'\n' for i in finalset]))
 	resdf.to_csv(snakemake.output[0])

@@ -91,7 +91,7 @@ def prepare_astral_input(uniprot_df , speciestreeout, mapperout):
 			f.write('{}\t{}\n'.format(k,int(v)))
 	#get ncbi tree of species set
 	#write with internal node names
-	st.write(outfile=speciestreeout , format= 1 )
+	st.write(outfile=speciestreeout , format= 1 , format_root_node = True)
 	return mapper , uniprot_df.replace('.csv','_speciesmap.txt' )  , uniprot_df.replace('.csv','_ncbi_tree.nwk' ) 
 
 

@@ -47,7 +47,7 @@ rule all:
 #should add a node to the species tree to root it
 rule prepare_species_tree:
 	input:
-		finalset="{folder}/sequence_dataset.csv",
+		finalset="{folder}/finalset.csv",
 	output:
 		map = "{folder}/gene_species.map",
 		species_tree = "{folder}/species_tree.nwk"
