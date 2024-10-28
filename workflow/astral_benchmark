@@ -78,7 +78,8 @@ rule support_astral_pro:
 		logout="{folder}/log/apro/{treetype}_astral_support.log",
 	log: "{folder}/log/apro/{treetype}_apro.log"
 	conda: "foldtree"
-	shell: config['astral_path'] +' -c {input.sptree} -a {input.genemap} -u 2 -i {input.gt} -o {output.st} -C --root root 2> {output.logout} ' 
+	#shell: config['astral_path'] +' -c {input.sptree} -a {input.genemap} -u 2 -i {input.gt} -o {output.st} -C --root root 2> {output.logout} ' 
+	shell: config['astral_path'] +' -c {input.sptree} -a {input.genemap} -u 2 -i {input.gt} -o {output.st} -C 2> {output.logout} ' 
 
 rule read_astral:
 	input:

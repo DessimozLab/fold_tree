@@ -3,10 +3,41 @@ import toyplot
 import re
 from scipy.stats import describe
 import pandas as pd
-from ete3 import NCBITaxa
+from ete3 import NCBITaxa, Tree
 ####### Astral functions ########
 
 ncbi = NCBITaxa()
+
+def resolve_polytomies(tree):
+	"""
+	Recursively resolve polytomies in a given tree by arbitrarily adding bifurcating nodes,
+	ensuring that the set of leaves remains unchanged and that the root node is not modified.
+	
+	Parameters:
+	- tree (Tree): ETE3 Tree object with polytomies to be resolved.
+	
+	Returns:
+	- Tree: A fully bifurcating tree with unchanged leaves.
+	"""
+	for node in tree.traverse("postorder"):
+		# Skip resolution if node is the root or has less than 3 children
+		if node.is_root() or len(node.children) < 3:
+			continue
+		
+		# Resolve polytomies by introducing internal nodes as necessary
+		while len(node.children) > 2:
+			# Pop two children to group under a new internal node
+			child1 = node.children[0].detach()
+			child2 = node.children[1].detach()
+			# Create a new internal node as an instance of Tree
+			new_internal_node = Tree(name="internal_node")
+			new_internal_node.add_child(child=child1)
+			new_internal_node.add_child(child=child2)
+			
+			# Attach the new internal node back to the current node
+			node.add_child(child = new_internal_node)
+
+	return tree
 
 def parse_astral(string , index = 0):
 	"""
@@ -76,23 +107,35 @@ def prepare_astral_input(uniprot_df , speciestreeout, mapperout):
 	
 	species_set = list(finalset.species.unique())
 	species_set = [int(s) for s in species_set]
-	st = ncbi.get_topology(species_set, intermediate_nodes=False)
-	st.name = 'root'
 
+	st = ncbi.get_topology(species_set, intermediate_nodes=False)
+	
+	print(st)
+	st_nwk = st.expand_polytomies( polytomy_size_limit=100 )[0]
+	print(st_nwk)
+	st = Tree(st_nwk , format = 1 , quoted_node_names = True)
+	print(st)
+
+	#st.name = 'root'
 	#reduce mapping to species set  
 	leaves = set(st.get_leaf_names())
 	inters = set(mapper.values()).intersection(leaves)
+	
 	mapper = {k:v for k,v in mapper.items() if v in inters}
 	#prune species tree 
-	st.prune( inters , preserve_branch_length = True)
+	st.prune( inters , preserve_branch_length = False)
+
+
 
 	with open(mapperout , 'w') as f:
 		for k,v in mapper.items():
 			f.write('{}\t{}\n'.format(k,int(v)))
+
+
 	#get ncbi tree of species set
 	#write with internal node names
-	st.write(outfile=speciestreeout , format= 1 , format_root_node = True)
-	return mapper , uniprot_df.replace('.csv','_speciesmap.txt' )  , uniprot_df.replace('.csv','_ncbi_tree.nwk' ) 
+	st.write(outfile=speciestreeout , format= 9 , format_root_node = False)
+	return mapper , mapperout , speciestreeout 
 
 
 
