@@ -7,37 +7,57 @@ from ete3 import NCBITaxa, Tree
 ####### Astral functions ########
 
 ncbi = NCBITaxa()
+from ete3 import Tree
+import itertools
 
-def resolve_polytomies(tree):
-	"""
-	Recursively resolve polytomies in a given tree by arbitrarily adding bifurcating nodes,
-	ensuring that the set of leaves remains unchanged and that the root node is not modified.
-	
-	Parameters:
-	- tree (Tree): ETE3 Tree object with polytomies to be resolved.
-	
-	Returns:
-	- Tree: A fully bifurcating tree with unchanged leaves.
-	"""
-	for node in tree.traverse("postorder"):
-		# Skip resolution if node is the root or has less than 3 children
-		if node.is_root() or len(node.children) < 3:
-			continue
-		
-		# Resolve polytomies by introducing internal nodes as necessary
-		while len(node.children) > 2:
-			# Pop two children to group under a new internal node
-			child1 = node.children[0].detach()
-			child2 = node.children[1].detach()
-			# Create a new internal node as an instance of Tree
-			new_internal_node = Tree(name="internal_node")
-			new_internal_node.add_child(child=child1)
-			new_internal_node.add_child(child=child2)
-			
-			# Attach the new internal node back to the current node
-			node.add_child(child = new_internal_node)
+def expand_polytomies_first_resolution(st, map_prop="name", polytomy_size_limit=100,
+                                       skip_large_polytomies=False):
+    """Return the first solution of each multifurcated node in Newick format.
 
-	return tree
+    This function resolves polytomies by producing only the first bifurcated tree
+    it encounters for each multifurcated node without exploring all possible combinations.
+    """
+
+    class TipTuple(tuple):
+        pass
+
+    def add_leaf_first(tree, label):
+        """Yield only the first possible insertion of a new leaf into the tree."""
+        yield (label, tree)
+        if not isinstance(tree, TipTuple) and isinstance(tree, tuple):
+            # Stop after yielding the first solution for left and right
+            yield (tree[0], (label, tree[1]))
+
+    def enum_unordered_first(labels):
+        """Yield only the first possible unordered binary tree structure for the given labels."""
+        if len(labels) == 1:
+            yield labels[0]
+        else:
+            tree = next(enum_unordered_first(labels[1:]))
+            yield next(add_leaf_first(tree, labels[0]))
+
+    n2subtrees = {}
+    for n in st.traverse("postorder"):
+        if n.is_leaf():
+            subtrees = [n.name]  # Fallback to node name if map_prop not set
+        else:
+            subtrees = []
+            if len(n.children) > polytomy_size_limit:
+                if skip_large_polytomies:
+                    for childtrees in itertools.product(*[n2subtrees[ch] for ch in n.children]):
+                        subtrees.append(TipTuple(childtrees))
+                else:
+                    raise("Found polytomy larger than current limit: %s" % n)
+            else:
+                # Generate only the first resolution of polytomies
+                for childtrees in itertools.product(*[n2subtrees[ch] for ch in n.children]):
+                    subtrees.append(next(enum_unordered_first(childtrees)))
+
+        n2subtrees[n] = subtrees
+
+    # Return only the first Newick representation
+    return ["%s;" % str(n2subtrees[st][0]) ] # First resolution in Newick format
+
 
 def parse_astral(string , index = 0):
 	"""
@@ -111,7 +131,7 @@ def prepare_astral_input(uniprot_df , speciestreeout, mapperout):
 	st = ncbi.get_topology(species_set, intermediate_nodes=False)
 	
 	print(st)
-	st_nwk = st.expand_polytomies( polytomy_size_limit=100 )[0]
+	st_nwk = expand_polytomies_first_resolution(st )[0]
 	print(st_nwk)
 	st = Tree(st_nwk , format = 1 , quoted_node_names = True)
 	print(st)
