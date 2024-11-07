@@ -13,3 +13,6 @@
 [submodule "A-pro"]
 	path = A-pro
 	url = git@github.com:chaoszhang/A-pro.git
+[submodule "python-phylopic"]
+	path = python-phylopic
+	url = https://github.com/bendmorris/python-phylopic
