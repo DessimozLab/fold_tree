@@ -32,8 +32,9 @@ if custom_structs == True and snakemake.params.cath == False:
 	finalset = { f.replace('.pdb', '' ).split('/')[-1] : AFDB_tools.get_amino_acid_sequence(f) for f in found }
 	with open(snakemake.output[0] , 'w') as outfile:
 		outfile.write(''.join(['>'+i+'\n'+finalset[i]+'\n' for i in finalset]))
+	
 
-if custom_structs == True and snakemake.params.cath == True:
+elif custom_structs == True and snakemake.params.cath == True:
 	print('custom cath structures, skipping download of structures')
 	found = glob.glob(structfolder+'*.pdb')
 	finalset = { f.replace('.pdb', '' ).split('/')[-1] : AFDB_tools.get_amino_acid_sequence(f) for f in found }
