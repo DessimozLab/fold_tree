@@ -1,0 +1,302 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>foldseek2tree &mdash; foldtree  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="AFDB tools" href="AFDBtool.html" />
+    <link rel="prev" title="Tree inspector" href="treeinspector.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            foldtree
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="treeinspector.html">Tree inspector</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">foldseek2tree</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#src.foldseek2tree.consensustree"><code class="docutils literal notranslate"><span class="pre">consensustree()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.foldseek2tree.MDS_smooth"><code class="docutils literal notranslate"><span class="pre">MDS_smooth()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.foldseek2tree.Tajima_dist"><code class="docutils literal notranslate"><span class="pre">Tajima_dist()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.foldseek2tree.simple_logdist"><code class="docutils literal notranslate"><span class="pre">simple_logdist()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.foldseek2tree.runargs"><code class="docutils literal notranslate"><span class="pre">runargs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.foldseek2tree.runFoldseekdb"><code class="docutils literal notranslate"><span class="pre">runFoldseekdb()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.foldseek2tree.runFoldseek_allvall"><code class="docutils literal notranslate"><span class="pre">runFoldseek_allvall()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.foldseek2tree.runFoldseek_allvall_EZsearch"><code class="docutils literal notranslate"><span class="pre">runFoldseek_allvall_EZsearch()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.foldseek2tree.kernelfun"><code class="docutils literal notranslate"><span class="pre">kernelfun()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.foldseek2tree.runFastme"><code class="docutils literal notranslate"><span class="pre">runFastme()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.foldseek2tree.runQuicktree"><code class="docutils literal notranslate"><span class="pre">runQuicktree()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.foldseek2tree.distmat_to_txt"><code class="docutils literal notranslate"><span class="pre">distmat_to_txt()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.foldseek2tree.postprocess"><code class="docutils literal notranslate"><span class="pre">postprocess()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.foldseek2tree.read_dbfiles3di"><code class="docutils literal notranslate"><span class="pre">read_dbfiles3di()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.foldseek2tree.structblob2tree"><code class="docutils literal notranslate"><span class="pre">structblob2tree()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="AFDBtool.html">AFDB tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.get_amino_acid_sequence"><code class="docutils literal notranslate"><span class="pre">get_amino_acid_sequence()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.descr"><code class="docutils literal notranslate"><span class="pre">descr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.filter_plddt"><code class="docutils literal notranslate"><span class="pre">filter_plddt()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.grab_struct"><code class="docutils literal notranslate"><span class="pre">grab_struct()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.chunk"><code class="docutils literal notranslate"><span class="pre">chunk()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.unirequest_tab"><code class="docutils literal notranslate"><span class="pre">unirequest_tab()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.grab_entries"><code class="docutils literal notranslate"><span class="pre">grab_entries()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.res2fasta"><code class="docutils literal notranslate"><span class="pre">res2fasta()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="treescore.html">Treescore</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">foldtree</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">foldseek2tree</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/foldseek2tree.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="foldseek2tree">
+<h1>foldseek2tree<a class="headerlink" href="#foldseek2tree" title="Permalink to this heading"></a></h1>
+<p>some docs from the function docstrings</p>
+<span class="target" id="module-src.foldseek2tree"></span><dl class="py function">
+<dt class="sig sig-object py" id="src.foldseek2tree.consensustree">
+<span class="sig-prename descclassname"><span class="pre">src.foldseek2tree.</span></span><span class="sig-name descname"><span class="pre">consensustree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">treelist</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.foldseek2tree.consensustree" title="Permalink to this definition"></a></dt>
+<dd><p>get a consensus tree from a list of tree files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>treelist</strong> (<em>list</em>) – list of tree files</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.foldseek2tree.MDS_smooth">
+<span class="sig-prename descclassname"><span class="pre">src.foldseek2tree.</span></span><span class="sig-name descname"><span class="pre">MDS_smooth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distmat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.foldseek2tree.MDS_smooth" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.foldseek2tree.Tajima_dist">
+<span class="sig-prename descclassname"><span class="pre">src.foldseek2tree.</span></span><span class="sig-name descname"><span class="pre">Tajima_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kn_ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bfactor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.foldseek2tree.Tajima_dist" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.foldseek2tree.simple_logdist">
+<span class="sig-prename descclassname"><span class="pre">src.foldseek2tree.</span></span><span class="sig-name descname"><span class="pre">simple_logdist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kn_ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bfactor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.foldseek2tree.simple_logdist" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.foldseek2tree.runargs">
+<span class="sig-prename descclassname"><span class="pre">src.foldseek2tree.</span></span><span class="sig-name descname"><span class="pre">runargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.foldseek2tree.runargs" title="Permalink to this definition"></a></dt>
+<dd><p>run a command line command</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>str</em>) – command line command</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.foldseek2tree.runFoldseekdb">
+<span class="sig-prename descclassname"><span class="pre">src.foldseek2tree.</span></span><span class="sig-name descname"><span class="pre">runFoldseekdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfolder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">foldseekpath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'../foldseek/bin/foldseek'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.foldseek2tree.runFoldseekdb" title="Permalink to this definition"></a></dt>
+<dd><p>run foldseek createdb</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>folder</strong> (<em>str</em>) – path to folder with pdb files</p></li>
+<li><p><strong>outfolder</strong> (<em>str</em>) – path to output folder</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.foldseek2tree.runFoldseek_allvall">
+<span class="sig-prename descclassname"><span class="pre">src.foldseek2tree.</span></span><span class="sig-name descname"><span class="pre">runFoldseek_allvall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structfolder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfolder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">foldseekpath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'../foldseek/bin/foldseek'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxseqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.foldseek2tree.runFoldseek_allvall" title="Permalink to this definition"></a></dt>
+<dd><p>run foldseek search and createtsv</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbpath</strong> (<em>str</em>) – path to foldseek database</p></li>
+<li><p><strong>outfolder</strong> (<em>str</em>) – path to output folder</p></li>
+<li><p><strong>maxseqs</strong> (<em>int</em>) – maximum number of sequences to compare to</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.foldseek2tree.runFoldseek_allvall_EZsearch">
+<span class="sig-prename descclassname"><span class="pre">src.foldseek2tree.</span></span><span class="sig-name descname"><span class="pre">runFoldseek_allvall_EZsearch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infolder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">foldseekpath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'../foldseek/bin/foldseek'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.foldseek2tree.runFoldseek_allvall_EZsearch" title="Permalink to this definition"></a></dt>
+<dd><p>run foldseek easy-search</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>infolder</strong> (<em>str</em>) – path to folder with pdb files</p></li>
+<li><p><strong>outpath</strong> (<em>str</em>) – path to output folder</p></li>
+<li><p><strong>foldseekpath</strong> (<em>str</em>) – path to foldseek binary</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.foldseek2tree.kernelfun">
+<span class="sig-prename descclassname"><span class="pre">src.foldseek2tree.</span></span><span class="sig-name descname"><span class="pre">kernelfun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">AA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AB</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.foldseek2tree.kernelfun" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.foldseek2tree.runFastme">
+<span class="sig-prename descclassname"><span class="pre">src.foldseek2tree.</span></span><span class="sig-name descname"><span class="pre">runFastme</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fastmepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clusterfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.foldseek2tree.runFastme" title="Permalink to this definition"></a></dt>
+<dd><p>run fastme</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fastmepath</strong> (<em>str</em>) – path to fastme binary</p></li>
+<li><p><strong>clusterfile</strong> (<em>str</em>) – path to all vs all distance matrix in fastme format</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.foldseek2tree.runQuicktree">
+<span class="sig-prename descclassname"><span class="pre">src.foldseek2tree.</span></span><span class="sig-name descname"><span class="pre">runQuicktree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clusterfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quicktreepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'quicktree'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.foldseek2tree.runQuicktree" title="Permalink to this definition"></a></dt>
+<dd><p>run quicktree</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>clusterfile</strong> (<em>str</em>) – path to all vs all distance matrix in fastme format</p></li>
+<li><p><strong>quicktreepath</strong> (<em>str</em>) – path to quicktree binary</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.foldseek2tree.distmat_to_txt">
+<span class="sig-prename descclassname"><span class="pre">src.foldseek2tree.</span></span><span class="sig-name descname"><span class="pre">distmat_to_txt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifiers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.foldseek2tree.distmat_to_txt" title="Permalink to this definition"></a></dt>
+<dd><p>write out a distance matrix in fastme format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>identifiers</strong> (<em>list</em>) – list of identifiers for your proteins</p></li>
+<li><p><strong>distmat</strong> (<em>np.array</em>) – distance matrix</p></li>
+<li><p><strong>outfile</strong> (<em>str</em>) – path to output file</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.foldseek2tree.postprocess">
+<span class="sig-prename descclassname"><span class="pre">src.foldseek2tree.</span></span><span class="sig-name descname"><span class="pre">postprocess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.foldseek2tree.postprocess" title="Permalink to this definition"></a></dt>
+<dd><p>postprocess a tree to make sure all branch lengths are positive</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<em>str</em>) – path to tree file</p></li>
+<li><p><strong>delta</strong> (<em>float</em>) – small number to replace negative branch lengths with</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.foldseek2tree.read_dbfiles3di">
+<span class="sig-prename descclassname"><span class="pre">src.foldseek2tree.</span></span><span class="sig-name descname"><span class="pre">read_dbfiles3di</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'outdb'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.foldseek2tree.read_dbfiles3di" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.foldseek2tree.structblob2tree">
+<span class="sig-prename descclassname"><span class="pre">src.foldseek2tree.</span></span><span class="sig-name descname"><span class="pre">structblob2tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfolder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fastmepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fastme'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quicktreepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'quicktree'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">foldseekpath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'../foldseek/foldseek'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.foldseek2tree.structblob2tree" title="Permalink to this definition"></a></dt>
+<dd><p>run structblob pipeline for a folder of pdb files without snakemake</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_folder</strong> (<em>str</em>) – path to folder with pdb files</p></li>
+<li><p><strong>logfolder</strong> (<em>str</em>) – path to output folder</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="treeinspector.html" class="btn btn-neutral float-left" title="Tree inspector" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="AFDBtool.html" class="btn btn-neutral float-right" title="AFDB tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

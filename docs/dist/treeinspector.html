@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Phylo.io refactoring 0.0.1</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet"  crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js"  crossorigin="anonymous"></script>
+
+    <!-- BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+
+    <!-- PHYLO.IO -->
+
+
+    <script src="phylo.js"></script>
+    <script src="src_utils_js.phylo.js"></script>
+    <script src="src_worker_bcn_js.phylo.js"></script>
+    <script src="src_worker_distance_js.phylo.js"></script>
+    <script src="vendors-node_modules_biojs-io-newick_src_index_js-node_modules_minhashjs_index_js.phylo.js"></script>
+    <script src="vendors-node_modules_d3_index_js-node_modules_file-saver_dist_FileSaver_min_js.phylo.js"></script>
+
+    <link href="index.css" rel="stylesheet" >
+
+</head>
+
+<script>
+
+    const folder = {'LUCA':  39 ,'Fungi': 15}
+    var taxa = 'Fungi';
+
+    var load_data_single = function(div_id, taxa, family, name){
+
+        var div = document.getElementById(div_id)
+
+        div.innerHTML = ''
+
+        var c1 = document.createElement('div')
+        c1.className = 'viewer '
+        c1.style.width = '98%'
+        c1.id = div_id + 'container1'
+
+        div.appendChild(c1)
+
+
+        $.get('../datasamples/' + String(taxa) + '/' + String(family) + '/struct_tree.nwk.PP.nwk.rooted', function(left) {
+
+
+                var  phylo = PhyloIO.init()
+                var c1 = phylo.create_container(div_id + "container1")
+
+                c1.add_tree(left, {'name':name,  'use_branch_lenght': true})
+
+
+                phylo.settings.compareMode = false;
+
+                phylo.start()
+
+
+        });
+
+
+        var legend_l = document.createElement("p")
+        legend_l.textContent = 'Inferred from structures'
+        legend_l.className = 'legend_inf'
+
+        c1.appendChild(legend_l)
+
+    }
+
+    var load_data = function(div_id, family){
+
+        var div = document.getElementById(div_id)
+
+        div.innerHTML = ''
+
+        var c1 = document.createElement('div')
+        c1.className = 'viewer '
+        c1.id = div_id + 'container1'
+
+        var c2 = document.createElement('div')
+        c2.className = 'viewer '
+        c2.id = div_id + 'container2'
+        c2.style.borderLeft = '1px solid #ddd'
+        c2.style.paddingLeft = '8px'
+
+
+        div.appendChild(c1)
+        div.appendChild(c2)
+
+
+
+        $.get('../datasamples/' + String(taxa) + '/' + String(family) + '/sequences.aln.fst.nwk.rooted', function(right) {
+
+
+            $.get('../datasamples/' +   String(taxa) + '/' + String(family) + '/struct_tree.nwk.PP.nwk.rooted', function(left) {
+
+
+                var  phylo = PhyloIO.init()
+                var c1 = phylo.create_container(div_id + "container1")
+                var c2 = phylo.create_container(div_id + "container2")
+
+                c1.add_tree(left, {'name':taxa + ': '+ family,  'use_branch_lenght': true})
+
+                c2.add_tree(right, {'name':taxa + ': '+ family,  'use_branch_lenght': true})
+
+                phylo.settings.compareMode = true;
+                phylo.bound_container = [c1,c2];
+
+                c2.models[c2.current_model].settings.mirror = true
+
+                phylo.start()
+
+
+
+                var myInterval = setInterval(function () {
+
+                    if (c1.message_loader == null) {
+
+                        c1.viewer.update_collapse_level(0, true)
+                        c2.viewer.update_collapse_level(0, true)
+
+                        c1.viewer.maximise_zoom()
+                        c2.viewer.maximise_zoom()
+
+                        clearInterval(myInterval);
+
+                        return;
+                    }
+                }, 200);
+
+
+
+
+
+            });
+
+        });
+
+
+        var legend_l = document.createElement("p")
+        legend_l.textContent = 'Inferred from structures'
+        legend_l.className = 'legend_inf'
+
+        c1.appendChild(legend_l)
+
+        var legend_r = document.createElement("p")
+        legend_r.textContent = 'Inferred from sequences'
+        legend_r.className = 'legend_inf'
+
+        c2.appendChild(legend_r)
+
+    }
+
+    var load_drop_taxa = function(){
+
+        var drop = document.getElementById('folder_drop')
+
+        drop.innerHTML = ''
+
+        for (const dropKey in folder) {
+
+            var a = document.createElement('li')
+
+            a.className = "dropdown-item";
+            a.id= dropKey
+            a.innerHTML = dropKey
+
+            a.addEventListener("click", function(e){taxa = e.target.id; load_drop_down()} )
+
+            drop.appendChild(a)
+
+
+
+        }
+
+
+
+    }
+
+    var load_drop_down = function(no_load = false){
+
+
+        var drop = document.getElementById('family_drop')
+
+        drop.innerHTML = ''
+
+        for (var i = 0; i <= folder[taxa]; i++){
+
+            var a = document.createElement('li')
+
+            a.className = "dropdown-item";
+            a.id= i
+            a.innerHTML = 'HOG' + i
+
+            a.addEventListener("click", function(e){load_data('family_viewer', 'HOG' + e.target.id)} )
+
+            drop.appendChild(a)
+
+        }
+
+        if(no_load){return}
+
+        load_data('family_viewer', 'HOG0')
+
+
+
+    }
+
+
+</script>
+
+<body >
+
+
+<div class="container-fluid " id="main_con">
+
+    <div class="row">
+        <div class="col">
+
+        </div>
+
+        <div class="col-10">
+
+            <br>
+           <h2>Tree-struct viewer </h2>
+
+            <p class="bd-lead">Documentation and examples for Bootstrap typography, including global settings, headings, body text, lists, and more.</p>
+
+            <br>
+
+            <div class="card" >
+                <div class="card-body">
+
+                    <div style="border-bottom: #ddd solid 1px;padding-bottom: 12px;">
+
+                        <ul class="nav" >
+                            <li id='f1' class="nav-item nav-link " style="color: black; cursor: pointer" >
+                                Glotropine 2A
+                            </li>
+                            <li id='f2' class="nav-item nav-link" style="color: black; cursor: pointer">
+                                Turlutubule
+                            </li>
+                            <li id='f3' class="nav-item nav-link" style="color: black; cursor: pointer">
+                                Fastobiture Alpha
+                            </li>
+
+                            <li class="nav-item dropdown flex-end" >
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Change family</a>
+                                <ul class="dropdown-menu" id="family_drop">
+
+                                </ul>
+                            </li>
+
+                        </ul>
+
+                        <ul class="nav justify-content-end" style="position: absolute; right: 0;    top: 17px;">
+
+                            <li class="nav-item dropdown flex-end" >
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Change taxa</a>
+                                <ul class="dropdown-menu" id="folder_drop">
+
+                                </ul>
+                            </li>
+                        </ul>
+
+                    </div>
+
+
+
+                    <div id="family_viewer" style="padding: 8px"></div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col">
+
+        </div>
+    </div>
+
+
+</div>
+
+</body>
+
+<script>
+
+    document.getElementById('f1').addEventListener("click", function(){load_data_single('family_viewer', 'Fungi',  'HOG0', 'Glotropine 2A' )} )
+    document.getElementById('f2').addEventListener("click", function(){load_data_single('family_viewer', 'Fungi', 'HOG1', 'Turlutubule' )} )
+    document.getElementById('f3').addEventListener("click", function(){load_data_single('family_viewer', 'LUCA', 'HOG2', 'Fastobiture Alpha' )} )
+
+
+    load_drop_taxa()
+
+    load_drop_down(true)
+
+    load_data_single('family_viewer', 'Fungi',  'HOG0', 'Glotropine 2A' )
+
+
+
+
+</script>
+
+
+
+
+</html>
