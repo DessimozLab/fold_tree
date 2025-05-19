@@ -1,0 +1,104 @@
+
+
+body {
+    overflow: auto;
+    width: 100%;
+    background-color: white;
+}
+
+#main_con {
+    margin: 0;
+font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans","Liberation Sans",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+}
+
+.bd-lead{
+    font-size: 1.2em;
+}
+
+.viewer{
+    display: inline-block;
+    width: 49%;
+    height: 700px;
+    background-color: #fff;
+}
+
+
+
+.dashed_button{
+    display: none;
+}
+
+#buttonshiftright_family_viewercontainer2{
+    display: none;
+}
+#buttontoggleleft_family_viewercontainer2{
+    display: none;
+}
+
+#family_viewercontainer2 > div.corner_placeholder.top.left > div > div > div > ul{
+    display: none;
+}
+
+#family_viewercontainer2 > div.corner_placeholder.top.left > div > div{
+    background-color: white;
+}
+
+#buttonshiftright_family_viewercontainer1{
+    display: none;
+}
+#buttontoggleleft_family_viewercontainer1{
+    display: none;
+}
+
+#family_viewercontainer1 > div.corner_placeholder.top.left > div > div > div > ul{
+    display: none;
+}
+
+#family_viewercontainer1 > div.corner_placeholder.top.left > div > div{
+    background-color: white;
+}
+
+.legend_inf{
+    font-weight: bold;
+    position: absolute;
+    bottom: -30px;
+    left: 24px;
+}
+
+.square_button > p{
+    font-size: 7px !important;
+
+
+}
+
+
+
+.square_button{
+    border-radius: 8px;
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    background-color: rgba(239, 239, 239, 0.95);
+    color: #555;
+    width: 48px;
+    height: 48px;
+}
+
+
+#family_viewercontainer2 > div.corner_placeholder.bottom.right{
+    right: -36px !important;
+}
+
+#family_viewercontainer2 > div.corner_placeholder.top.right{
+    right: -36px !important;
+}
+
+.dropdown-menu{
+    max-height: 480px;
+    overflow: scroll;
+}
+
+
+
+
+
