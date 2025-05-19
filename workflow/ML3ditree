@@ -3,6 +3,10 @@ import snakemake.utils
 snakemake.utils.min_version("7.8.0")
 snake_dir = workflow.basedir
 rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
+
+
+
+
 print('ml3ditree running in ' , rootdir)
 
 configfile: rootdir+ "workflow/config/config_vars.yaml"
@@ -20,7 +24,6 @@ if 'folder' in config:
 else:
 	folders = glob_wildcards("{folders}/finalset.csv").folders
 	config['folder']  = folders
-
 
 if config["iqtree_redo"] == True:
 	redo = " -redo"
@@ -57,7 +60,6 @@ rule calcfident_distributions:
 		'{folder}/logs/alnfident_dist{restype}_{alntype}.log'
 	script:
 		'../src/calcfident_distributions.py'
-
 
 
 rule treescore:
