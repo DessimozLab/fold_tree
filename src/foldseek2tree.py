@@ -265,6 +265,6 @@ def structblob2tree(input_folder, outfolder, overwrite = False, fastmepath = 'fa
 		np.save( outfolder + k + '_distmat.npy' , distmat)
 		distmat_txt = distmat_to_txt( ids , distmat , outfolder + k + '_distmat.txt' )
 		out_tree = runFastme(  fastmepath = fastmepath , clusterfile = distmat_txt )
-		out_tree = postprocess(out_tree, outfolder + 'structblob_tree.nwk' , delta = delta)
+		out_tree = postprocess(out_tree, out_tree+'.pp.nwk' , delta = delta)
 		trees[k] = out_tree
 	return alnres, trees
