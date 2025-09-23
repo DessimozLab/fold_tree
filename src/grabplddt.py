@@ -1,7 +1,6 @@
-import json
+import ujson as json
 import AFDB_tools
 import glob
-
 
 path = ''.join( [ p + '/' for p in snakemake.input[0].split('/')[:-1]]) +'structs/*.pdb'
 all_structs ={}

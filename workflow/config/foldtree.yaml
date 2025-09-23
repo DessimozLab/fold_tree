@@ -32,4 +32,5 @@ dependencies:
     - statsmodels
     - toyplot
     - requests
+    - ujson
     
