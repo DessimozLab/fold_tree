@@ -43,7 +43,7 @@ def descr(pdb_path):
 	struc = parser.get_structure("a", pdb_path)
 	for res in struc.get_residues():
 		for at in res.get_atoms():
-		   lppd.append(at.get_bfactor())
+		   lppd.append(int(at.get_bfactor()))
 		   break
 	return describe(lppd)
 
