@@ -7,5 +7,6 @@ path = ''.join( [ p + '/' for p in snakemake.input[0].split('/')[:-1]]) +'struct
 all_structs ={}
 for struct in glob.glob(path):
     all_structs[struct] = AFDB_tools.descr(struct)
+print(all_structs)
 with open(snakemake.output[0], 'w' ) as rfout:
     rfout.write(json.dumps(all_structs))
