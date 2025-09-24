@@ -7,7 +7,7 @@ all_structs ={}
 for struct in glob.glob(path):
     all_structs[struct] = AFDB_tools.descr(struct)
     #unpack scipy stats describe object into a dictionary
-    all_structs[struct] = { k:v for k,v in zip( ['nobs', 'minmax', 'mean', 'variance', 'skewness', 'kurtosis'], all_structs[struct].tolist())}
+    all_structs[struct] = { k:v for k,v in zip( ['nobs', 'minmax', 'mean', 'variance', 'skewness', 'kurtosis'], list(all_structs[struct] ) ) }
 #write to log file
 with open(snakemake.log[0], 'w' ) as lfout:
     lfout.write(str(all_structs))
