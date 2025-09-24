@@ -1,0 +1,243 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AFDB tools &mdash; foldtree  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Treescore" href="treescore.html" />
+    <link rel="prev" title="foldseek2tree" href="foldseek2tree.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            foldtree
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="treeinspector.html">Tree inspector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="foldseek2tree.html">foldseek2tree</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.consensustree"><code class="docutils literal notranslate"><span class="pre">consensustree()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.MDS_smooth"><code class="docutils literal notranslate"><span class="pre">MDS_smooth()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.Tajima_dist"><code class="docutils literal notranslate"><span class="pre">Tajima_dist()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.simple_logdist"><code class="docutils literal notranslate"><span class="pre">simple_logdist()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.runargs"><code class="docutils literal notranslate"><span class="pre">runargs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.runFoldseekdb"><code class="docutils literal notranslate"><span class="pre">runFoldseekdb()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.runFoldseek_allvall"><code class="docutils literal notranslate"><span class="pre">runFoldseek_allvall()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.runFoldseek_allvall_EZsearch"><code class="docutils literal notranslate"><span class="pre">runFoldseek_allvall_EZsearch()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.kernelfun"><code class="docutils literal notranslate"><span class="pre">kernelfun()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.runFastme"><code class="docutils literal notranslate"><span class="pre">runFastme()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.runQuicktree"><code class="docutils literal notranslate"><span class="pre">runQuicktree()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.distmat_to_txt"><code class="docutils literal notranslate"><span class="pre">distmat_to_txt()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.postprocess"><code class="docutils literal notranslate"><span class="pre">postprocess()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.read_dbfiles3di"><code class="docutils literal notranslate"><span class="pre">read_dbfiles3di()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.structblob2tree"><code class="docutils literal notranslate"><span class="pre">structblob2tree()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">AFDB tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#src.AFDB_tools.get_amino_acid_sequence"><code class="docutils literal notranslate"><span class="pre">get_amino_acid_sequence()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.AFDB_tools.descr"><code class="docutils literal notranslate"><span class="pre">descr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.AFDB_tools.filter_plddt"><code class="docutils literal notranslate"><span class="pre">filter_plddt()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.AFDB_tools.grab_struct"><code class="docutils literal notranslate"><span class="pre">grab_struct()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.AFDB_tools.chunk"><code class="docutils literal notranslate"><span class="pre">chunk()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.AFDB_tools.unirequest_tab"><code class="docutils literal notranslate"><span class="pre">unirequest_tab()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.AFDB_tools.grab_entries"><code class="docutils literal notranslate"><span class="pre">grab_entries()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.AFDB_tools.res2fasta"><code class="docutils literal notranslate"><span class="pre">res2fasta()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="treescore.html">Treescore</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">foldtree</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AFDB tools</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/AFDBtool.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="afdb-tools">
+<h1>AFDB tools<a class="headerlink" href="#afdb-tools" title="Permalink to this heading"></a></h1>
+<p>This module contains the utility functions for alpha fold db and uniprot.</p>
+<span class="target" id="module-src.AFDB_tools"></span><dl class="py function">
+<dt class="sig sig-object py" id="src.AFDB_tools.get_amino_acid_sequence">
+<span class="sig-prename descclassname"><span class="pre">src.AFDB_tools.</span></span><span class="sig-name descname"><span class="pre">get_amino_acid_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdb_filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.AFDB_tools.get_amino_acid_sequence" title="Permalink to this definition"></a></dt>
+<dd><p>This function extracts the amino acid sequence from a PDB file.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.AFDB_tools.descr">
+<span class="sig-prename descclassname"><span class="pre">src.AFDB_tools.</span></span><span class="sig-name descname"><span class="pre">descr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdb_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.AFDB_tools.descr" title="Permalink to this definition"></a></dt>
+<dd><p>Extracts the plddt (in the beta factor column) of the first atom of each residue in a PDB file and returns a descriptive statistics object.
+:param pdb_path: The path to the PDB file.
+:type pdb_path: str</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.AFDB_tools.filter_plddt">
+<span class="sig-prename descclassname"><span class="pre">src.AFDB_tools.</span></span><span class="sig-name descname"><span class="pre">filter_plddt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdb_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minthresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.AFDB_tools.filter_plddt" title="Permalink to this definition"></a></dt>
+<dd><p>Extracts the plddt (in the beta factor column) of the first atom of each residue in a PDB file and returns bool if the pdb is accepted or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pdb_path</strong> (<em>str</em>) – The path to the PDB file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.AFDB_tools.grab_struct">
+<span class="sig-prename descclassname"><span class="pre">src.AFDB_tools.</span></span><span class="sig-name descname"><span class="pre">grab_struct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uniID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structfolder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rejected</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.AFDB_tools.grab_struct" title="Permalink to this definition"></a></dt>
+<dd><p>Downloads a protein structure file from the AlphaFold website and saves it to the specified folder.</p>
+<p>Parameters:
+uniID (str): The UniProt ID of the protein for which the structure is being downloaded.
+structfolder (str): The path to the folder where the structure file should be saved.
+overwrite (bool, optional): A flag indicating whether to overwrite an existing file with the same name in the specified folder. Defaults to False.</p>
+<p>Returns:
+None: If the file is successfully downloaded or if overwrite is set to True and a file with the same name is found in the specified folder.
+str: If an error occurs during the download or if a file with the same name is found in the specified folder and overwrite is set to False.</p>
+<p>Examples:
+&gt;&gt;&gt; grab_struct(‘P00533’, ‘/path/to/structures/’)
+None
+&gt;&gt;&gt; grab_struct(‘P00533’, ‘/path/to/structures/’, overwrite=True)
+None</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.AFDB_tools.chunk">
+<span class="sig-prename descclassname"><span class="pre">src.AFDB_tools.</span></span><span class="sig-name descname"><span class="pre">chunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csize</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.AFDB_tools.chunk" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.AFDB_tools.unirequest_tab">
+<span class="sig-prename descclassname"><span class="pre">src.AFDB_tools.</span></span><span class="sig-name descname"><span class="pre">unirequest_tab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.AFDB_tools.unirequest_tab" title="Permalink to this definition"></a></dt>
+<dd><p>Makes a request to the UniProt API and returns information about a protein in tab-separated format.</p>
+<p>Parameters:
+name (str): The name of the protein for which information is being requested.
+verbose (bool, optional): A flag indicating whether to print the returned data to the console. Defaults to False.</p>
+<p>Returns:
+pd.DataFrame: A DataFrame containing information about the protein, with one row for each hit in the search.</p>
+<p>Examples:
+&gt;&gt;&gt; unirequest_tab(‘P00533’)</p>
+<blockquote>
+<div><p>id  …                                            sequence</p>
+</div></blockquote>
+<p>0  sp|P00533|1A2K_HUMAN RecName: Full=Alpha-2-…  …  MPTSVLLLALLLAPAALVHVCRSRFPKCVVLVNVTGLFGN…</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.AFDB_tools.grab_entries">
+<span class="sig-prename descclassname"><span class="pre">src.AFDB_tools.</span></span><span class="sig-name descname"><span class="pre">grab_entries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.AFDB_tools.grab_entries" title="Permalink to this definition"></a></dt>
+<dd><p>Makes requests to the UniProt API for information about proteins with the given IDs.</p>
+<p>Parameters:
+ids (list): A list of UniProt IDs for the proteins for which information is being requested.
+verbose (bool, optional): A flag indicating whether to print the returned data to the console. Defaults to False.</p>
+<p>Returns:
+pd.DataFrame: A DataFrame containing information about the proteins, with one row for each hit in the search.</p>
+<p>Examples:
+&gt;&gt;&gt; grab_entries([‘P00533’, ‘P15056’])</p>
+<blockquote>
+<div><p>id  …                                            sequence</p>
+</div></blockquote>
+<p>0  sp|P00533|1A2K_HUMAN RecName: Full=Alpha-2-…  …  MPTSVLLLALLLAPAALVHVCRSRFPKCVVLVNVTGLFGN…
+1  sp|P15056|1A01_HUMAN RecName: Full=Alpha-1-…  …  MAAARLLPLLPLLLALALALTETSCPPASQGQRASVGDRV…</p>
+<p>Notes:
+This function makes requests to the UniProt API for information about proteins with the given IDs. If a request is successful, the returned data is processed and added to a DataFrame. If a request is unsuccessful, an error message is printed to the console.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.AFDB_tools.res2fasta">
+<span class="sig-prename descclassname"><span class="pre">src.AFDB_tools.</span></span><span class="sig-name descname"><span class="pre">res2fasta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unires_df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.AFDB_tools.res2fasta" title="Permalink to this definition"></a></dt>
+<dd><blockquote>
+<div><p>Converts a DataFrame containing protein information into a FASTA format string.</p>
+<p>Parameters:
+unires_df (pd.DataFrame): A DataFrame containing information about proteins, with columns ‘query’ and ‘Sequence’ representing the name and sequence of each protein, respectively.</p>
+<p>Returns:
+str: A string in FASTA format representing the proteins in the input DataFrame.</p>
+<p>Examples:
+&gt;&gt;&gt; unires_df = pd.DataFrame([{‘query’: ‘P00533’, ‘Sequence’: ‘MPTSVLLLALLLAPAALVHVCRSRFPKCVVLVNVTGLFGN’}])
+&gt;&gt;&gt; res2fasta(unires_df)
+‘&gt; P00533</p>
+</div></blockquote>
+<p>MPTSVLLLALLLAPAALVHVCRSRFPKCVVLVNVTGLFGN
+‘</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="foldseek2tree.html" class="btn btn-neutral float-left" title="foldseek2tree" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="treescore.html" class="btn btn-neutral float-right" title="Treescore" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

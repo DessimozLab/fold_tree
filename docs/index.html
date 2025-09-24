@@ -1,0 +1,227 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Foldtree &mdash; foldtree  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tree inspector" href="treeinspector.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            foldtree
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="treeinspector.html">Tree inspector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="foldseek2tree.html">foldseek2tree</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.consensustree"><code class="docutils literal notranslate"><span class="pre">consensustree()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.MDS_smooth"><code class="docutils literal notranslate"><span class="pre">MDS_smooth()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.Tajima_dist"><code class="docutils literal notranslate"><span class="pre">Tajima_dist()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.simple_logdist"><code class="docutils literal notranslate"><span class="pre">simple_logdist()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.runargs"><code class="docutils literal notranslate"><span class="pre">runargs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.runFoldseekdb"><code class="docutils literal notranslate"><span class="pre">runFoldseekdb()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.runFoldseek_allvall"><code class="docutils literal notranslate"><span class="pre">runFoldseek_allvall()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.runFoldseek_allvall_EZsearch"><code class="docutils literal notranslate"><span class="pre">runFoldseek_allvall_EZsearch()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.kernelfun"><code class="docutils literal notranslate"><span class="pre">kernelfun()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.runFastme"><code class="docutils literal notranslate"><span class="pre">runFastme()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.runQuicktree"><code class="docutils literal notranslate"><span class="pre">runQuicktree()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.distmat_to_txt"><code class="docutils literal notranslate"><span class="pre">distmat_to_txt()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.postprocess"><code class="docutils literal notranslate"><span class="pre">postprocess()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.read_dbfiles3di"><code class="docutils literal notranslate"><span class="pre">read_dbfiles3di()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.structblob2tree"><code class="docutils literal notranslate"><span class="pre">structblob2tree()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="AFDBtool.html">AFDB tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.get_amino_acid_sequence"><code class="docutils literal notranslate"><span class="pre">get_amino_acid_sequence()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.descr"><code class="docutils literal notranslate"><span class="pre">descr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.filter_plddt"><code class="docutils literal notranslate"><span class="pre">filter_plddt()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.grab_struct"><code class="docutils literal notranslate"><span class="pre">grab_struct()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.chunk"><code class="docutils literal notranslate"><span class="pre">chunk()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.unirequest_tab"><code class="docutils literal notranslate"><span class="pre">unirequest_tab()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.grab_entries"><code class="docutils literal notranslate"><span class="pre">grab_entries()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.res2fasta"><code class="docutils literal notranslate"><span class="pre">res2fasta()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="treescore.html">Treescore</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">foldtree</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Foldtree</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="treeinspector.html">Tree inspector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="foldseek2tree.html">foldseek2tree</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.consensustree"><code class="docutils literal notranslate"><span class="pre">consensustree()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.MDS_smooth"><code class="docutils literal notranslate"><span class="pre">MDS_smooth()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.Tajima_dist"><code class="docutils literal notranslate"><span class="pre">Tajima_dist()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.simple_logdist"><code class="docutils literal notranslate"><span class="pre">simple_logdist()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.runargs"><code class="docutils literal notranslate"><span class="pre">runargs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.runFoldseekdb"><code class="docutils literal notranslate"><span class="pre">runFoldseekdb()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.runFoldseek_allvall"><code class="docutils literal notranslate"><span class="pre">runFoldseek_allvall()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.runFoldseek_allvall_EZsearch"><code class="docutils literal notranslate"><span class="pre">runFoldseek_allvall_EZsearch()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.kernelfun"><code class="docutils literal notranslate"><span class="pre">kernelfun()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.runFastme"><code class="docutils literal notranslate"><span class="pre">runFastme()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.runQuicktree"><code class="docutils literal notranslate"><span class="pre">runQuicktree()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.distmat_to_txt"><code class="docutils literal notranslate"><span class="pre">distmat_to_txt()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.postprocess"><code class="docutils literal notranslate"><span class="pre">postprocess()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.read_dbfiles3di"><code class="docutils literal notranslate"><span class="pre">read_dbfiles3di()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="foldseek2tree.html#src.foldseek2tree.structblob2tree"><code class="docutils literal notranslate"><span class="pre">structblob2tree()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="AFDBtool.html">AFDB tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.get_amino_acid_sequence"><code class="docutils literal notranslate"><span class="pre">get_amino_acid_sequence()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.descr"><code class="docutils literal notranslate"><span class="pre">descr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.filter_plddt"><code class="docutils literal notranslate"><span class="pre">filter_plddt()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.grab_struct"><code class="docutils literal notranslate"><span class="pre">grab_struct()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.chunk"><code class="docutils literal notranslate"><span class="pre">chunk()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.unirequest_tab"><code class="docutils literal notranslate"><span class="pre">unirequest_tab()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.grab_entries"><code class="docutils literal notranslate"><span class="pre">grab_entries()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="AFDBtool.html#src.AFDB_tools.res2fasta"><code class="docutils literal notranslate"><span class="pre">res2fasta()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="treescore.html">Treescore</a></li>
+</ul>
+</div>
+<section id="foldtree">
+<h1>Foldtree<a class="headerlink" href="#foldtree" title="Permalink to this heading"></a></h1>
+<p>This is the documentation for foldtree, it’s a combination of some utility functions and a snakemake workflow to make trees from alphafold structures.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
+<p>To use foldtree, first install snakemake:
+<a class="reference external" href="https://snakemake.readthedocs.io/en/stable/getting_started/installation.html">https://snakemake.readthedocs.io/en/stable/getting_started/installation.html</a></p>
+<p>Now we can clone the repo and create a conda environment with the software need to run fold tree</p>
+<p>Now, we’re ready to run the pipeline. For most users, using the fold_tree pipeline should be sufficient for their needs.
+You can setup a fold_tree run by creating a folder for your output.</p>
+<p>Now we can either add an identifiers.txt file containing the uniprot identifiers of all of the proteins we would like to make a tree with.</p>
+<p>Or we can run the pipeline on our own set of structures. Please note that discontinuities or other defects in the PDBs may adversly affect results.
+Let’s make our structure directory and add some PDB files to it. In this case the identifiers file is blank.</p>
+<p>Now we’re ready to build our trees. Let’s run the pipeline.</p>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h2>
+<p>To run the snakemake workflow on the test dataset try using. You can change the folder variable to the location of your data.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>snakemake<span class="w"> </span>--cores<span class="w"> </span><span class="m">4</span><span class="w"> </span>--use-conda<span class="w"> </span>-s<span class="w"> </span>./workflow/fold_tree<span class="w"> </span>--config<span class="w"> </span><span class="nv">folder</span><span class="o">=</span>./testdata<span class="w"> </span><span class="nv">filter</span><span class="o">=</span>False<span class="w"> </span><span class="nv">customstructs</span><span class="o">=</span>False<span class="w">  </span>--use-conda
+</pre></div>
+</div>
+<p>Or if you are using a slurm cluster you can use the slurm profile:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>snakemake<span class="w"> </span>--cores<span class="w"> </span><span class="m">4</span><span class="w"> </span>--use-conda<span class="w"> </span>-s<span class="w"> </span>./workflow/fold_tree<span class="w"> </span>--config<span class="w"> </span><span class="nv">folder</span><span class="o">=</span>./testdata<span class="w"> </span><span class="nv">filter</span><span class="o">=</span>False<span class="w"> </span><span class="nv">customstructs</span><span class="o">=</span>False<span class="w">  </span>--profile<span class="w"> </span>slurmsimple<span class="w"> </span>--use-conda
+</pre></div>
+</div>
+<p>The fold_tree workflow will create a tree for each of the uniprot identifiers in the identifier.txt file in the input folder.</p>
+<p>To use custom structures leave a blank identifier file and set the customstructs variable to True.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>snakemake<span class="w"> </span>--cores<span class="w"> </span><span class="m">4</span><span class="w"> </span>--use-conda<span class="w"> </span>-s<span class="w"> </span>./workflow/fold_tree<span class="w"> </span>--config<span class="w"> </span><span class="nv">folder</span><span class="o">=</span>./myfam<span class="w"> </span><span class="nv">filter</span><span class="o">=</span>False<span class="w"> </span><span class="nv">customstructs</span><span class="o">=</span>True<span class="w">  </span>--profile<span class="w"> </span>slurmsimple<span class="w"> </span>--use-conda
+</pre></div>
+</div>
+<p>To use the foldtree utility functions in your own work first install the repo as a python library.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>clone
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>foldtree
+$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+<p>Then import the libraries in your script or notebooks</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">foldtree.src</span><span class="w"> </span><span class="kn">import</span> <span class="n">foldseek2tree</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">foldtree.src</span><span class="w"> </span><span class="kn">import</span> <span class="n">AFDBtools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">foldtree.src</span><span class="w"> </span><span class="kn">import</span> <span class="n">treescore</span>
+
+
+<span class="c1"># use the functions somehow.</span>
+<span class="c1"># comments/help are provided in the code</span>
+</pre></div>
+</div>
+<p>There are also examples of how to use the different functions in the notebooks in the notebooks folder.</p>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this heading"></a></h2>
+<p>If you encounter any issues while using My Project, please file a bug report on our GitHub repository: <a class="reference external" href="https://github.com/DessimozLab/fold_tree/issues">https://github.com/DessimozLab/fold_tree/issues</a></p>
+</section>
+<section id="credits">
+<h2>Credits<a class="headerlink" href="#credits" title="Permalink to this heading"></a></h2>
+<p>This project was created by Dave Moi, Yannis Nevers and Charles Bernard at DessimozLab (DBC at the university of Lausanne).</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="treeinspector.html" class="btn btn-neutral float-right" title="Tree inspector" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
