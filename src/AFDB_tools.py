@@ -95,7 +95,8 @@ def grab_struct(uniID, structfolder, rejected = None, overwrite=False):
 		pass
 	try:
 		prefix = 'https://alphafold.ebi.ac.uk/files/AF-'
-		post = '-F1-model_v4.pdb'
+		#post = '-F1-model_v4.pdb'
+		post = '-F1-model_v6.pdb'
 		url = prefix+uniID.upper()+post
 		if not os.path.isfile(structfolder + uniID +'.pdb'):
 			if rejected is None or (rejected and not os.path.isfile(structfolder + uniID +'.pdb')):
