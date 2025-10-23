@@ -7,7 +7,7 @@
 
 This repo contains the scripts and snakemake workflow for making and benchmarking structure based trees using Foldseek.
 
-It's associated with the manuscript located at https://www.biorxiv.org/content/10.1101/2023.09.19.558401v1 (DOI: https://doi.org/10.1101/2023.09.19.558401
+It's associated with the manuscript located at https://www.nature.com/articles/s41594-025-01649-8 (DOI: https://doi.org/10.1038/s41594-025-01649-8
 ). Please cite us if you use foldtree in your work.
 
 ## Try it out on Collab
