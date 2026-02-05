@@ -4,6 +4,9 @@
 Foldtree creates phylogenetic trees from protein 
 structures using Foldseek to align protein structures 
 and generate distance matrices for tree construction.
+
+This file wraps the snakemake pipeline to make it
+easier to call from the command line.
 """
 
 import click
@@ -22,7 +25,7 @@ def _bool_to_str(v: bool) -> str:
 def _get_snakemake() -> Path:
     """Returns snakemake path"""
     conda_prefix = os.environ.get("CONDA_PREFIX")
-    p =Path(conda_prefix) / "bin" / "snakemake"
+    p = Path(conda_prefix) / "bin" / "snakemake"
     return p
 
 
@@ -157,9 +160,9 @@ def foldtree(
 
     folder = _validate_folder(folder)
 
-    #snakefile = "./workflow/fold_tree"
-    #snakefile = Path(snakefile) if snakefile else _default_snakefile_path()
-    snakefile = _default_snakefile_path()
+    snakefile = "./workflow/fold_tree"
+    snakefile = Path(snakefile) if snakefile else _default_snakefile_path()
+    #snakefile = _default_snakefile_path()
     snakefile = _validate_snakefile(snakefile)
 
     cmd = ["snakemake"]
