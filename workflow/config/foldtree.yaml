@@ -6,6 +6,7 @@ channels:
   - nodefaults
 
 dependencies:
+  - pip
   - foldseek
   - t-coffee
   - snakedeploy

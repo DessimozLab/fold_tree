@@ -137,7 +137,7 @@ def _validate_folder(folder: Path) -> Path:
     default=False,
     help="Print the snakemake command before running.",
 )
-def foldtree(
+def cli(
     folder: Path,
     filter: bool,
     foldseek_cores: Optional[int],
@@ -210,4 +210,4 @@ def foldtree(
 
 
 if __name__ == "__main__":
-    foldtree()
+    cli()
