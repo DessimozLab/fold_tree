@@ -4,14 +4,15 @@ channels:
   - bioconda
   - conda-forge
   - nodefaults
+
 dependencies:
+  - pip
   - foldseek
   - t-coffee
   - snakedeploy
   - snakefmt
   - toytree=2.0.1
   - snakemake>=5.15.0
-  - pip
   - iqtree
   - muscle
   - mafft
@@ -25,12 +26,10 @@ dependencies:
   - biopython
   - pycairo
   - numpy
-  - pip:
-    - tqdm
-    - wget
-    - numpy
-    - statsmodels
-    - toyplot
-    - requests
-    - ujson
-    
+  - tqdm
+  - wget
+  - statsmodels
+  - toyplot
+  - requests
+  - ujson
+  - click

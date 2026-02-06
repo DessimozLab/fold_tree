@@ -47,3 +47,5 @@ src/dataprep/**
 !src/dataprep/*.sh
 
 notebooks/**.pkl
+
+.ipynb_checkpoints/
