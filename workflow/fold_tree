@@ -24,8 +24,7 @@ rule all:
 
 rule mad_root_post:
 	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
+		"config/fold_tree.yaml"
 	input:
 		"{folder}/{mattype}_struct_tree.PP.nwk"
 	output:
@@ -37,8 +36,7 @@ rule mad_root_post:
 	
 rule mad_root_struct:
 	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
+		"config/fold_tree.yaml"
 	input:
 		"{folder}/{mattype}_struct_tree.PP.nwk"
 	output:
@@ -50,8 +48,7 @@ rule mad_root_struct:
 
 rule postprocess:
 	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
+		"config/fold_tree.yaml"
 	input:
 		"{folder}/{mattype}_struct_tree.nwk"
 	output:
@@ -63,8 +60,7 @@ rule postprocess:
 
 rule quicktree:
 	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
+		"config/fold_tree.yaml"
 	input:
 		"{folder}/{mattype}_fastmemat.txt"
 	output:
@@ -76,8 +72,7 @@ rule quicktree:
 
 rule foldseek2distmat:
 	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
+		"config/fold_tree.yaml"
 	input:
 		"{folder}/allvall_1.csv"
 	output:
@@ -93,8 +88,7 @@ rule foldseek2distmat:
 
 rule foldseek_allvall_1:
 	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
+		"config/fold_tree.yaml"
 	input:
 		"{folder}/finalset.csv"
 	output:
@@ -106,8 +100,7 @@ rule foldseek_allvall_1:
 
 rule dl_ids_sequences:
 	conda: 
-		#"config/fold_tree.yaml"
-		"foldtree"
+		"config/fold_tree.yaml"
 	input:
 		ids="{folder}/identifiers.txt",
 	output:
@@ -123,8 +116,7 @@ rule dl_ids_sequences:
 
 rule plddt:
 	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
+		"config/fold_tree.yaml"
 	input:
 		"{folder}/finalset.csv",
 	output:
@@ -135,14 +127,13 @@ rule plddt:
 		'../src/foldtree/grabplddt.py'
 
 rule dl_ids_structs:
+	conda: 
+		"config/fold_tree.yaml"
 	input:
 		"{folder}/sequence_dataset.csv",
 	output:
 		#"{folder}/sequences.fst",
 		"{folder}/finalset.csv",
-	conda: 
-		#"config/fold_tree.yaml"
-		"foldtree",
 	log:
 		"{folder}/logs/dlstructs.log",
 	params:
