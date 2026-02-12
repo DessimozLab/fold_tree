@@ -168,6 +168,7 @@ def cli(
     cmd = ["snakemake"]
     cmd += ["--cores", str(cores)]
     cmd.append("--use-conda")
+    cmd += ["--conda-frontend", "mamba"]
     cmd += ["-s", str(snakefile)]
 
     # snakemake CLI config values are strings, so be explicit.
@@ -203,6 +204,7 @@ def cli(
     # check if snakemake is available
     _check_snakemake()
 
+    print(" ".join(x for x in cmd))
     try:
         subprocess.run(cmd, check=True, cwd=run_cwd)
     except subprocess.CalledProcessError as e:

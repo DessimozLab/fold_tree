@@ -1,4 +1,3 @@
-import foldseek2tree
 import toytree
 
 

@@ -1,0 +1,16 @@
+name: seqs
+
+channel_priority: strict
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+
+dependencies:
+  - pandas
+  - requests
+  - scipy
+  - biopython
+  - numpy
+  - python-wget
+  - ujson

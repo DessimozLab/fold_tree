@@ -1,0 +1,13 @@
+name: foldseek
+
+channel_priority: strict
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+
+dependencies:
+  - foldseek
+  - numpy
+  - pandas
+  - toytree

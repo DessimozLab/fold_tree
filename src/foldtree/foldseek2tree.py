@@ -1,14 +1,11 @@
 #foldssek cluster
-import subprocess ,shlex
+import subprocess
+import shlex
 import numpy as np
-from scipy.spatial.distance import cdist
-import statsmodels
 import toytree
 import pandas as pd
-import re
 import os
-from scipy.stats import chi2
-import argparse
+
 
 def consensustree(treelist):
 	'''get a consensus tree from a list of tree files
@@ -25,13 +22,6 @@ def consensustree(treelist):
 	#get the consensus tree
 	ct = mt.get_consensus_tree( )
 	return ct
-
-#smooth distmat with MDS
-def MDS_smooth(distmat):
-	mds = MDS(n_components=int(distmat.shape[0]/2) )#, dissimilarity='precomputed'  )
-	distmat = mds.fit_transform(1-distmat )
-	distmat = cdist(distmat,distmat, 'minkowski', p=1.5 )
-	return distmat
 
 def Tajima_dist( kn_ratio,bfactor=19/20, iter = 100 ):
 	taj = np.add.reduce([ (kn_ratio**(np.ones(kn_ratio.shape)*i) )/ (bfactor**(i-1)*i) for i in range(1,iter) ] )
