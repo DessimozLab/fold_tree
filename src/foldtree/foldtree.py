@@ -168,7 +168,6 @@ def cli(
     cmd = ["snakemake"]
     cmd += ["--cores", str(cores)]
     cmd.append("--use-conda")
-    cmd += ["--conda-frontend", "mamba"]
     cmd += ["-s", str(snakefile)]
 
     # snakemake CLI config values are strings, so be explicit.
