@@ -33,7 +33,7 @@ rule mad_root_post:
 	log:
 		"{folder}/logs/{mattype}_struct_madroot_post.log"
 	script:
-		'../src/foldtree/process_madroot.py'
+		'../process_madroot.py'
 	
 rule mad_root_struct:
 	conda:
@@ -57,7 +57,7 @@ rule postprocess:
 	log:
 		"{folder}/logs/{mattype}_struct_postprocess.log"
 	script:
-		'../src/foldtree/postprocess.py'
+		'../postprocess.py'
 
 rule quicktree:
 	conda:
@@ -85,7 +85,7 @@ rule foldseek2distmat:
 	log:
 		"{folder}/logs/foldseek2distmat.log"
 	script:
-		"../src/foldtree/foldseekres2distmat_simple.py"
+		"../foldseekres2distmat_simple.py"
 
 rule foldseek_allvall_1:
 	conda:
@@ -113,7 +113,7 @@ rule dl_ids_sequences:
 		custom_structs=config["custom_structs"],
 		clean_folder=config["clean_folder"],
 	script:
-		"../src/foldtree/dl_sequences.py"
+		"../dl_sequences.py"
 
 rule plddt:
 	conda:
@@ -125,7 +125,7 @@ rule plddt:
 	log:
 		"{folder}/logs/plddt.log"
 	script:
-		'../src/foldtree/grabplddt.py'
+		'../grabplddt.py'
 
 rule dl_ids_structs:
 	conda:
@@ -145,4 +145,4 @@ rule dl_ids_structs:
 		custom_structs=config["custom_structs"],
 		clean_folder=config["clean_folder"],
 	script:
-		"../src/foldtree/dl_structs.py"
+		"../dl_structs.py"

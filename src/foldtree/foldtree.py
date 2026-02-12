@@ -13,9 +13,16 @@ import click
 import os
 import shlex
 import subprocess
+from importlib.metadata import version as pkg_version, PackageNotFoundError
 from pathlib import Path
 from typing import Optional
 
+
+def get_version() -> str:
+    try:
+        return pkg_version("foldtree")
+    except PackageNotFoundError:
+        return "0+unknown"    
 
 
 def _bool_to_str(v: bool) -> str:
@@ -28,21 +35,20 @@ def _get_snakemake() -> Path:
     p = Path(conda_prefix) / "bin" / "snakemake"
     return p
 
+def _choose_snakefile() -> Path:
+    snakefile = _snakefile_from_sources()
+    return _validate_snakefile(snakefile)
 
-def _default_snakefile_path() -> Path:
+
+def _snakefile_from_sources() -> Path:
     """
-    Returns the path for the main Foldtree snakefile.
-    Once installed with conda, it is supposed to be:
-      $CONDA_PREFIX/share/foldtree/workflow/fold_tree
+    Returns the path of the main Foldtree snakefile
+    from this directory; that is, the one shipped with this
+    exact file. To run foldtree from sources
     """
-    conda_prefix = os.environ.get("CONDA_PREFIX")
-    if not conda_prefix:
-        raise click.ClickException(
-            "CONDA_PREFIX is not set. Are you running inside a conda environment?\n"
-            "If you are developing locally, pass --snakefile PATH to the Snakefile."
-        )
-    p = Path(conda_prefix) / "share" / "foldtree" / "workflow" / "fold_tree"
-    return p
+    snakefile = Path(f"{Path(__file__).resolve().parent}/workflow/fold_tree")
+    return Path(snakefile)
+
 
 
 def _validate_snakefile(p: Path) -> Path:
@@ -74,7 +80,8 @@ def _validate_folder(folder: Path) -> Path:
 
 
 # Foldtree-related options
-@click.command(context_settings={"help_option_names": ["-h", "--help"]})
+@click.command(context_settings={"help_option_names": ["-h", "--help"]},
+               no_args_is_help=True)
 @click.option(
     "--folder",
     "folder",
@@ -137,6 +144,7 @@ def _validate_folder(folder: Path) -> Path:
     default=False,
     help="Print the snakemake command before running.",
 )
+@click.version_option(version=get_version())
 def cli(
     folder: Path,
     filter: bool,
@@ -150,7 +158,42 @@ def cli(
     verbose: bool
 ) -> None:
     """
-    Run the FoldTree snakemake pipeline.
+    Foldtree creates phylogenetic trees from protein
+    structures using Foldseek to align protein structures
+    and generate distance matrices for tree construction.
+
+    \b
+    Usage:
+        foldtree --folder <input_folder> --cores <N>
+
+    \b
+    Example:
+        # on a local machine
+        foldtree --folder myfam -p
+
+    \b
+        # single thread
+        foldtree --folder myfam -p -c 1
+
+    \b
+        # on a SLURM cluster:
+        foldtree --folder myfam -p -c 8 -esa "--profile slurmsimple/simple"
+
+
+    \b
+    Please cite:
+        Moi D, Bernard C, Steinegger M, Nevers Y, Langleib M, Dessimoz C.
+        Structural phylogenetics unravels the evolutionary diversification
+        of communication systems in gram-positive bacteria and their viruses.
+        Nature Structural & Molecular Biology
+    \b
+        doi: 10.1038/s41594-025-01649-8 (2025)
+
+    \b
+    Contributors:
+        David Moi, Mauricio Langleib, Martin Steinegger, 
+        Stefano Pascarelli, Nikolai Romashchenko
+        (c) 2022-present
     """
     if cores < 1:
         raise click.ClickException("--cores must be >= 1")
@@ -160,10 +203,8 @@ def cli(
 
     folder = _validate_folder(folder)
 
-    snakefile = "./workflow/fold_tree"
-    snakefile = Path(snakefile) if snakefile else _default_snakefile_path()
-    #snakefile = _default_snakefile_path()
-    snakefile = _validate_snakefile(snakefile)
+    snakefile = _choose_snakefile()
+    print("Running pipeline:", snakefile)
 
     cmd = ["snakemake"]
     cmd += ["--cores", str(cores)]
