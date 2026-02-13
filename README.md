@@ -164,11 +164,13 @@ foldtree <other-args> --conda-prefix <path-to-env-storage>
 
 ## "libmamba Non-conda folder exists at prefix"
 
-You must be using older mamba (<2.4). Update mamba or force snakemake to use conda (should not take much longer):
+You are likely using an older version of mamba (<2.4). Update mamba or force snakemake to use conda (should not take much longer):
 
 ```
 foldtree <other args> -esa "--conda-frontend conda"
 ```
+
+The [legends say](https://github.com/snakemake/snakemake/issues/3249) you can also use `mamba=1`, but we have not tested it.
 
 
 # Other
