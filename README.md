@@ -1,7 +1,8 @@
 
-<div style="text-align: center;">
-<img src="foldtree_logo.png" alt="Alt Text" style="width:25%; height:auto;">
-</div>
+<p align="center" width="100%">
+  <img src="foldtree_logo.png" style="width:30%; height:auto;">
+</p>
+
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥7.8.0-brightgreen.svg)](https://snakemake.github.io)
 
@@ -131,7 +132,7 @@ foldtree --cores 4 --folder=myfam -p --custom-structs
 
 Foldtree produces 3 trees: the Foldtree metric, LDDT, and TM tree. Also, it outputs some information retreived from the Uniprot API on the proteins, foldseek comparisons, distance matrices and descriptors of the pLDDT of the structures.
 
-## Running on a cluster
+## Run on a cluster
 
 Foldtree passes any additional arguments via `--extra-snakemake-arguments` to snakemake. For example, to run the pipeline on a Slurm cluster, prepare a slurm config 
 
@@ -145,11 +146,23 @@ Adapt `slurmsimple/simple/config.yaml` correspondingly. Then pass it to snakemak
 foldtree <other args> -esa "--profile slurmsimple/simple"
 ```
 
+## Managing Foldtree conda environments
+
+To run Foldtree, Snakemake automatically creates additional conda environments for the required tools. By default, these environments are stored in `~/.foldtree`.
+
+The environments are created only once (about 2 GB total) and reused in subsequent runs.
+
+On some systems this may be inconvenient (for example, on HPC clusters the home directory might have limited storage). In such cases, you can specify an alternative location using `--conda-prefix`:
+
+```
+foldtree <other-args> --conda-prefix <path-to-env-storage>
+```
+
 
 
 # Known issues
 
-## libmamba Non-conda folder
+## "libmamba Non-conda folder exists at prefix"
 
 You must be using older mamba (<2.4). Update mamba or force snakemake to use conda (should not take much longer):
 
