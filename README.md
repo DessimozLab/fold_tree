@@ -1,53 +1,94 @@
 
-![logo](foldtree_logo.png)
-
-# Snakemake workflow: `fold_tree`
+<div style="text-align: center;">
+<img src="foldtree_logo.png" alt="Alt Text" style="width:25%; height:auto;">
+</div>
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥7.8.0-brightgreen.svg)](https://snakemake.github.io)
 
-This repo contains the scripts and snakemake workflow for making and benchmarking structure based trees using Foldseek.
 
-It's associated with the manuscript located at https://www.nature.com/articles/s41594-025-01649-8 (DOI: https://doi.org/10.1038/s41594-025-01649-8
-). Please cite us if you use foldtree in your work.
+Foldtree creates phylogenetic trees from protein structures by using Foldseek to align protein structures and generate distance matrices for tree construction. 
 
-## Try it out on Collab
+This repository contains the scripts, the main Snakemake workflow, and additional code and data reported in the paper.
 
-We have created a collab notebook which allows you to try out foldtree without installing anything. You can find it here:
+# Cite
+
+If you use foldtree in your work, please cite: 
+
+https://www.nature.com/articles/s41594-025-01649-8
+
+DOI: https://doi.org/10.1038/s41594-025-01649-8
+
+
+# Try on Colab
+
+We created a Colab notebook that allows you to try Foldtree without installing anything. You can find it here:
+
 https://colab.research.google.com/github/DessimozLab/fold_tree/blob/main/notebooks/Foldtree.ipynb
 
+# Install from sources
 
-## Running the pipeline
+Alternatively, you can install Foldtree locally on your machine or on an HPC cluster.
 
-First, install snakemake. Instructions are available here.
+## conda
 
-https://snakemake.readthedocs.io/en/stable/getting_started/installation.html
+Foldtree is a Snakemake pipeline that runs multiple tools inside conda environments. First, you need to install conda. We recommend [Miniforge3](https://github.com/conda-forge/miniforge), as it ships both conda and mamba (a faster native replacement for conda).
 
 
-Next we need to clone the repo.
+> [!WARNING]
+> 1) Micromamba is not supported, as Snakemake currently does not work reliably with it. If you are using micromamba, we recommend switching to mamba. You *can try* to make it work; good luck. See [one](https://github.com/snakemake/snakemake/issues/3490), [two](https://github.com/snakemake/snakemake/issues/2322).
+> 2) We discourage using older version of conda, i.e. versions that do not use libmamba as the default dependency solver. Foldtree creates conda environments under the hood, and solving them with outdated conda may take forever. Check that 
+> `conda info | grep  solver`
+> shows `libmamba`, and update conda if it does not.
+
+
+## snakemake
+
+Create a conda environment for Foldtree and install Snakemake:
+
+```bash
+mamba create -n foldtree python=3.10
+mamba activate foldtree
+mamba install click snakemake-minimal
+```
+
+## foldtree
+
+Clone the repository:
 
 ```
 git clone git@github.com:DessimozLab/fold_tree.git
 cd fold_tree
 ```
 
-Now create a conda environment for foldtree with all of the required software to avoid creating many environments ( and lots of files ).
-We can use the yaml file found in the workflow configuration. 
+Install Foldtree:
 
 ```
-mamba env create -n foldtree --file=./workflow/config/foldtree.yaml
-mamba activate foldtree
+python -m pip install . --no-deps --no-build-isolation --no-cache-dir
 ```
 
-Now we're ready to run the workflow.
-First we set up a folder which will contain the results. Here we call it myfam.
+Check that the installation worked:
+
+```
+foldtree --help
+```
+
+
+# Usage
+
+## Prepare input
+Now we're ready to run the workflow. First, create a folder that will contain the results.Here we call it `myfam`.
 
 ```
 mkdir myfam
 ```
 
-Now we can either create a text file with the uniprot identifiers of the structures we would like to inlcude in the tree or provide a precompiled set of structures (useful if the structures are not in the AlphaFold DB). Each line should be an identifier. 
+Next, choose one of two input options:
 
-identifiers.txt example:
+### Option 1: UniProt identifiers
+
+Create a text file containing the UniProt identifiers of the structures you would like to include in the tree. Each line should contain one identifier.
+
+Example `identifiers.txt`:
 ```
 A0A060X1A3
 A0A087X979
@@ -56,38 +97,68 @@ A0A091F6W6
 ...
 ```
 
-In the use case of precompiled sets of structures, create a structs folder in the myfam directory and place all of your structures ( in pdb format ) in this folder and leave the identifier file blank.
+If identifiers are provided, Foldtree will automatically fetch available protein structures from the AlphaFold DB.
 
+### Option 2: Precompiled structures
+
+If you already have structure files (for example, structures not available in AlphaFold DB), create a `structs` folder inside `myfam` and place all structure files (PDB format) there. In this case, leave the identifier file empty.
 
 ```
 mkdir myfam/structs
 ```
 
-If identifiers are provided, foldtree will automatically fetch the protein structures that are available from AlphFold DB. All we need to do now is run the workflow. In our example we use 4 cores. We also have the option of filtering out structures with an average PLDDT lower than 40. This was shown to improve the quality of trees relative to sequence trees ( see the manuscript). Here we turn this option off to allow all structures in the tree.
+
+## Run Foldtree
+
+All we need to do now is run the workflow. In this example, we use 4 cores. We also have the option of filtering out structures with an average pLDDT < 40 (disabled by default). This was shown to improve the quality of trees relative to sequence-based trees (see the manuscript). Here we disable filtering to include all structures in the tree.
 
 ```
-snakemake --cores 4 --use-conda -s ./workflow/fold_tree --config folder=./myfam filter=False 
-
+foldtree --folder=myfam --no-filter -p 
 ```
 
-We can also use more cores for the foldseek all vs all comparison step by using the foldseek_cores flag.
+We can also use more cores for the Foldseek all-vs-all comparison step using the `--foldseek-cores` flag.
 
 ```
-snakemake --cores 4 --use-conda -s ./workflow/fold_tree --config folder=./myfam filter=False foldseek_cores=4
-
+foldtree --cores 4 --folder=myfam -p --foldseek-cores 4
 ```
 
-If we have a custom set of structures we use the following command and leave the identifier file blank.
+If we have a custom set of structures, use the following command and leave the identifier file empty:
 
 ```
-snakemake --cores 4 --use-conda -s ./workflow/fold_tree --config folder=./myfam filter=False custom_structs=True
-
+foldtree --cores 4 --folder=myfam -p --custom-structs
 ```
 
 
+Foldtree produces 3 trees: the Foldtree metric, LDDT, and TM tree. Also, it outputs some information retreived from the Uniprot API on the proteins, foldseek comparisons, distance matrices and descriptors of the pLDDT of the structures.
 
-The Foldtree metric, LDDT and TM trees are output alongside some information retreived from the uniprot API on the proteins, foldseek comparisons, distance matrices and descriptors of the pLDDT of the structures.
+## Running on a cluster
 
+Foldtree passes any additional arguments via `--extra-snakemake-arguments` to snakemake. For example, to run the pipeline on a Slurm cluster, prepare a slurm config 
+
+```
+git clone https://github.com/jdblischak/smk-simple-slurm slurmsimple
+```
+
+Adapt `slurmsimple/simple/config.yaml` correspondingly. Then pass it to snakemake:
+
+```
+foldtree <other args> -esa "--profile slurmsimple/simple"
+```
+
+
+
+# Known issues
+
+## libmamba Non-conda folder
+
+You must be using older mamba (<2.4). Update mamba or force snakemake to use conda (should not take much longer):
+
+```
+foldtree <other args> -esa "--conda-frontend conda"
+```
+
+
+# Other
 ## Repo contents
 
 In the examples folder you can find the data we used to make the RRNPPA phylogeny which is presented in detail in the manuscript as a motivating case study alongside other case studies.
@@ -99,7 +170,22 @@ The src folder contains python code used to interact with the Uniprot and Alphaf
 
 ## Benchmarking experiments
 
-To rerun the benchmarking experiments use the benchmarking workflow. This should be done on a cluster environment since thousands of trees will be generated. We performed experiments on a slurm cluster and the slurmsimple module is included as a module in this repo to allow snakemake to schedule jobs. Other cluster approaches to using snakemake on a cluster should also work (snakemake provides extensive documentation on this). The benchmarking pipeline will output 4 types of trees for sequence-based analysis for each family using 2 possible aligners ( muscle5 or clustalo ) and 2 possible tree building approaches ( iqtree of fasttree). The pipeline also output 12 structural trees for each family. These either use only 3di or 3di and amino acid alignments, 3 different strutural distances ( Fident or Foldtree metric, LDDT and TM score) and with or without statistical correction. The trees are then rooted with MAD and scored using ultrametricity and taxonomic congruence metrics.
+### Prepare
+
+To reproduce the benchmarking experiments, use the benchmarking workflow. This workflow is not directly wrapped by the `foldtree` command. To run it, you need to run it with snakemake from sources.
+
+The experiment should be done on a cluster environment, since thousands of trees will be generated. We performed experiments on a slurm cluster and the `slurmsimple` module is included as a module in this repo to allow snakemake to schedule jobs. Other cluster approaches to using snakemake on a cluster should also work (snakemake provides extensive documentation on this). 
+
+As the benchmarking pipeline has more dependencies than the main one, it was isolated into a different conda environment. To install benchmarking dependencies, run:
+
+```
+mamba env create -n foldtree-bench --file=src/foldtree/workflow/config/foldtree.yaml
+mamba activate
+```
+
+### Run
+
+The benchmarking pipeline is located in `src/foldtree/workflow`. It will output 4 types of trees for sequence-based analysis for each family using 2 possible aligners (`muscle5` or `clustalo`) and 2 possible tree building approaches (`iqtree` of `fasttree`). The pipeline also output 12 structural trees for each family. These either use only 3di or 3di and amino acid alignments, 3 different strutural distances ( Fident or Foldtree metric, LDDT and TM score) and with or without statistical correction. The trees are then rooted with MAD and scored using ultrametricity and taxonomic congruence metrics.
 
 To rerun the OMA HOG experiments download the identifier data from zenodo. (https://doi.org/10.5281/zenodo.8346286)
 
