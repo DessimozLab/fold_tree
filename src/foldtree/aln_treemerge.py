@@ -7,6 +7,8 @@ import pandas as pd
 import subprocess
 import shlex
 
+from Bio import SeqIO
+
 
 #recursive function from root to leaves
 allvall = snakemake.input[0] 
@@ -47,7 +49,7 @@ def mergeAlign( fasta1, fasta2, outfile):
 	args = shlex.split(args)
 	p = subprocess.call(args )
 
-def sub2fasta( sub, outfile , fastacol1='qaln' , fastacol1='taln' ):
+def sub2fasta( sub, outfile , fastacol1='qaln' , fastacol2='taln' ):
     with open(outfile, 'w') as f:
         f.write('>' + sub['query'] + '\n')
         f.write(sub[fastacol1] + '\n')
@@ -77,7 +79,7 @@ def traverse_tree_merge( treenode , resAA , res3di, allvall ):
                 #cherry, just grab the right pairwise alignment
                 sub = retalns(allvall, list(leafset)[0] , leafset)
                 c.aln = sub2fasta(sub, c.name + '_inter.fasta')
-                c.aln3di = sub2fasta(sub, c.name + '_inter.fasta' , fastacol1='qaln3di' , fastacol1='taln3di')
+                c.aln3di = sub2fasta(sub, c.name + '_inter.fasta' , fastacol1='qaln3di' , fastacol2='taln3di')
                 childalnsAA.append(c.aln)
                 childalns3di.append(c.aln3di)
             if c.aln and c.aln3di:
@@ -89,15 +91,16 @@ def traverse_tree_merge( treenode , resAA , res3di, allvall ):
                     #if the node is a leaf, then we need to add it to the alignment
                     sub = retalns(allvall, leafname, treenode.leafset)
                     c.aln = sub2fasta(sub, leafname + '_inter.fasta')
-                    c.aln3di = sub2fasta(sub, leafname + '_inter.fasta' , fastacol1='qaln3di' , fastacol1='taln3di')
+                    c.aln3di = sub2fasta(sub, leafname + '_inter.fasta' , fastacol1='qaln3di' , fastacol2='taln3di')
                     childalnsAA.append(c.aln)
                     childalns3di.append(c.aln3di)
                 else:
                     #if the node is not a leaf, then we need to recursively call the function
                     childalnsAA.append(traverse_tree(c, resAA , res3di, allvall)[0])
                     childalns3di.append(traverse_tree(c, resAA , res3di, allvall)[1])        
-        treenode.aln = mergeAlign( treenode.name + '_inter.fasta' , childalnsAA[0], childalnsAA[1]))            
-        treenode.aln3di = mergeAlign( treenode.name + '_inter.3di.fasta' , childalns3di[0], childalns3di[1]))
+        treenode.aln = mergeAlign( treenode.name + '_inter.fasta' , childalnsAA[0], childalnsAA[1])
+        treenode.aln3di = mergeAlign( treenode.name + '_inter.3di.fasta' , childalns3di[0], childalns3di[1])
+
     return treenode.aln, treenode.aln3di
 
 def remove_redundant( alignment ):
