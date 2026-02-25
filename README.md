@@ -26,9 +26,15 @@ We created a Colab notebook that allows you to try Foldtree without installing a
 
 https://colab.research.google.com/github/DessimozLab/fold_tree/blob/main/notebooks/Foldtree.ipynb
 
+# Install from conda
+
+```
+conda install -c bioconda foldtree
+```
+
 # Install from sources
 
-Alternatively, you can install Foldtree locally on your machine or on an HPC cluster.
+Alternatively, you can install Foldtree from sources.
 
 ## conda
 
