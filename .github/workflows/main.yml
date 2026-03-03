@@ -28,7 +28,7 @@ jobs:
       uses: snakemake/snakemake-github-action@v1.24.0
       with:
         directory: .
-        snakefile: workflow/Snakefile
+        snakefile: src/foldtree/workflow/fold_tree
         args: "--lint"
 
   Testing:
