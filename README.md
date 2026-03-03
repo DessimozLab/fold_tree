@@ -136,3 +136,10 @@ snakemake  --profile slurmsimple/simple --use-conda -s ./workflow/Benchmarking_w
 ```
 
 The code to generate the figures from the manuscript is available in the notebooks folder of the repo.
+
+## Funding
+
+Funded by NIH through the Pathogen Data Network.
+
+*This resource is supported by the National Institute Of Allergy And Infectious Diseases of the National Institutes of Health under Award Number U24AI183840. The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institutes of Health.
+
