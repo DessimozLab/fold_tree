@@ -1,0 +1,17 @@
+.gitattributes export-ignore
+.gitignore export-ignore
+
+3diphy/ export-ignore
+A-pro/ export-ignore
+CATH_data/ export-ignore
+Protein-comparison-tool/ export-ignore
+docs/ export-ignore
+docsource/ export-ignore
+examples/ export-ignore
+figures/ export-ignore
+foldseek/ export-ignore
+madroot/ export-ignore
+mafftmat/ export-ignore
+notebooks/ export-ignore
+slurmsimple/ export-ignore
+test-example/ export-ignore

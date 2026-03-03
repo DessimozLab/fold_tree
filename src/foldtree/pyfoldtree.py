@@ -1,3 +1,8 @@
+"""
+Entry point for the python Foldtree pipeline.
+
+For the snakemake pipeline, see src/cli.py
+"""
 
 from . import foldseek2tree
 from . import corecut 

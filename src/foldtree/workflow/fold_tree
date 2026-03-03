@@ -1,7 +1,8 @@
 
 #once snakemake is installed use the following command to test the struct tree
-import snakemake.utils
-snakemake.utils.min_version("7.8.0")
+#import snakemake.utils
+#snakemake.utils.min_version("7.8.0")
+
 snake_dir = workflow.basedir
 
 rootdir = ''.join([ sub + '/' for sub in snake_dir.split('/')[:-1] ] )
@@ -19,13 +20,12 @@ rule all:
 	input:
 	#get all treescore and rf distance files for all alntypes
 		#expand( "{folder}/RFdistances_{exp}_.json" , folder = folders , exp = exp) ,
-		expand( "{folder}/plddt.json" , folder = config["folder"] ) ,
+		expand("{folder}/plddt.json" , folder = config["folder"]) ,
 		expand("{folder}/{mattype}_struct_tree.PP.nwk.rooted.final", folder = config["folder"], mattype = mattypes),
 
 rule mad_root_post:
 	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
+		"envs/trees.yaml"
 	input:
 		"{folder}/{mattype}_struct_tree.PP.nwk"
 	output:
@@ -33,12 +33,11 @@ rule mad_root_post:
 	log:
 		"{folder}/logs/{mattype}_struct_madroot_post.log"
 	script:
-		'../src/process_madroot.py'
+		'../process_madroot.py'
 	
 rule mad_root_struct:
 	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
+		"config/foldtree.yaml"
 	input:
 		"{folder}/{mattype}_struct_tree.PP.nwk"
 	output:
@@ -50,8 +49,7 @@ rule mad_root_struct:
 
 rule postprocess:
 	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
+		"envs/trees.yaml"
 	input:
 		"{folder}/{mattype}_struct_tree.nwk"
 	output:
@@ -59,12 +57,11 @@ rule postprocess:
 	log:
 		"{folder}/logs/{mattype}_struct_postprocess.log"
 	script:
-		'../src/postprocess.py'
+		'../postprocess.py'
 
 rule quicktree:
 	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
+		"envs/trees.yaml"
 	input:
 		"{folder}/{mattype}_fastmemat.txt"
 	output:
@@ -76,8 +73,7 @@ rule quicktree:
 
 rule foldseek2distmat:
 	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
+		"envs/foldseek.yaml"
 	input:
 		"{folder}/allvall_1.csv"
 	output:
@@ -89,12 +85,11 @@ rule foldseek2distmat:
 	log:
 		"{folder}/logs/foldseek2distmat.log"
 	script:
-		"../src/foldseekres2distmat_simple.py"
+		"../foldseekres2distmat_simple.py"
 
 rule foldseek_allvall_1:
 	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
+		"envs/foldseek.yaml"
 	input:
 		"{folder}/finalset.csv"
 	output:
@@ -106,8 +101,7 @@ rule foldseek_allvall_1:
 
 rule dl_ids_sequences:
 	conda: 
-		#"config/fold_tree.yaml"
-		"foldtree"
+		"envs/seqs.yaml"
 	input:
 		ids="{folder}/identifiers.txt",
 	output:
@@ -119,12 +113,11 @@ rule dl_ids_sequences:
 		custom_structs=config["custom_structs"],
 		clean_folder=config["clean_folder"],
 	script:
-		"../src/dl_sequences.py"
+		"../dl_sequences.py"
 
 rule plddt:
 	conda:
-		#"config/fold_tree.yaml"
-		"foldtree"
+		"envs/seqs.yaml"
 	input:
 		"{folder}/finalset.csv",
 	output:
@@ -132,17 +125,16 @@ rule plddt:
 	log:
 		"{folder}/logs/plddt.log"
 	script:
-		'../src/grabplddt.py'
+		'../grabplddt.py'
 
 rule dl_ids_structs:
+	conda:
+		"envs/seqs.yaml"
 	input:
 		"{folder}/sequence_dataset.csv",
 	output:
 		#"{folder}/sequences.fst",
 		"{folder}/finalset.csv",
-	conda: 
-		#"config/fold_tree.yaml"
-		"foldtree",
 	log:
 		"{folder}/logs/dlstructs.log",
 	params:
@@ -153,4 +145,4 @@ rule dl_ids_structs:
 		custom_structs=config["custom_structs"],
 		clean_folder=config["clean_folder"],
 	script:
-		"../src/dl_structs.py"
+		"../dl_structs.py"

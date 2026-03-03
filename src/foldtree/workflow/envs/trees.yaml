@@ -1,0 +1,13 @@
+name: trees
+
+channel_priority: strict
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+
+dependencies:
+  - quicktree
+  - numpy
+  - pandas
+  - toytree
