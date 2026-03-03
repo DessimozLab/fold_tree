@@ -44,7 +44,7 @@ Foldtree is a Snakemake pipeline that runs multiple tools inside conda environme
 > [!WARNING]
 > 1) Micromamba is not supported, as Snakemake currently does not work reliably with it. If you are using micromamba, we recommend switching to mamba. You *can try* to make it work; good luck. See [one](https://github.com/snakemake/snakemake/issues/3490), [two](https://github.com/snakemake/snakemake/issues/2322).
 > 2) We discourage using older version of conda, i.e. versions that do not use libmamba as the default dependency solver. Foldtree creates conda environments under the hood, and solving them with outdated conda may take forever. Check that 
-> `conda info | grep  solver`
+> `conda info | grep solver`
 > shows `libmamba`, and update conda if it does not.
 
 
@@ -120,19 +120,19 @@ mkdir myfam/structs
 All we need to do now is run the workflow. In this example, we use 4 cores. We also have the option of filtering out structures with an average pLDDT < 50 (disabled by default). This was shown to improve the quality of trees relative to sequence-based trees (see the manuscript). Here we disable filtering to include all structures in the tree.
 
 ```
-foldtree --folder=myfam --no-filter -p 
+foldtree --folder myfam --no-filter -p 
 ```
 
 We can also use more cores for the Foldseek all-vs-all comparison step using the `--foldseek-cores` flag.
 
 ```
-foldtree --cores 4 --folder=myfam -p --foldseek-cores 4
+foldtree --cores 4 --folder myfam -p --foldseek-cores 4
 ```
 
 If we have a custom set of structures, use the following command and leave the identifier file empty:
 
 ```
-foldtree --cores 4 --folder=myfam -p --custom-structs
+foldtree --cores 4 --folder myfam -p --custom-structs
 ```
 
 
