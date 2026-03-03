@@ -83,7 +83,7 @@ foldtree --help
 # Usage
 
 ## Prepare input
-Now we're ready to run the workflow. First, create a folder that will contain the results.Here we call it `myfam`.
+Now we're ready to run the workflow. First, create a folder that will contain the results. Here we call it `myfam`.
 
 ```
 mkdir myfam
@@ -117,7 +117,7 @@ mkdir myfam/structs
 
 ## Run Foldtree
 
-All we need to do now is run the workflow. In this example, we use 4 cores. We also have the option of filtering out structures with an average pLDDT < 40 (disabled by default). This was shown to improve the quality of trees relative to sequence-based trees (see the manuscript). Here we disable filtering to include all structures in the tree.
+All we need to do now is run the workflow. In this example, we use 4 cores. We also have the option of filtering out structures with an average pLDDT < 50 (disabled by default). This was shown to improve the quality of trees relative to sequence-based trees (see the manuscript). Here we disable filtering to include all structures in the tree.
 
 ```
 foldtree --folder=myfam --no-filter -p 
