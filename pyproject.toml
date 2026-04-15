@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "foldtree"
 dynamic = ["entry-points"]
-version = "1.1.0"
+version = "1.1.1rc1"
 authors = [
   { name="Dave Moi", email="dmoi@unil.ch" },
   { name="Mauricio Langlieb", email="dmoi@unil.ch" },
