@@ -246,7 +246,9 @@ The code to generate the figures from the manuscript is available in the noteboo
 
 ## Funding
 
-Funded by NIH through the Pathogen Data Network.
+Funded by NIH* through the Pathogen Data Network. 
+<p align="center" width="100%">
+  <img src="pdn_logo.png" style="width:30%; height:auto;">
+</p>
 
-*This resource is supported by the National Institute Of Allergy And Infectious Diseases of the National Institutes of Health under Award Number U24AI183840. The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institutes of Health.
-
+*This resource is supported as a whole or in part by the National Institute Of Allergy And Infectious Diseases of the National Institutes of Health under grant n°U24AI183840, awarded to the SIB Swiss Institute of Bioinformatics. The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institutes of Health.
