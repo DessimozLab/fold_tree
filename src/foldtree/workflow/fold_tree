@@ -24,8 +24,6 @@ rule all:
 		expand("{folder}/{mattype}_struct_tree.PP.nwk.rooted.final", folder = config["folder"], mattype = mattypes),
 
 rule mad_root_post:
-	conda:
-		"envs/trees.yaml"
 	input:
 		"{folder}/{mattype}_struct_tree.PP.nwk"
 	output:
@@ -36,8 +34,6 @@ rule mad_root_post:
 		'../process_madroot.py'
 	
 rule mad_root_struct:
-	conda:
-		"config/foldtree.yaml"
 	input:
 		"{folder}/{mattype}_struct_tree.PP.nwk"
 	output:
@@ -48,8 +44,6 @@ rule mad_root_struct:
 		rootdir+'madroot/mad {wildcards.folder}/{wildcards.mattype}_struct_tree.PP.nwk'
 
 rule postprocess:
-	conda:
-		"envs/trees.yaml"
 	input:
 		"{folder}/{mattype}_struct_tree.nwk"
 	output:
@@ -60,8 +54,6 @@ rule postprocess:
 		'../postprocess.py'
 
 rule quicktree:
-	conda:
-		"envs/trees.yaml"
 	input:
 		"{folder}/{mattype}_fastmemat.txt"
 	output:
@@ -72,8 +64,6 @@ rule quicktree:
 		'quicktree -i m {wildcards.folder}/{wildcards.mattype}_fastmemat.txt > {wildcards.folder}/{wildcards.mattype}_struct_tree.nwk '
 
 rule foldseek2distmat:
-	conda:
-		"envs/foldseek.yaml"
 	input:
 		"{folder}/allvall_1.csv"
 	output:
@@ -88,8 +78,6 @@ rule foldseek2distmat:
 		"../foldseekres2distmat_simple.py"
 
 rule foldseek_allvall_1:
-	conda:
-		"envs/foldseek.yaml"
 	input:
 		"{folder}/finalset.csv"
 	output:
@@ -100,8 +88,6 @@ rule foldseek_allvall_1:
 		foldseekpath + " easy-search {wildcards.folder}/structs/ {wildcards.folder}/structs/ {wildcards.folder}/allvall_1.csv {wildcards.folder}/tmp --format-output 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore' --exhaustive-search --alignment-type 2 -e inf --threads " + str(config['foldseek_cores']) 
 
 rule dl_ids_sequences:
-	conda: 
-		"envs/seqs.yaml"
 	input:
 		ids="{folder}/identifiers.txt",
 	output:
@@ -116,8 +102,6 @@ rule dl_ids_sequences:
 		"../dl_sequences.py"
 
 rule plddt:
-	conda:
-		"envs/seqs.yaml"
 	input:
 		"{folder}/finalset.csv",
 	output:
@@ -128,8 +112,6 @@ rule plddt:
 		'../grabplddt.py'
 
 rule dl_ids_structs:
-	conda:
-		"envs/seqs.yaml"
 	input:
 		"{folder}/sequence_dataset.csv",
 	output:

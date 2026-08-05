@@ -134,12 +134,6 @@ def _validate_folder(folder: Path) -> Path:
     help="Run snakemake with -p/--printshellcmds. Prints commands run by snakemake.",
 )
 @click.option(
-    "--conda-prefix", "-cp",
-    default="~/.foldtree",
-    type=click.Path(path_type=Path, file_okay=False, dir_okay=True),
-    help="Root directory for temporary conda environments used by snakemake rules."
-)
-@click.option(
     "--extra-snakemake-args", "-esa",
     default="",
     help="Extra args passed verbatim to snakemake (e.g. '--rerun-incomplete' or cluster profile settings) for custom configuration.",
@@ -161,7 +155,6 @@ def cli(
     cores: int,
     dry_run: bool,
     printshellcmds: bool,
-    conda_prefix: Path,
     extra_snakemake_args: str,
     verbose: bool
 ) -> None:
@@ -180,8 +173,8 @@ def cli(
         foldtree --folder myfam -p
 
     \b
-        # Single thread, specify where to store snakemake envs
-        foldtree --folder myfam -p -c 1 --conda-prefix /tmp/foldtree
+        # Single thread
+        foldtree --folder myfam -p -c 1
 
     \b
         # Run on a SLURM cluster:
@@ -215,8 +208,6 @@ def cli(
 
     cmd = ["snakemake"]
     cmd += ["--cores", str(cores)]
-    cmd.append("--use-conda")
-    cmd += ["--conda-prefix", str(conda_prefix)]
     cmd += ["-s", str(snakefile)]
 
     # snakemake CLI config values are strings, so be explicit.
