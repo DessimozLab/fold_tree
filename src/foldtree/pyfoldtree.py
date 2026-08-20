@@ -10,6 +10,7 @@ import argparse
 import numpy as np
 import pandas as pd
 import os
+import shutil
 
 def structblob2tree(input_folder, outfolder, overwrite = False,
              fastmepath = 'fastme', quicktreepath = 'quicktree' , 
@@ -41,20 +42,28 @@ def structblob2tree(input_folder, outfolder, overwrite = False,
         kernel to use, either 'fident', 'lddt' or 'alntmscore'
     
     '''
+    if shutil.which(fastmepath) is None:
+        raise RuntimeError(
+            f"FastME executable '{fastmepath}' was not found. "
+            "FastME is required to run pyfoldtree. "
+            "Install it or provide its location with --fastmepath."
+        )
+    os.makedirs(outfolder, exist_ok=True)
+
     #check if the foldseek output is already there
-    if os.path.exists(outfolder + 'res.m8') and overwrite == False:
+    if os.path.exists(os.path.join(outfolder, 'res.m8')) and overwrite == False:
         print('found foldseek output, skipping foldseek')
-        alnres = outfolder + 'res.m8'
+        alnres = os.path.join(outfolder, 'res.m8')
     else:
-        alnres = foldseek2tree.runFoldseek_allvall_EZsearch(input_folder , outfolder + 'res.m8', foldseekpath = foldseekpath)
+        alnres = foldseek2tree.runFoldseek_allvall_EZsearch(input_folder , os.path.join(outfolder, 'res.m8'), foldseekpath = foldseekpath)
     
     if core == True:
         corecut.extract_core( alnres , outfolder+'.core.csv',  hitthresh = .8 ,minthresh = .6, corefolder = input_folder+'core_structs/' , structfolder = input_folder )
-        if os.path.exists(outfolder + 'res.m8') and overwrite == False:
+        if os.path.exists(os.path.join(outfolder, 'core.res.m8')) and overwrite == False:
             print('found foldseek core output, skipping foldseek')
-            alnres = outfolder + 'core.res.m8'
+            alnres = os.path.join(outfolder, 'core.res.m8')
         else:
-            alnres = foldseek2tree.runFoldseek_allvall_EZsearch(input_folder , outfolder + 'core.res.m8', foldseekpath = foldseekpath)
+            alnres = foldseek2tree.runFoldseek_allvall_EZsearch(input_folder , os.path.join(outfolder, 'core.res.m8'), foldseekpath = foldseekpath)
     
     res = pd.read_table(alnres , header = None )
     res[0] = res[0].map(lambda x :x.replace('.pdb', ''))
@@ -85,10 +94,10 @@ def structblob2tree(input_folder, outfolder, overwrite = False,
             else:
                 factor = 1
             matrices[k] = Tajima_dist(matrices[k], factor = factor)
-        np.save( input_folder + k + '_distmat.npy' , matrices[k])
-        distmat_txt = foldseek2tree.distmat_to_txt( ids , matrices[k] , outfolder + k + '_distmat.txt' )
+        np.save(os.path.join(input_folder, k + '_distmat.npy'), matrices[k])
+        distmat_txt = foldseek2tree.distmat_to_txt( ids , matrices[k] , os.path.join(outfolder, k + '_distmat.txt'))
         out_tree = foldseek2tree.runFastme(  fastmepath = fastmepath , clusterfile = distmat_txt )
-        out_tree = foldseek2tree.postprocess(out_tree, input_folder + 'structblob_tree.nwk' , delta = delta)
+        out_tree = foldseek2tree.postprocess(out_tree, os.path.join(input_folder, 'structblob_tree.nwk') , delta = delta)
         trees[k] = out_tree
     return alnres, trees
 
