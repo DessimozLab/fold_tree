@@ -16,7 +16,7 @@ def structblob2tree(input_folder, outfolder, overwrite = False,
              fastmepath = 'fastme', quicktreepath = 'quicktree' , 
          foldseekpath = 'foldseek' , delta = 0.0001 ,
        correction = False , kernel = 'fident' , core = False 
-       , hittresh = .8 , minthresh = .6):
+       , hitthresh = .8 , minthresh = .6):
     '''
     run fold tree pipeline for a folder of pdb files
     
@@ -58,7 +58,7 @@ def structblob2tree(input_folder, outfolder, overwrite = False,
         alnres = foldseek2tree.runFoldseek_allvall_EZsearch(input_folder , os.path.join(outfolder, 'res.m8'), foldseekpath = foldseekpath)
     
     if core == True:
-        corecut.extract_core( alnres , outfolder+'.core.csv',  hitthresh = .8 ,minthresh = .6, corefolder = input_folder+'core_structs/' , structfolder = input_folder )
+        corecut.extract_core( alnres , outfolder+'.core.csv',  hitthresh = hitthresh ,minthresh = minthresh, corefolder = input_folder+'core_structs/' , structfolder = input_folder )
         if os.path.exists(os.path.join(outfolder, 'core.res.m8')) and overwrite == False:
             print('found foldseek core output, skipping foldseek')
             alnres = os.path.join(outfolder, 'core.res.m8')
@@ -93,7 +93,7 @@ def structblob2tree(input_folder, outfolder, overwrite = False,
                 factor = .93
             else:
                 factor = 1
-            matrices[k] = Tajima_dist(matrices[k], factor = factor)
+            matrices[k] = foldseek2tree.Tajima_dist(matrices[k], bfactor = factor)
         np.save(os.path.join(input_folder, k + '_distmat.npy'), matrices[k])
         distmat_txt = foldseek2tree.distmat_to_txt( ids , matrices[k] , os.path.join(outfolder, k + '_distmat.txt'))
         out_tree = foldseek2tree.runFastme(  fastmepath = fastmepath , clusterfile = distmat_txt )
@@ -113,9 +113,9 @@ def main():
     parser.add_argument('--quicktreepath', default='quicktree', help='path to quicktree binary')
     parser.add_argument('--foldseekpath', default='foldseek', help='path to foldseek binary')
     parser.add_argument('--delta', default=0.0001, help='small number to replace negative branch lengths with')
-    parser.add_argument('--correction', help='use the -ln correction for the distance matrix')
+    parser.add_argument('--correction', action='store_true', help='use the -ln correction for the distance matrix')
     parser.add_argument('--overwrite', help='overwrite existing foldseek output')
-    parser.add_argument( '--hittresh', default = .8, help='threshold for finding the boundaries of the core')
+    parser.add_argument( '--hitthresh', default = .8, help='threshold for finding the boundaries of the core')
     parser.add_argument( '--minthresh', default = .6, help='threshold if the core is not found')
     
     args = parser.parse_args()
@@ -124,7 +124,7 @@ def main():
         parser.error("Positional arguments are required.")
     flag_dict = {}
     flag_dict['core'] = args.corecut
-    flag_dict['hittresh'] = args.hittresh
+    flag_dict['hitthresh'] = args.hitthresh
     flag_dict['minthresh'] = args.minthresh
     flag_dict['correction'] = True if args.correction else False
     flag_dict['overwrite'] = True if args.overwrite else False
