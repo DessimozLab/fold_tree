@@ -22,8 +22,8 @@ def extract_core(resdf , outfile,  hitthresh = .8 ,minthresh = .6, corefolder = 
 
 	"""
 	
-	#read all results
-	folder =''.join([ sub + '/' for sub in resdf.split('/')[:-1] ])
+	# read all results
+	folder = os.path.dirname(resdf)
 	print(folder)
 	resdf = pd.read_table(resdf, header = None)
 	resdf.columns = 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,lddt,lddtfull,alntmscore'.split(',')
@@ -75,7 +75,7 @@ def extract_core(resdf , outfile,  hitthresh = .8 ,minthresh = .6, corefolder = 
 			if '/' in q:
 				qfile = qfile.split('/')[-1]
 
-			struct = parser.get_structure(q.split('.')[0], folder+structfolder+qfile )
+			struct = parser.get_structure(q.split('.')[0], os.path.join(structfolder, qfile))
 
 			#zero based indexing...
 			struct_core = Bio.PDB.Dice.extract( struct ,'A' , hits[q]['min']+1 , hits[q]['max']+1 ,folder+corefolder+qfile  )

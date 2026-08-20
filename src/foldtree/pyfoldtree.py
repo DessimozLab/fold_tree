@@ -10,12 +10,13 @@ import argparse
 import numpy as np
 import pandas as pd
 import os
+import shutil
 
 def structblob2tree(input_folder, outfolder, overwrite = False,
              fastmepath = 'fastme', quicktreepath = 'quicktree' , 
          foldseekpath = 'foldseek' , delta = 0.0001 ,
        correction = False , kernel = 'fident' , core = False 
-       , hittresh = .8 , minthresh = .6):
+       , hitthresh = .8 , minthresh = .6):
     '''
     run fold tree pipeline for a folder of pdb files
     
@@ -41,20 +42,28 @@ def structblob2tree(input_folder, outfolder, overwrite = False,
         kernel to use, either 'fident', 'lddt' or 'alntmscore'
     
     '''
+    if shutil.which(fastmepath) is None:
+        raise RuntimeError(
+            f"FastME executable '{fastmepath}' was not found. "
+            "FastME is required to run pyfoldtree. "
+            "Install it or provide its location with --fastmepath."
+        )
+    os.makedirs(outfolder, exist_ok=True)
+
     #check if the foldseek output is already there
-    if os.path.exists(outfolder + 'res.m8') and overwrite == False:
+    if os.path.exists(os.path.join(outfolder, 'res.m8')) and overwrite == False:
         print('found foldseek output, skipping foldseek')
-        alnres = outfolder + 'res.m8'
+        alnres = os.path.join(outfolder, 'res.m8')
     else:
-        alnres = foldseek2tree.runFoldseek_allvall_EZsearch(input_folder , outfolder + 'res.m8', foldseekpath = foldseekpath)
+        alnres = foldseek2tree.runFoldseek_allvall_EZsearch(input_folder , os.path.join(outfolder, 'res.m8'), foldseekpath = foldseekpath)
     
     if core == True:
-        corecut.extract_core( alnres , resdf+'.core.csv',  hitthresh = .8 ,minthresh = .6, corefolder = input_folder+'core_structs/' , structfolder = input_folder )
-        if os.path.exists(outfolder + 'res.m8') and overwrite == False:
+        corecut.extract_core( alnres , outfolder+'.core.csv',  hitthresh = hitthresh ,minthresh = minthresh, corefolder = input_folder+'core_structs/' , structfolder = input_folder )
+        if os.path.exists(os.path.join(outfolder, 'core.res.m8')) and overwrite == False:
             print('found foldseek core output, skipping foldseek')
-            alnres = outfolder + 'core.res.m8'
+            alnres = os.path.join(outfolder, 'core.res.m8')
         else:
-            alnres = foldseek2tree.runFoldseek_allvall_EZsearch(input_folder , outfolder + 'core.res.m8', foldseekpath = foldseekpath)
+            alnres = foldseek2tree.runFoldseek_allvall_EZsearch(input_folder , os.path.join(outfolder, 'core.res.m8'), foldseekpath = foldseekpath)
     
     res = pd.read_table(alnres , header = None )
     res[0] = res[0].map(lambda x :x.replace('.pdb', ''))
@@ -84,38 +93,38 @@ def structblob2tree(input_folder, outfolder, overwrite = False,
                 factor = .93
             else:
                 factor = 1
-            matrices[k] = Tajima_dist(matrices[k], factor = factor)
-        np.save( input_folder + k + '_distmat.npy' , matrices[k])
-        distmat_txt = foldseek2tree.distmat_to_txt( ids , matrices[k] , outfolder + k + '_distmat.txt' )
+            matrices[k] = foldseek2tree.Tajima_dist(matrices[k], bfactor = factor)
+        np.save(os.path.join(input_folder, k + '_distmat.npy'), matrices[k])
+        distmat_txt = foldseek2tree.distmat_to_txt( ids , matrices[k] , os.path.join(outfolder, k + '_distmat.txt'))
         out_tree = foldseek2tree.runFastme(  fastmepath = fastmepath , clusterfile = distmat_txt )
-        out_tree = foldseek2tree.postprocess(out_tree, input_folder + 'structblob_tree.nwk' , delta = delta)
+        out_tree = foldseek2tree.postprocess(out_tree, os.path.join(input_folder, 'structblob_tree.nwk') , delta = delta)
         trees[k] = out_tree
     return alnres, trees
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(description='run foldtree pipeline for a folder of pdb files')
     parser.add_argument('struct_dir', help='path to folder with pdb files')
     parser.add_argument('output_dir', help='output directory')
-    parser.add_argument('--corecut', help='cut the core of the proteins and realign')
+    parser.add_argument('--corecut', action='store_true', help='cut the core of the proteins and realign')
     parser.add_argument('--kernel', choices = ['lddt', 'fident', 'tmalign' ] ,
     default = 'fident',
     help='this is the comparison metric used to build the tree')
     parser.add_argument('--fastmepath', default='fastme', help='path to fastme binary')
     parser.add_argument('--quicktreepath', default='quicktree', help='path to quicktree binary')
-    parser.add_argument('--foldseekpath', default='../foldseek/foldseek', help='path to foldseek binary')
+    parser.add_argument('--foldseekpath', default='foldseek', help='path to foldseek binary')
     parser.add_argument('--delta', default=0.0001, help='small number to replace negative branch lengths with')
-    parser.add_argument('--correction', help='use the -ln correction for the distance matrix')
+    parser.add_argument('--correction', action='store_true', help='use the -ln correction for the distance matrix')
     parser.add_argument('--overwrite', help='overwrite existing foldseek output')
-    parser.add_argument( 'hittresh', default = .8, help='threshold for finding the boundaries of the core')
-    parser.add_argument( 'minthresh', default = .6, help='threshold if the core is not found')
+    parser.add_argument( '--hitthresh', default = .8, help='threshold for finding the boundaries of the core')
+    parser.add_argument( '--minthresh', default = .6, help='threshold if the core is not found')
     
     args = parser.parse_args()
 
-    if not all([args.positional1, args.positional2]):
+    if not all([args.struct_dir, args.output_dir]):
         parser.error("Positional arguments are required.")
     flag_dict = {}
-    flag_dict['corecut'] = True if args.corecut else False
-    flag_dict['hittresh'] = args.hittresh
+    flag_dict['core'] = args.corecut
+    flag_dict['hitthresh'] = args.hitthresh
     flag_dict['minthresh'] = args.minthresh
     flag_dict['correction'] = True if args.correction else False
     flag_dict['overwrite'] = True if args.overwrite else False
@@ -129,4 +138,5 @@ if __name__ == '__main__':
     print('Done!')
 
 
-    
+if __name__ == '__main__':
+    main()   
